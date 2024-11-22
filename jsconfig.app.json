@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "allowJs": true
+  },
+  "include": [
+    "src/**/*", // Include all files in the 'src' folder
+    "index.html" // Include index.html if it's in the project root
+  ],
+  "exclude": ["node_modules"]
+}
