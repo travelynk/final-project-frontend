@@ -31,7 +31,7 @@ export default function BookingForm() {
   };
 
   return (
-    <div className="max-w-[550px] md:w-2/3 mx-auto space-y-6 py-[6px] px-4">
+    <div className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4">
       {/* Data Diri Pemesan */}
       <div className="border p-6 rounded-lg shadow-md bg-white">
         <p className="text-xl font-bold mb-4">Isi Data Pemesan</p>
