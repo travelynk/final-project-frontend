@@ -17,7 +17,7 @@ import {
 import { Progress } from "../../components/ui/progress";
 import { Skeleton } from "../../components/ui/skeleton";
 
-export const Route = createLazyFileRoute("/flight/$params")({
+export const Route = createLazyFileRoute("/flights/$params")({
   component: Flight,
 });
 
