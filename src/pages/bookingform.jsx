@@ -41,7 +41,12 @@ export default function BookingForm() {
 
         <div className="space-y-4 p-4">
           <div>
-            <Label htmlFor="fullname">Nama Lengkap</Label>
+            <Label
+              className="text-darkblue05 font-bold text-[14px]"
+              htmlFor="fullname"
+            >
+              Nama Lengkap
+            </Label>
             <Input
               id="fullname"
               placeholder="Masukkan nama lengkap"
@@ -53,7 +58,12 @@ export default function BookingForm() {
             <Switch />
           </div>
           <div>
-            <Label htmlFor="namakeluarga">Nama Keluarga</Label>
+            <Label
+              className="text-darkblue05 font-bold text-[14px]"
+              htmlFor="namakeluarga"
+            >
+              Nama Keluarga
+            </Label>
             <Input
               id="namakeluarga"
               placeholder="Masukan nama keluarga"
@@ -61,7 +71,12 @@ export default function BookingForm() {
             />
           </div>
           <div>
-            <Label htmlFor="phone">Nomor Telepon</Label>
+            <Label
+              className="text-darkblue05 font-bold text-[14px]"
+              htmlFor="phone"
+            >
+              Nomor Telepon
+            </Label>
             <Input
               id="phone"
               placeholder="Masukkan nomor telepon"
@@ -69,7 +84,12 @@ export default function BookingForm() {
             />
           </div>
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label
+              className="text-darkblue05 font-bold text-[14px]"
+              htmlFor="email"
+            >
+              Email
+            </Label>
             <Input
               id="email"
               placeholder="Contoh: johndoe@gmail.com"
@@ -92,7 +112,12 @@ export default function BookingForm() {
               <AccordionContent>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor={`title-${index}`}>Title</Label>
+                    <Label
+                      className="text-darkblue05 font-bold text-[14px]"
+                      htmlFor={`title-${index}`}
+                    >
+                      Title
+                    </Label>
                     <Input
                       id={`title-${index}`}
                       placeholder="Mr./Mrs./Miss"
@@ -100,7 +125,12 @@ export default function BookingForm() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor={`fullname-${index}`}>Nama Lengkap</Label>
+                    <Label
+                      className="text-darkblue05 font-bold text-[14px]"
+                      htmlFor={`fullname-${index}`}
+                    >
+                      Nama Lengkap
+                    </Label>
                     <Input
                       id={`fullname-${index}`}
                       placeholder="Masukkan nama lengkap"
@@ -112,7 +142,12 @@ export default function BookingForm() {
                     <Switch />
                   </div>
                   <div>
-                    <Label htmlFor={`birthdate-${index}`}>Tanggal Lahir</Label>
+                    <Label
+                      className="text-darkblue05 font-bold text-[14px]"
+                      htmlFor={`birthdate-${index}`}
+                    >
+                      Tanggal Lahir
+                    </Label>
                     <Input
                       id={`birthdate-${index}`}
                       placeholder="dd/mm/yyyy"
@@ -121,7 +156,10 @@ export default function BookingForm() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor={`citizenship-${index}`}>
+                    <Label
+                      className="text-darkblue05 font-bold text-[14px]"
+                      htmlFor={`citizenship-${index}`}
+                    >
                       Kewarganegaraan
                     </Label>
                     <Input
@@ -131,7 +169,12 @@ export default function BookingForm() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor={`passport-${index}`}>KTP/Paspor</Label>
+                    <Label
+                      className="text-darkblue05 font-bold text-[14px]"
+                      htmlFor={`passport-${index}`}
+                    >
+                      KTP/Paspor
+                    </Label>
                     <Input
                       id={`passport-${index}`}
                       placeholder="Masukkan nomor KTP atau paspor"
@@ -139,7 +182,12 @@ export default function BookingForm() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor={`expiry-${index}`}>Berlaku Sampai</Label>
+                    <Label
+                      className="text-darkblue05 font-bold text-[14px]"
+                      htmlFor={`expiry-${index}`}
+                    >
+                      Berlaku Sampai
+                    </Label>
                     <Input
                       id={`expiry-${index}`}
                       placeholder="dd/mm/yyyy"
