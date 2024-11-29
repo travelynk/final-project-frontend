@@ -1,25 +1,25 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
-import { Button } from '../../components/ui/button'
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { Button } from "../../components/ui/button";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '../../components/ui/accordion'
-import { Checkbox } from '../../components/ui/checkbox'
-import { Slider } from '../../components/ui/slider'
-import { useState } from 'react'
+} from "../../components/ui/accordion";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Slider } from "../../components/ui/slider";
+import { useState } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '../../components/ui/popover'
-import { Progress } from '../../components/ui/progress'
-import { Skeleton } from '../../components/ui/skeleton'
+} from "../../components/ui/popover";
+import { Progress } from "../../components/ui/progress";
+import { Skeleton } from "../../components/ui/skeleton";
 
 export const Route = createLazyFileRoute("/flights/$params")({
   component: Flight,
-})
+});
 
 function Flight() {
   return (
@@ -29,7 +29,7 @@ function Flight() {
         <BodyComponent />
       </div>
     </>
-  )
+  );
 }
 
 const HeaderComponent = () => {
@@ -43,7 +43,7 @@ const HeaderComponent = () => {
           <div className="labels col-span-1 sm:col-span-6 flex gap-x-3 bg-darkblue03 p-3 rounded-lg">
             <img src="/src/assets/arrow-left.svg" alt="" />
             <p className="text-sm sm:text-base">
-              JKT {'>'} MLB - 2 Penumpang - Economy
+              JKT {">"} MLB - 2 Penumpang - Economy
             </p>
           </div>
           <Button className="bg-[#73CA5C] hover:bg-[#73CA5C]/70 h-full px-4 py-2 rounded-lg">
@@ -130,14 +130,14 @@ const HeaderComponent = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
 const BodyComponent = () => {
-  const [sliderValue, setSliderValue] = useState(3000000)
+  const [sliderValue, setSliderValue] = useState(3000000);
   const handleSliderChange = (value) => {
-    setSliderValue(value[0])
-  }
+    setSliderValue(value[0]);
+  };
   return (
     <>
       <div className="flex   flex-col lg:flex-row gap-3 pb-5">
@@ -269,52 +269,113 @@ const BodyComponent = () => {
           </div>
         </div>
         <div className="listt-flights w-full md:w-3/4">
-          {/* <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-2">
             <li>
-              <div className="p-5 border border-darkblue02 rounded-xl shadow-sm">
-                <div className="header flex justify-between">
-                  <div className="flex gap-2">
-                    <img src="/src/assets/logo-plane.svg" alt="" />
-                    <span>Jet Air - Economy </span>
-                  </div>
-                  <img src="/src/assets/collaps.svg" alt="" />
-                </div>
-                <div className="content grid grid-cols-7">
-                  <div className="route flex col-span-5 lg:col-span-6 px-5 justify-start font-bold text-lg md:text-xl items-center gap-3">
-                    <div>
-                      <span>07.00</span>
-                      <p className="font-semibold text-lg">JKT</p>
-                    </div>
-                    <div className="flex flex-col justify-center items-center  text-sm md:text-xl  w-full font-semibold text-gray-400 text-center">
-                      <span>4h 0m</span>
-                      <img
-                        src="/src/assets/route.svg"
-                        alt=""
-                        className="w-full"
-                      />
-                      <span>Direct</span>
-                    </div>
-                    <div>
-                      <span>07.00</span>
-                      <p className="font-semibold text-lg">JKT</p>
-                    </div>
+              <Accordion
+                type="single"
+                collapsible
+                className="p-5 border border-darkblue02 rounded-xl shadow-sm "
+              >
+                <AccordionItem value="item-1 ">
+                  <AccordionTrigger className="w-full bg-transparent hover:bg-transparent">
+                    <div className="w-full">
+                      <div className="header flex justify-between">
+                        <div className="flex gap-2">
+                          <img src="/src/assets/logo-plane.svg" alt="" />
+                          <span>Jet Air - Economy </span>
+                        </div>
+                        <img src="/src/assets/collaps.svg" alt="" />
+                      </div>
+                      <div className="content grid grid-cols-7">
+                        <div className="route flex col-span-5 lg:col-span-6 px-5 justify-start font-bold text-lg md:text-xl items-center gap-3">
+                          <div>
+                            <span>07.00</span>
+                            <p className="font-semibold text-lg">JKT</p>
+                          </div>
+                          <div className="flex flex-col justify-center items-center  text-sm md:text-xl  w-full font-semibold text-gray-400 text-center">
+                            <span>4h 0m</span>
+                            <img
+                              src="/src/assets/route.svg"
+                              alt=""
+                              className="w-full"
+                            />
+                            <span>Direct</span>
+                          </div>
+                          <div>
+                            <span>07.00</span>
+                            <p className="font-semibold text-lg">JKT</p>
+                          </div>
 
-                    <img src="/src/assets/bagasi.svg" alt="" className="w-10" />
-                  </div>
-                  <div className="price  text-xl font-bold text-darkblue04 w-full col-span-2 lg:col-span-1">
-                    <h1>4.950.000</h1>
-                    <Button className="w-full rounded-2xl">Pilih</Button>
-                  </div>
-                </div>
-              </div>
+                          <img
+                            src="/src/assets/bagasi.svg"
+                            alt=""
+                            className="w-10"
+                          />
+                        </div>
+                        <div className="price  text-xl font-bold text-darkblue04 w-full col-span-2 lg:col-span-1">
+                          <h1>4.950.000</h1>
+                          <Button className="w-full rounded-2xl">Pilih</Button>
+                        </div>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <h1 className="text-darkblue05 text-xl font-bold">
+                      Detail Penerbangan
+                    </h1>
+                    <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
+                      <h1 className="text-darkblue05  font-bold col-end-10 px-5">
+                        Keberangkatan
+                      </h1>
+                      <div className="col-span-9 ">
+                        <h1 className="font-bold ">07.00</h1>
+                        <p>3 Maret</p>
+                        <span className="font-semibold text-lg">
+                          Sokearno Hatta - Terminal 1A Domestik
+                        </span>
+                      </div>
+                    </div>
+                    <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
+                      <h1 className="text-darkblue05  font-bold col-end-10">
+                        Keberangkatan
+                      </h1>
+                      <div className="col-span-9 ">
+                        <h1 className="font-bold ">Jet Air - Ekonomi</h1>
+                        <h1 className="font-bold ">JT-301</h1>
+                        <div className="flex gap-1">
+                          <img src="/src/assets/logo-plane.svg" alt="" />
+                          <span className="font-bold text-lg">Informasi</span>
+                        </div>
+                        <ul className="px-10">
+                          <li>Baggage 20 kg</li>
+                          <li>Cabin baggage 7 kg In Flight</li>
+                          <li>Entertainment</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="return text-lg grid grid-cols-10 justify-items-stretch">
+                      <h1 className="text-darkblue05  font-bold col-end-10 px-5">
+                        Kedatangan
+                      </h1>
+                      <div className="col-span-9 ">
+                        <h1 className="font-bold ">01.00</h1>
+                        <p>3 Maret</p>
+                        <span className="font-semibold text-lg">
+                          Melbourne International Airport
+                        </span>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </li>
-          </ul> */}
-          <Loading />
+          </ul>
+          {/* <Loading /> */}
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
 const Loading = () => {
   return (
@@ -328,8 +389,8 @@ const Loading = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 const SoldOut = () => {
   return (
     <>
@@ -339,8 +400,8 @@ const SoldOut = () => {
         <span>Coba cari perjalanan lainnya!</span>
       </div>
     </>
-  )
-}
+  );
+};
 
 const NotFound = () => {
   return (
@@ -361,7 +422,7 @@ const NotFound = () => {
                 <div className="animate-pulse rounded-md bg-muted w-full  h-3" />
                 <div className="animate-pulse rounded-md bg-muted w-8/12  h-3" />
               </div>
-            </Skeleton>{' '}
+            </Skeleton>{" "}
             <Skeleton className=" p-2 grid grid-cols-12 w-full">
               <img src="/src/assets/verification.svg" alt="" />
               <div className="flex flex-col gap-1 col-span-11">
@@ -376,5 +437,5 @@ const NotFound = () => {
         <span className="text-darkblue04"> Coba cari perjalanan lainnya!</span>
       </div>
     </>
-  )
-}
+  );
+};
