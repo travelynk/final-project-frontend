@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import {
   Accordion,
   AccordionItem,
@@ -10,17 +10,13 @@ import {
 } from "@/components/ui/accordion";
 
 export default function BookingForm() {
-  const [passengers, setPassengers] = useState([1]); // Array for passengers
-  const [selectedSeats, setSelectedSeats] = useState([]); // Selected seats
+  const [passengers, setPassengers] = useState([1]);
+  const [selectedSeats, setSelectedSeats] = useState([]);
 
   const seatRows = 12;
-  const seatColumns = ["A", "B", "C", "D", "E", "F"];
-  const reservedSeats = ["3D", "3E"]; // Reserved seats
+  const seatColumns = ["A", "B", "C", "", "D", "E", "F"];
+  const reservedSeats = ["3D", "3E", "1D"];
   const maxSelectableSeats = passengers.length;
-
-  // Calculate available seats dynamically
-  const totalSeats = seatRows * seatColumns.length;
-  const availableSeats = totalSeats - reservedSeats.length;
 
   const toggleSeatSelection = (seat) => {
     if (selectedSeats.includes(seat)) {
@@ -35,18 +31,42 @@ export default function BookingForm() {
   };
 
   return (
-    <div className="w-full md:w-2/3 mx-auto space-y-6">
+    <div className="max-w-[550px] md:w-2/3 mx-auto space-y-6 py-[6px] px-4">
       {/* Data Diri Pemesan */}
       <div className="border p-6 rounded-lg shadow-md bg-white">
-        <h3 className="text-xl font-semibold mb-4">Isi Data Pemesan</h3>
-        <div className="space-y-4">
+        <p className="text-xl font-bold mb-4">Isi Data Pemesan</p>
+        <div className="bg-[#3C3C3C] text-white rounded-t-lg px-4 py-2 max-h-[40px]">
+          <p className="text-xl font-semibold">Data Diri Pemesan</p>
+        </div>
+
+        <div className="space-y-4 p-4">
           <div>
             <Label htmlFor="fullname">Nama Lengkap</Label>
-            <Input id="fullname" placeholder="Masukkan nama lengkap" />
+            <Input
+              id="fullname"
+              placeholder="Masukkan nama lengkap"
+              className="mb-2"
+            />
+          </div>
+          <div className="flex items-center justify-between mb-4">
+            <Label>Punya Nama Keluarga</Label>
+            <Switch />
+          </div>
+          <div>
+            <Label htmlFor="namakeluarga">Nama Keluarga</Label>
+            <Input
+              id="namakeluarga"
+              placeholder="Masukan nama keluarga"
+              className="mb-2"
+            />
           </div>
           <div>
             <Label htmlFor="phone">Nomor Telepon</Label>
-            <Input id="phone" placeholder="Masukkan nomor telepon" />
+            <Input
+              id="phone"
+              placeholder="Masukkan nomor telepon"
+              className="mb-2"
+            />
           </div>
           <div>
             <Label htmlFor="email">Email</Label>
@@ -54,6 +74,7 @@ export default function BookingForm() {
               id="email"
               placeholder="Contoh: johndoe@gmail.com"
               type="email"
+              className="mb-2"
             />
           </div>
         </div>
@@ -72,18 +93,23 @@ export default function BookingForm() {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor={`title-${index}`}>Title</Label>
-                    <Input id={`title-${index}`} placeholder="Mr./Mrs./Miss" />
+                    <Input
+                      id={`title-${index}`}
+                      placeholder="Mr./Mrs./Miss"
+                      className="mb-2"
+                    />
                   </div>
                   <div>
                     <Label htmlFor={`fullname-${index}`}>Nama Lengkap</Label>
                     <Input
                       id={`fullname-${index}`}
                       placeholder="Masukkan nama lengkap"
+                      className="mb-2"
                     />
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-4">
                     <Label>Punya Nama Keluarga?</Label>
-                    <Checkbox />
+                    <Switch />
                   </div>
                   <div>
                     <Label htmlFor={`birthdate-${index}`}>Tanggal Lahir</Label>
@@ -91,6 +117,7 @@ export default function BookingForm() {
                       id={`birthdate-${index}`}
                       placeholder="dd/mm/yyyy"
                       type="date"
+                      className="mb-2"
                     />
                   </div>
                   <div>
@@ -100,6 +127,7 @@ export default function BookingForm() {
                     <Input
                       id={`citizenship-${index}`}
                       placeholder="Indonesia"
+                      className="mb-2"
                     />
                   </div>
                   <div>
@@ -107,6 +135,7 @@ export default function BookingForm() {
                     <Input
                       id={`passport-${index}`}
                       placeholder="Masukkan nomor KTP atau paspor"
+                      className="mb-2"
                     />
                   </div>
                   <div>
@@ -115,6 +144,7 @@ export default function BookingForm() {
                       id={`expiry-${index}`}
                       placeholder="dd/mm/yyyy"
                       type="date"
+                      className="mb-2"
                     />
                   </div>
                 </div>
@@ -134,22 +164,29 @@ export default function BookingForm() {
       <div className="border p-6 rounded-lg shadow-md bg-white">
         <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
         <div className="text-center text-lg font-bold mb-4">
-          Economy - {availableSeats} Seats Available
+          Economy - {seatRows * (seatColumns.length - 1) - reservedSeats.length}{" "}
+          Seats Available
         </div>
         <div className="flex justify-center">
           <div className="grid grid-cols-7 gap-2 justify-center items-center">
-            <div></div>
-            {seatColumns.map((col) => (
-              <div key={col} className="text-center font-bold">
+            {seatColumns.map((col, colIndex) => (
+              <div key={colIndex} className="text-center font-bold">
                 {col}
               </div>
             ))}
             {Array.from({ length: seatRows }).map((_, rowIndex) => (
               <>
-                <div key={`row-${rowIndex}`} className="text-center font-bold">
-                  {rowIndex + 1}
-                </div>
-                {seatColumns.map((col) => {
+                {seatColumns.map((col, colIndex) => {
+                  if (col === "") {
+                    return (
+                      <div
+                        key={`${rowIndex}-${colIndex}`}
+                        className="text-center font-bold"
+                      >
+                        {rowIndex + 1}
+                      </div>
+                    );
+                  }
                   const seatId = `${rowIndex + 1}${col}`;
                   const isReserved = reservedSeats.includes(seatId);
                   const isSelected = selectedSeats.includes(seatId);

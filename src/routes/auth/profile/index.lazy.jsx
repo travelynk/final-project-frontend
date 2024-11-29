@@ -48,7 +48,7 @@ function Profile() {
       <div className="flex justify-center items-center min-h-screen">
         <div className="flex w-3/4 rounded-lg bg-white">
           {/* Left Menu */}
-          <div className="w-1/4 border-r border-gray-200 p-4">
+          <div className="w-1/4  border-gray-200 p-4">
             <ul className="space-y-4">
               <li className="flex items-center space-x-3 text-gray-700 cursor-pointer hover:text-purple-600">
                 <FaPen />
@@ -67,7 +67,7 @@ function Profile() {
           </div>
 
           {/* Profile Form */}
-          <div className="w-3/4 p-6 shadow-lg ml-4 rounded-lg">
+          <div className="w-3/4 p-6 border  rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
               Ubah Data Profil
             </h2>
@@ -107,9 +107,11 @@ function Profile() {
                 />
               </div>
 
-              <Button type="submit" variant="default">
-                Simpan
-              </Button>
+              <div className="flex justify-center">
+                <Button type="submit" variant="default" className="w-[150px]">
+                  Simpan
+                </Button>
+              </div>
             </form>
           </div>
         </div>
