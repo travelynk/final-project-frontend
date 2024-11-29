@@ -20,7 +20,7 @@ const SuccessLazyImport = createFileRoute('/success')()
 const PaymentLazyImport = createFileRoute('/payment')()
 const IndexLazyImport = createFileRoute('/')()
 const NotificationIndexLazyImport = createFileRoute('/notification/')()
-const FlightParamsLazyImport = createFileRoute('/flight/$params')()
+const FlightsParamsLazyImport = createFileRoute('/flights/$params')()
 const AuthVerifyOtpIndexLazyImport = createFileRoute('/auth/verify-otp/')()
 const AuthSendOtpIndexLazyImport = createFileRoute('/auth/send-otp/')()
 const AuthResetPasswordIndexLazyImport = createFileRoute(
@@ -57,12 +57,12 @@ const NotificationIndexLazyRoute = NotificationIndexLazyImport.update({
   import('./routes/notification/index.lazy').then((d) => d.Route),
 )
 
-const FlightParamsLazyRoute = FlightParamsLazyImport.update({
-  id: '/flight/$params',
-  path: '/flight/$params',
+const FlightsParamsLazyRoute = FlightsParamsLazyImport.update({
+  id: '/flights/$params',
+  path: '/flights/$params',
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
-  import('./routes/flight/$params.lazy').then((d) => d.Route),
+  import('./routes/flights/$params.lazy').then((d) => d.Route),
 )
 
 const AuthVerifyOtpIndexLazyRoute = AuthVerifyOtpIndexLazyImport.update({
@@ -132,11 +132,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuccessLazyImport
       parentRoute: typeof rootRoute
     }
-    '/flight/$params': {
-      id: '/flight/$params'
-      path: '/flight/$params'
-      fullPath: '/flight/$params'
-      preLoaderRoute: typeof FlightParamsLazyImport
+    '/flights/$params': {
+      id: '/flights/$params'
+      path: '/flights/$params'
+      fullPath: '/flights/$params'
+      preLoaderRoute: typeof FlightsParamsLazyImport
       parentRoute: typeof rootRoute
     }
     '/notification/': {
@@ -190,7 +190,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/payment': typeof PaymentLazyRoute
   '/success': typeof SuccessLazyRoute
-  '/flight/$params': typeof FlightParamsLazyRoute
+  '/flights/$params': typeof FlightsParamsLazyRoute
   '/notification': typeof NotificationIndexLazyRoute
   '/auth/login': typeof AuthLoginIndexLazyRoute
   '/auth/register': typeof AuthRegisterIndexLazyRoute
@@ -203,7 +203,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/payment': typeof PaymentLazyRoute
   '/success': typeof SuccessLazyRoute
-  '/flight/$params': typeof FlightParamsLazyRoute
+  '/flights/$params': typeof FlightsParamsLazyRoute
   '/notification': typeof NotificationIndexLazyRoute
   '/auth/login': typeof AuthLoginIndexLazyRoute
   '/auth/register': typeof AuthRegisterIndexLazyRoute
@@ -217,7 +217,7 @@ export interface FileRoutesById {
   '/': typeof IndexLazyRoute
   '/payment': typeof PaymentLazyRoute
   '/success': typeof SuccessLazyRoute
-  '/flight/$params': typeof FlightParamsLazyRoute
+  '/flights/$params': typeof FlightsParamsLazyRoute
   '/notification/': typeof NotificationIndexLazyRoute
   '/auth/login/': typeof AuthLoginIndexLazyRoute
   '/auth/register/': typeof AuthRegisterIndexLazyRoute
@@ -232,7 +232,7 @@ export interface FileRouteTypes {
     | '/'
     | '/payment'
     | '/success'
-    | '/flight/$params'
+    | '/flights/$params'
     | '/notification'
     | '/auth/login'
     | '/auth/register'
@@ -244,7 +244,7 @@ export interface FileRouteTypes {
     | '/'
     | '/payment'
     | '/success'
-    | '/flight/$params'
+    | '/flights/$params'
     | '/notification'
     | '/auth/login'
     | '/auth/register'
@@ -256,7 +256,7 @@ export interface FileRouteTypes {
     | '/'
     | '/payment'
     | '/success'
-    | '/flight/$params'
+    | '/flights/$params'
     | '/notification/'
     | '/auth/login/'
     | '/auth/register/'
@@ -270,7 +270,7 @@ export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   PaymentLazyRoute: typeof PaymentLazyRoute
   SuccessLazyRoute: typeof SuccessLazyRoute
-  FlightParamsLazyRoute: typeof FlightParamsLazyRoute
+  FlightsParamsLazyRoute: typeof FlightsParamsLazyRoute
   NotificationIndexLazyRoute: typeof NotificationIndexLazyRoute
   AuthLoginIndexLazyRoute: typeof AuthLoginIndexLazyRoute
   AuthRegisterIndexLazyRoute: typeof AuthRegisterIndexLazyRoute
@@ -283,7 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   PaymentLazyRoute: PaymentLazyRoute,
   SuccessLazyRoute: SuccessLazyRoute,
-  FlightParamsLazyRoute: FlightParamsLazyRoute,
+  FlightsParamsLazyRoute: FlightsParamsLazyRoute,
   NotificationIndexLazyRoute: NotificationIndexLazyRoute,
   AuthLoginIndexLazyRoute: AuthLoginIndexLazyRoute,
   AuthRegisterIndexLazyRoute: AuthRegisterIndexLazyRoute,
@@ -305,7 +305,7 @@ export const routeTree = rootRoute
         "/",
         "/payment",
         "/success",
-        "/flight/$params",
+        "/flights/$params",
         "/notification/",
         "/auth/login/",
         "/auth/register/",
@@ -323,8 +323,8 @@ export const routeTree = rootRoute
     "/success": {
       "filePath": "success.lazy.jsx"
     },
-    "/flight/$params": {
-      "filePath": "flight/$params.lazy.jsx"
+    "/flights/$params": {
+      "filePath": "flights/$params.lazy.jsx"
     },
     "/notification/": {
       "filePath": "notification/index.lazy.jsx"
