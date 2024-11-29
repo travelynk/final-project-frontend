@@ -1,25 +1,25 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { Button } from "../../components/ui/button";
+import { createLazyFileRoute } from '@tanstack/react-router'
+import { Button } from '../../components/ui/button'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../../components/ui/accordion";
-import { Checkbox } from "../../components/ui/checkbox";
-import { Slider } from "../../components/ui/slider";
-import { useState } from "react";
+} from '../../components/ui/accordion'
+import { Checkbox } from '../../components/ui/checkbox'
+import { Slider } from '../../components/ui/slider'
+import { useState } from 'react'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../components/ui/popover";
-import { Progress } from "../../components/ui/progress";
-import { Skeleton } from "../../components/ui/skeleton";
+} from '../../components/ui/popover'
+import { Progress } from '../../components/ui/progress'
+import { Skeleton } from '../../components/ui/skeleton'
 
 export const Route = createLazyFileRoute("/flights/$params")({
   component: Flight,
-});
+})
 
 function Flight() {
   return (
@@ -29,7 +29,7 @@ function Flight() {
         <BodyComponent />
       </div>
     </>
-  );
+  )
 }
 
 const HeaderComponent = () => {
@@ -43,7 +43,7 @@ const HeaderComponent = () => {
           <div className="labels col-span-1 sm:col-span-6 flex gap-x-3 bg-darkblue03 p-3 rounded-lg">
             <img src="/src/assets/arrow-left.svg" alt="" />
             <p className="text-sm sm:text-base">
-              JKT {">"} MLB - 2 Penumpang - Economy
+              JKT {'>'} MLB - 2 Penumpang - Economy
             </p>
           </div>
           <Button className="bg-[#73CA5C] hover:bg-[#73CA5C]/70 h-full px-4 py-2 rounded-lg">
@@ -130,14 +130,14 @@ const HeaderComponent = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
 const BodyComponent = () => {
-  const [sliderValue, setSliderValue] = useState(3000000);
+  const [sliderValue, setSliderValue] = useState(3000000)
   const handleSliderChange = (value) => {
-    setSliderValue(value[0]);
-  };
+    setSliderValue(value[0])
+  }
   return (
     <>
       <div className="flex   flex-col lg:flex-row gap-3 pb-5">
@@ -313,8 +313,8 @@ const BodyComponent = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
 const Loading = () => {
   return (
@@ -328,8 +328,8 @@ const Loading = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 const SoldOut = () => {
   return (
     <>
@@ -339,8 +339,8 @@ const SoldOut = () => {
         <span>Coba cari perjalanan lainnya!</span>
       </div>
     </>
-  );
-};
+  )
+}
 
 const NotFound = () => {
   return (
@@ -361,7 +361,7 @@ const NotFound = () => {
                 <div className="animate-pulse rounded-md bg-muted w-full  h-3" />
                 <div className="animate-pulse rounded-md bg-muted w-8/12  h-3" />
               </div>
-            </Skeleton>{" "}
+            </Skeleton>{' '}
             <Skeleton className=" p-2 grid grid-cols-12 w-full">
               <img src="/src/assets/verification.svg" alt="" />
               <div className="flex flex-col gap-1 col-span-11">
@@ -376,5 +376,5 @@ const NotFound = () => {
         <span className="text-darkblue04"> Coba cari perjalanan lainnya!</span>
       </div>
     </>
-  );
-};
+  )
+}
