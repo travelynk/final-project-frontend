@@ -91,12 +91,12 @@ function TicketHistory() {
       <div className="container mx-auto max-w-5xl mt-8 px-4">
         <div className="grid grid-cols-1 md:grid-cols-[550px_370px] gap-2 mt-8">
           {/* First Column (Fixed at 550px) */}
+
           <div className="bg-white rounded-lg p-4">
-            <h2 className="text-lg font-bold">Additional Info</h2>
-            <p className="mt-4 text-sm">
-              This section can include extra details, such as promotions,
-              support contacts, or other relevant content.
-            </p>
+            <div className="font-bold lg:-mt-5 mb-5">Maret 2024</div>
+            <Card className="flex justify-center items-center border shadow h-[204px] w-[468px]">
+              <div>Content soon to be made</div>
+            </Card>
           </div>
 
           {/* Second Column (Remaining Space) */}
