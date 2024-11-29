@@ -19,6 +19,7 @@ import { Route as rootRoute } from './routes/__root'
 const SuccessLazyImport = createFileRoute('/success')()
 const PaymentLazyImport = createFileRoute('/payment')()
 const IndexLazyImport = createFileRoute('/')()
+const TicketHistoryIndexLazyImport = createFileRoute('/ticket-history/')()
 const NotificationIndexLazyImport = createFileRoute('/notification/')()
 const AuthVerifyOtpIndexLazyImport = createFileRoute('/auth/verify-otp/')()
 const AuthSendOtpIndexLazyImport = createFileRoute('/auth/send-otp/')()
@@ -47,6 +48,14 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const TicketHistoryIndexLazyRoute = TicketHistoryIndexLazyImport.update({
+  id: '/ticket-history/',
+  path: '/ticket-history/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/ticket-history/index.lazy').then((d) => d.Route),
+)
 
 const NotificationIndexLazyRoute = NotificationIndexLazyImport.update({
   id: '/notification/',
@@ -130,6 +139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotificationIndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/ticket-history/': {
+      id: '/ticket-history/'
+      path: '/ticket-history'
+      fullPath: '/ticket-history'
+      preLoaderRoute: typeof TicketHistoryIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/auth/login/': {
       id: '/auth/login/'
       path: '/auth/login'
@@ -175,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/payment': typeof PaymentLazyRoute
   '/success': typeof SuccessLazyRoute
   '/notification': typeof NotificationIndexLazyRoute
+  '/ticket-history': typeof TicketHistoryIndexLazyRoute
   '/auth/login': typeof AuthLoginIndexLazyRoute
   '/auth/register': typeof AuthRegisterIndexLazyRoute
   '/auth/reset-password': typeof AuthResetPasswordIndexLazyRoute
@@ -187,6 +204,7 @@ export interface FileRoutesByTo {
   '/payment': typeof PaymentLazyRoute
   '/success': typeof SuccessLazyRoute
   '/notification': typeof NotificationIndexLazyRoute
+  '/ticket-history': typeof TicketHistoryIndexLazyRoute
   '/auth/login': typeof AuthLoginIndexLazyRoute
   '/auth/register': typeof AuthRegisterIndexLazyRoute
   '/auth/reset-password': typeof AuthResetPasswordIndexLazyRoute
@@ -200,6 +218,7 @@ export interface FileRoutesById {
   '/payment': typeof PaymentLazyRoute
   '/success': typeof SuccessLazyRoute
   '/notification/': typeof NotificationIndexLazyRoute
+  '/ticket-history/': typeof TicketHistoryIndexLazyRoute
   '/auth/login/': typeof AuthLoginIndexLazyRoute
   '/auth/register/': typeof AuthRegisterIndexLazyRoute
   '/auth/reset-password/': typeof AuthResetPasswordIndexLazyRoute
@@ -214,6 +233,7 @@ export interface FileRouteTypes {
     | '/payment'
     | '/success'
     | '/notification'
+    | '/ticket-history'
     | '/auth/login'
     | '/auth/register'
     | '/auth/reset-password'
@@ -225,6 +245,7 @@ export interface FileRouteTypes {
     | '/payment'
     | '/success'
     | '/notification'
+    | '/ticket-history'
     | '/auth/login'
     | '/auth/register'
     | '/auth/reset-password'
@@ -236,6 +257,7 @@ export interface FileRouteTypes {
     | '/payment'
     | '/success'
     | '/notification/'
+    | '/ticket-history/'
     | '/auth/login/'
     | '/auth/register/'
     | '/auth/reset-password/'
@@ -249,6 +271,7 @@ export interface RootRouteChildren {
   PaymentLazyRoute: typeof PaymentLazyRoute
   SuccessLazyRoute: typeof SuccessLazyRoute
   NotificationIndexLazyRoute: typeof NotificationIndexLazyRoute
+  TicketHistoryIndexLazyRoute: typeof TicketHistoryIndexLazyRoute
   AuthLoginIndexLazyRoute: typeof AuthLoginIndexLazyRoute
   AuthRegisterIndexLazyRoute: typeof AuthRegisterIndexLazyRoute
   AuthResetPasswordIndexLazyRoute: typeof AuthResetPasswordIndexLazyRoute
@@ -261,6 +284,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentLazyRoute: PaymentLazyRoute,
   SuccessLazyRoute: SuccessLazyRoute,
   NotificationIndexLazyRoute: NotificationIndexLazyRoute,
+  TicketHistoryIndexLazyRoute: TicketHistoryIndexLazyRoute,
   AuthLoginIndexLazyRoute: AuthLoginIndexLazyRoute,
   AuthRegisterIndexLazyRoute: AuthRegisterIndexLazyRoute,
   AuthResetPasswordIndexLazyRoute: AuthResetPasswordIndexLazyRoute,
@@ -282,6 +306,7 @@ export const routeTree = rootRoute
         "/payment",
         "/success",
         "/notification/",
+        "/ticket-history/",
         "/auth/login/",
         "/auth/register/",
         "/auth/reset-password/",
@@ -300,6 +325,9 @@ export const routeTree = rootRoute
     },
     "/notification/": {
       "filePath": "notification/index.lazy.jsx"
+    },
+    "/ticket-history/": {
+      "filePath": "ticket-history/index.lazy.jsx"
     },
     "/auth/login/": {
       "filePath": "auth/login/index.lazy.jsx"

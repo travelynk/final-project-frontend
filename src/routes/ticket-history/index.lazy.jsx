@@ -2,20 +2,20 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Separator } from "../../components/ui/separator";
-import { ArrowLeft, Bell, Filter, Search } from "lucide-react";
+import { ArrowLeft, Filter, Search } from "lucide-react";
 
-export const Route = createLazyFileRoute("/notification/")({
-  component: Notification,
+export const Route = createLazyFileRoute("/ticket-history/")({
+  component: TicketHistory,
 });
 
-function Notification() {
+function TicketHistory() {
   return (
     <>
       <div className="container max-w-[1024px] mx-auto sm:pt-8 pt-2 px-4">
         {/* Header Section */}
-        <div className="flex justify-between items-center ms-0 lg:-ms-5 mt-5 sm:mb-10 mb-4">
+        <div className="flex justify-between items-center ms-0 lg:-ms-5 mt-2 sm:mb-8 mb-4">
           <h2 className="text-xl font-bold text-center sm:text-left">
-            Notifikasi
+            Riwayat Pemesanan
           </h2>
         </div>
 
@@ -88,36 +88,88 @@ function Notification() {
       </div>
 
       <Separator className="mt-[25px] shadow" />
-      <div className="container max-w-[1024px] mx-auto pt-2 px-4">
-        <div className="lg:mt-[20px]">
-          <Card className="flex flex-col sm:flex-row justify-between items-start sm:items-center h-auto w-full lg:w-[777px] shadow-none border-none p-4 relative">
-            <div className="flex items-start space-x-4">
-              {/* Icon */}
-              <div
-                className="flex items-center justify-center w-6 h-6 rounded-full bg-[#A06ECE]"
-                style={{ minWidth: "30px", minHeight: "30px" }}
-              >
-                <Bell className="w-4 h-4 text-white" />
-              </div>
-              {/* Content */}
-              <div className="flex flex-col">
-                <span className="text-sm text-gray-500">Promosi</span>
-                <span className="text-base text-black">
-                  Dapatkan Potongan 50% Tiket!
-                </span>
-                <span className="text-sm text-gray-500">
-                  Syarat dan Ketentuan berlaku!
-                </span>
+      <div className="container mx-auto max-w-5xl mt-8 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-[550px_370px] gap-2 mt-8">
+          {/* First Column (Fixed at 550px) */}
+          <div className="bg-white rounded-lg p-4">
+            <h2 className="text-lg font-bold">Additional Info</h2>
+            <p className="mt-4 text-sm">
+              This section can include extra details, such as promotions,
+              support contacts, or other relevant content.
+            </p>
+          </div>
+
+          {/* Second Column (Remaining Space) */}
+          <div className="bg-white rounded-lg py-4 pr-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold">Detail Pesanan</h2>
+              <div className="flex justify-center text-white w-[70px] h-[28px] bg-[#73CA5C] rounded-full">
+                Issued
               </div>
             </div>
-            {/* Timestamp */}
-            <div className="flex items-center space-x-2 mt-2 lg:-mt-8 sm:ml-0 ml-auto">
-              <span className="text-sm text-gray-400">20 Maret, 14:04</span>
-              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+            <h2 className="text-lg">
+              Booking Code:{" "}
+              <span className="text-purple-600 font-bold">6723y2GHK</span>
+            </h2>
+            <div className="mt-4 text-sm">
+              <p>
+                <strong>07:00</strong>
+                <span className="float-right text-purple-500">
+                  Keberangkatan
+                </span>
+              </p>
+              <p>3 Maret 2023</p>
+              <p>Soekarno Hatta - Terminal 1A Domestik</p>
+              <hr className="my-4" />
+              <p className="mt-4">
+                <strong>Jet Air - Economy</strong>
+              </p>
+              <p className="mb-4">
+                <strong>JT - 203</strong>
+              </p>
+              <p>
+                <strong>Informasi:</strong>
+                <br />
+                Baggage 20 kg
+                <br />
+                Cabin baggage 7 kg
+                <br />
+                In-Flight Entertainment
+              </p>
+              <hr className="my-4" />
+              <p className="mt-4">
+                <strong>11:00</strong>
+                <span className="float-right text-purple-500">
+                  Keberangkatan
+                </span>
+              </p>
+              <p>3 Maret 2023</p>
+              <p>Melbourne International Airport</p>
+              <hr className="my-4" />
+              <p>
+                2 Adults<span className="float-right">IDR 9.550.000</span>
+              </p>
+              <p>
+                1 Baby<span className="float-right">IDR 0</span>
+              </p>
+              <p>
+                Tax<span className="float-right">IDR 300.000</span>
+              </p>
+              <hr className="my-4" />
+              <p className="font-bold">
+                Total
+                <span className="float-right text-purple-600">
+                  IDR 9.850.000
+                </span>
+              </p>
             </div>
-          </Card>
+            <div>
+              <Button className="w-full h-[42px] mt-4 py-3 bg-purple-600 text-white rounded-lg text-center hover:bg-purple-700">
+                Bayar
+              </Button>
+            </div>
+          </div>
         </div>
-        <Separator className="m-0 p-0 w-full lg:w-[777px] shadow-xl" />
       </div>
     </>
   );
