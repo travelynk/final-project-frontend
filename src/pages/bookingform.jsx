@@ -102,15 +102,15 @@ export default function BookingForm() {
 
       {/* Data Diri Penumpang */}
       <div className="border p-6 rounded-lg shadow-md bg-white">
-        <h3 className="text-xl font-semibold mb-4">Isi Data Penumpang</h3>
+        <h3 className="text-xl font-bold mb-4">Isi Data Penumpang</h3>
         <Accordion type="single" collapsible>
           {passengers.map((passenger, index) => (
             <AccordionItem key={index} value={`passenger-${index}`}>
-              <AccordionTrigger>
+              <AccordionTrigger className="bg-[#3C3C3C]  text-white rounded-lg px-4 py-2 mb-1 ">
                 Data Diri Penumpang {index + 1} - Adult
               </AccordionTrigger>
               <AccordionContent>
-                <div className="space-y-4">
+                <div className="space-y-4 p-4">
                   <div>
                     <Label
                       className="text-darkblue05 font-bold text-[14px]"
