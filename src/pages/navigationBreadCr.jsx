@@ -93,7 +93,7 @@ export default function NavigationBreadCr() {
 
           {/* Timer */}
           <div>
-            <div className="text-left text-white font-bold py-2 rounded-md bg-allertdanger">
+            <div className="text-center text-white font-medium py-2 rounded-md bg-allertdanger ">
               Selesaikan dalam {formatTime(timeLeft)}
             </div>
           </div>
