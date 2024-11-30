@@ -43,58 +43,59 @@ export default function NavigationBreadCr() {
 
   return (
     <ToastProvider>
-      <div className="bg-white border-b h-[154px] flex flex-col justify-end p-4">
-        {/* Konten */}
-        <div className="flex flex-col md:flex-row items-center justify-between max-w-[936px] ml-64">
+      <div className="bg-white border-b h-[154px] p-3">
+        <div className="flex flex-col justify-end h-full max-w-[936px] mx-auto">
           {/* Breadcrumb */}
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <Link
-                  className={
-                    matchSeat || matchPayment || matchCompleted
-                      ? "text-black text-[20px] font-bold"
-                      : "text-gray-400 text-[20px] font-bold"
-                  }
-                  to="/seat"
-                >
-                  Isi Data Diri
-                </Link>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="font-bold" />
-              <BreadcrumbItem>
-                <Link
-                  className={
-                    matchPayment || matchCompleted
-                      ? "text-black text-[20px] font-bold"
-                      : "text-gray-400 text-[20px] font-bold"
-                  }
-                  to="/seat/payment"
-                >
-                  Bayar
-                </Link>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="font-bold" />
-              <BreadcrumbItem>
-                <Link
-                  className={
-                    matchPayment || matchCompleted
-                      ? "text-black text-[20px] font-bold"
-                      : "text-gray-400 text-[20px] font-bold"
-                  }
-                  to="/seat/payment/selesai"
-                >
-                  Selesai
-                </Link>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
+          <div className="mb-4">
+            <Breadcrumb>
+              <BreadcrumbList className="flex gap-2">
+                <BreadcrumbItem>
+                  <Link
+                    className={
+                      matchSeat || matchPayment || matchCompleted
+                        ? "text-black text-[20px] font-bold"
+                        : "text-gray-400 text-[20px] font-bold"
+                    }
+                    to="/seat"
+                  >
+                    Isi Data Diri
+                  </Link>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="font-bold" />
+                <BreadcrumbItem>
+                  <Link
+                    className={
+                      matchPayment || matchCompleted
+                        ? "text-black text-[20px] font-bold"
+                        : "text-gray-400 text-[20px] font-bold"
+                    }
+                    to="/seat/payment"
+                  >
+                    Bayar
+                  </Link>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="font-bold" />
+                <BreadcrumbItem>
+                  <Link
+                    className={
+                      matchPayment || matchCompleted
+                        ? "text-black text-[20px] font-bold"
+                        : "text-gray-400 text-[20px] font-bold"
+                    }
+                    to="/seat/payment/selesai"
+                  >
+                    Selesai
+                  </Link>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
 
-        {/* Timer */}
-        <div className="mt-4">
-          <div className="text-center text-white font-bold py-2 rounded-md bg-allertdanger max-w-[936px] mx-auto">
-            Selesaikan dalam {formatTime(timeLeft)}
+          {/* Timer */}
+          <div>
+            <div className="text-left text-white font-bold py-2 rounded-md bg-allertdanger">
+              Selesaikan dalam {formatTime(timeLeft)}
+            </div>
           </div>
         </div>
 
