@@ -43,7 +43,7 @@ export default function NavigationBreadCr() {
 
   return (
     <ToastProvider>
-      <div className="bg-white border-b h-[154px] p-3">
+      <div className="bg-white border-b h-[154px] p-3 shadow-md">
         <div className="flex flex-col justify-end h-full max-w-[936px] mx-auto">
           {/* Breadcrumb */}
           <div className="mb-4">
@@ -92,7 +92,7 @@ export default function NavigationBreadCr() {
           </div>
 
           {/* Timer */}
-          <div className="p-3">
+          <div className="p-3 ">
             <div className="text-center text-white font-medium py-2 rounded-md bg-allertdanger ">
               Selesaikan dalam {formatTime(timeLeft)}
             </div>
