@@ -254,7 +254,9 @@ export default function BookingForm() {
                     >
                       {isSelected
                         ? `P${selectedSeats.indexOf(seatId) + 1}`
-                        : ""}
+                        : !isReserved
+                          ? "X" // Add "X" for unselected and available seats
+                          : ""}
                     </button>
                   );
                 })}
@@ -264,7 +266,7 @@ export default function BookingForm() {
         </div>
       </div>
 
-      <button className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full">
+      <button className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040]">
         Simpan
       </button>
     </div>
