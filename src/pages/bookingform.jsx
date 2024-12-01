@@ -144,6 +144,19 @@ export default function BookingForm() {
                   <div>
                     <Label
                       className="text-darkblue05 font-bold text-[14px]"
+                      htmlFor={`namakeluarga-${index}`}
+                    >
+                      Nama Keluarga
+                    </Label>
+                    <Input
+                      id={`namakeluarga-${index}`}
+                      placeholder="Masukan Nama Keluarga"
+                      className="mb-2"
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      className="text-darkblue05 font-bold text-[14px]"
                       htmlFor={`birthdate-${index}`}
                     >
                       Tanggal Lahir
@@ -178,6 +191,19 @@ export default function BookingForm() {
                     <Input
                       id={`passport-${index}`}
                       placeholder="Masukkan nomor KTP atau paspor"
+                      className="mb-2"
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      className="text-darkblue05 font-bold text-[14px]"
+                      htmlFor={`negarapenerbit-${index}`}
+                    >
+                      Negara Penerbit
+                    </Label>
+                    <Input
+                      id={`negarapenerbit-${index}`}
+                      placeholder="Masukan Negara Penerbit"
                       className="mb-2"
                     />
                   </div>
