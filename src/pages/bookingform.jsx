@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -211,7 +211,7 @@ export default function BookingForm() {
       {/* Seat Selection */}
       <div className="border p-6 rounded-lg shadow-md bg-white">
         <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
-        <div className="text-center text-lg font-bold mb-4">
+        <div className="flex items-center justify-center text-center p-2 text-lg font-sm mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10">
           Economy - {seatRows * (seatColumns.length - 1) - reservedSeats.length}{" "}
           Seats Available
         </div>
@@ -223,7 +223,7 @@ export default function BookingForm() {
               </div>
             ))}
             {Array.from({ length: seatRows }).map((_, rowIndex) => (
-              <>
+              <React.Fragment key={rowIndex}>
                 {seatColumns.map((col, colIndex) => {
                   if (col === "") {
                     return (
@@ -255,12 +255,12 @@ export default function BookingForm() {
                       {isSelected
                         ? `P${selectedSeats.indexOf(seatId) + 1}`
                         : !isReserved
-                          ? "X" // Add "X" for unselected and available seats
+                          ? "X"
                           : ""}
                     </button>
                   );
                 })}
-              </>
+              </React.Fragment>
             ))}
           </div>
         </div>
