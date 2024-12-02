@@ -1,6 +1,14 @@
 import * as React from "react";
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "../components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export const Route = createLazyFileRoute("/success")({
   component: Success,
@@ -9,6 +17,31 @@ export const Route = createLazyFileRoute("/success")({
 function Success() {
   return (
     <main className="container mx-auto max-w-5xl mt-8 px-4">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink>
+              <Link className="font-bold text-lg" href="/">
+                Isi Data Diri
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink>
+              <Link className="font-bold text-lg " href="/components">
+                Bayar
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="font-bold text-lg">
+              Selesai
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="bg-green-500 text-white text-center py-2 my-10 rounded-lg">
         <p>Terimakasih atas pembayaran transaksi</p>
       </div>

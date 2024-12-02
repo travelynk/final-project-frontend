@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import {
   Accordion,
   AccordionItem,
@@ -7,6 +7,14 @@ import {
 } from "@/components/ui/accordion";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import CountdownTimer from "@/components/Countdown";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export const Route = createLazyFileRoute("/payment")({
   component: Payment,
@@ -15,6 +23,32 @@ export const Route = createLazyFileRoute("/payment")({
 function Payment() {
   return (
     <main className="container mx-auto max-w-5xl mt-8 px-4">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink>
+              <Link className="font-bold text-lg" href="/">
+                Isi Data Diri
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="font-bold text-lg">Bayar</BreadcrumbPage>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink>
+              <Link
+                className="font-bold text-lg text-gray-400"
+                href="/components"
+              >
+                Selesai
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <CountdownTimer />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
         {/* Left Section */}

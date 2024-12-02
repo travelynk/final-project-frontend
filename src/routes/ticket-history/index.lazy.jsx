@@ -94,8 +94,79 @@ function TicketHistory() {
 
           <div className="bg-white rounded-lg p-4">
             <div className="font-bold lg:-mt-5 mb-5">Maret 2024</div>
-            <Card className="flex justify-center items-center border shadow h-[204px] w-[468px]">
-              <div>Content soon to be made</div>
+            <Card className="border shadow h-[204px] w-full rounded-lg p-4">
+              {/* Status Badge */}
+              <div className="flex">
+                <div className="flex justify-center items-center text-white w-[70px] h-[28px] bg-[#73CA5C] rounded-full">
+                  Issued
+                </div>
+              </div>
+
+              {/* Flight Route */}
+              <div className="grid grid-cols-7 mt-4 items-center">
+                {/* Departure Info */}
+                <div className="col-span-2">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="/src/assets/live-area.svg"
+                      alt="Departure Icon"
+                      className="w-[20px] h-[20px]"
+                    />
+                    <span className="text-sm font-bold">Jakarta</span>
+                  </div>
+                  <div className=" text-xs mt-1 ms-7">
+                    <p>5 Maret 2023</p>
+                    <p>19:10</p>
+                  </div>
+                </div>
+
+                {/* Route Image */}
+                <div className="col-span-3 flex flex-col items-center">
+                  <span className=" text-xs mt-1">4h 0m</span>
+                  <img
+                    src="/src/assets/route.svg"
+                    alt="Flight Route"
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Arrival Info */}
+                <div className="col-span-2 text-right">
+                  <div className="flex justify-end items-center gap-2">
+                    <img
+                      src="/src/assets/live-area.svg"
+                      alt="Arrival Icon"
+                      className="w-[20px] h-[20px]"
+                    />
+                    <span className="text-sm font-bold">Melbourne</span>
+                  </div>
+                  <div className=" text-xs mt-1">
+                    <p>5 Maret 2023</p>
+                    <p>21:10</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="mt-4"></Separator>
+
+              {/* Booking Details */}
+              <div className="flex justify-between text-xs">
+                <div>
+                  <p className="md:text-base">
+                    <strong>Booking Code:</strong> <br></br>6723y2GHK
+                  </p>
+                </div>
+                <div>
+                  <p className="md:text-base">
+                    <strong>Class:</strong> <br></br>Economy
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="md:text-base font-bold text-purple-700">
+                    IDR 9.850.000
+                  </p>
+                </div>
+              </div>
             </Card>
           </div>
 
@@ -103,7 +174,7 @@ function TicketHistory() {
           <div className="bg-white rounded-lg py-4 pr-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">Detail Pesanan</h2>
-              <div className="flex justify-center text-white w-[70px] h-[28px] bg-[#73CA5C] rounded-full">
+              <div className="flex justify-center items-center text-white w-[70px] h-[28px] bg-[#73CA5C] rounded-full">
                 Issued
               </div>
             </div>
