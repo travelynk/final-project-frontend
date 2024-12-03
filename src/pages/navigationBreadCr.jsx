@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { Toast, ToastProvider, ToastViewport } from "@/components/ui/toast";
 import {
@@ -8,19 +9,16 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Link, useMatch } from "@tanstack/react-router";
 
-export default function NavigationBreadCr() {
-  const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
+function NavigationBreadCr({ initialTime, label }) {
+  const [timeLeft, setTimeLeft] = useState(initialTime);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          Toast({
-            title: "Peringatan!",
-            description: "Waktu telah habis! Selesaikan pemesanan Anda segera.",
-            variant: "destructive",
-          });
+          setShowToast(true); // Show the toast
           return 0;
         }
         return prev - 1;
@@ -36,7 +34,6 @@ export default function NavigationBreadCr() {
     return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
-  // Matching routes
   const matchSeat = useMatch("/seat");
   const matchPayment = useMatch("/seat/payment");
   const matchCompleted = useMatch("/seat/payment/selesai");
@@ -45,7 +42,6 @@ export default function NavigationBreadCr() {
     <ToastProvider>
       <div className="bg-white border-b h-[154px] p-3 shadow-md">
         <div className="flex flex-col justify-end h-full max-w-[936px] mx-auto">
-          {/* Breadcrumb */}
           <div className="mb-4">
             <Breadcrumb>
               <BreadcrumbList className="flex gap-2">
@@ -90,18 +86,29 @@ export default function NavigationBreadCr() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-
-          {/* Timer */}
-          <div className="p-3 ">
-            <div className="text-center text-white font-medium py-2 rounded-md bg-allertdanger ">
-              Selesaikan dalam {formatTime(timeLeft)}
+          <div className="p-3">
+            <div className="text-center text-white font-medium py-2 rounded-md bg-allertdanger">
+              {label} {formatTime(timeLeft)}
             </div>
           </div>
         </div>
-
-        {/* Toast Viewport */}
+        {showToast && (
+          <Toast variant="destructive">
+            <ToastTitle>Peringatan!</ToastTitle>
+            <ToastDescription>
+              Waktu telah habis! Selesaikan pemesanan Anda segera.
+            </ToastDescription>
+          </Toast>
+        )}
         <ToastViewport />
       </div>
     </ToastProvider>
   );
 }
+
+NavigationBreadCr.propTypes = {
+  initialTime: PropTypes.number.isRequired,
+  label: PropTypes.string.isRequired,
+};
+
+export default NavigationBreadCr;

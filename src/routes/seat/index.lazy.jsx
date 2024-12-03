@@ -10,7 +10,7 @@ export const Route = createLazyFileRoute("/seat/")({
 export default function Seat() {
   return (
     <>
-      <NavigationBreadCr />
+      <NavigationBreadCr initialTime={10} label="Selesaikan Dalam" />
       <div className="flex flex-col md:flex-row gap-4 p-4 max-w-[936px] mx-auto ">
         <BookingForm />
         <FlightDetail />
