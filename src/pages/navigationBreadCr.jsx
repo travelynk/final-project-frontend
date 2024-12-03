@@ -1,6 +1,12 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { Toast, ToastProvider, ToastViewport } from "@/components/ui/toast";
+import {
+  Toast,
+  ToastProvider,
+  ToastViewport,
+  ToastTitle,
+  ToastDescription,
+} from "@/components/ui/toast";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -96,11 +102,11 @@ function NavigationBreadCr({ initialTime, label }) {
           <Toast variant="destructive">
             <ToastTitle>Peringatan!</ToastTitle>
             <ToastDescription>
-              Waktu telah habis! Selesaikan pemesanan Anda segera.
+              Waktu telah habis! Silahkan mengulangi pesanan anda.
             </ToastDescription>
           </Toast>
         )}
-        <ToastViewport />
+        <ToastViewport className="!top-0 !right-0 !p-4" />
       </div>
     </ToastProvider>
   );
