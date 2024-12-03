@@ -24,7 +24,7 @@ export const Route = createLazyFileRoute("/flights/$params")({
 function Flight() {
   return (
     <>
-      <div className="container mx-auto lg:px-28 sm:px-10">
+      <div className="container mx-auto lg:px-28 px-2">
         <HeaderComponent />
         <BodyComponent />
       </div>
@@ -33,6 +33,11 @@ function Flight() {
 }
 
 const HeaderComponent = () => {
+  const [sliderValue, setSliderValue] = useState(3000000);
+  const handleSliderChange = (value) => {
+    setSliderValue(value[0]);
+  };
+
   return (
     <>
       <div className="flex flex-col gap-3 my-5">
@@ -72,7 +77,141 @@ const HeaderComponent = () => {
             <p className="bg-none text-xs sm:text-sm">27/12/2023</p>
           </div>
         </div>
-        <div className="filter flex justify-end ">
+        <div className="filter flex justify-between lg:justify-end ">
+          <div className="md:hidden">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button className="bg-transparent border border-darkblue03 px-3 text-darkblue05 hover:text-white rounded-full  hover:fill-white text-lg transition">
+                  <img src="/src/assets/fitler.svg" alt="" />
+                  Filter
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="mx-5">
+                <div>
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem
+                      value="item-1"
+                      className="border-b border-gray-400"
+                    >
+                      <AccordionTrigger className="w-full bg-transparent ">
+                        <div className="flex gap-3">
+                          <img src="/src/assets/box.svg" alt="" />
+                          <span>Transit</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="flex flex-col gap-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="terms" defaultChecked disabled />
+
+                          <label
+                            htmlFor="terms"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Direct
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="terms" />
+                          <label
+                            htmlFor="terms"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            1 Transit
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="terms" />
+                          <label
+                            htmlFor="terms"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            2+ Transit
+                          </label>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem
+                      value="item-1"
+                      className="border-b border-gray-400"
+                    >
+                      <AccordionTrigger className="w-full bg-transparent ">
+                        <div className="flex gap-3">
+                          <img src="/src/assets/pesawat.svg" alt="" />
+                          <span>Maskapai</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="flex flex-col gap-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="terms" />
+                          <img src="/src/assets/logo-plane.svg" alt="" />
+                          <label
+                            htmlFor="terms"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Garuda Indonesia
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="terms" />
+                          <img src="/src/assets/logo-plane.svg" alt="" />
+                          <label
+                            htmlFor="terms"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Garuda Indonesia
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox id="terms" />
+                          <img src="/src/assets/logo-plane.svg" alt="" />
+                          <label
+                            htmlFor="terms"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Garuda Indonesia
+                          </label>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem
+                      value="item-1"
+                      className="border-b border-gray-400"
+                    >
+                      <AccordionTrigger className="w-full bg-transparent ">
+                        <div className="flex gap-3">
+                          <img src="/src/assets/dollar.svg" alt="" />
+                          <span>Harga</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="flex flex-col gap-2">
+                        <div className="flex justify-end text-gray-500">
+                          <span>IDR {sliderValue}</span>
+                        </div>
+                        <Slider
+                          value={[sliderValue]}
+                          onValueChange={handleSliderChange}
+                          max={5000000}
+                          min={2500000}
+                          step={1}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-gray-500">
+                          <span>IDR 2.500.000</span>
+                          <span>IDR 5.000/00</span>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <Popover>
             <PopoverTrigger asChild>
               <Button className="bg-transparent border border-darkblue03 px-3 text-darkblue05 hover:text-white rounded-full  hover:fill-white text-lg transition">
@@ -141,7 +280,7 @@ const BodyComponent = () => {
   return (
     <>
       <div className="flex   flex-col lg:flex-row gap-3 pb-5">
-        <div className="w-full lg:w-1/4 filter p-5 border border-darkblue02 rounded-xl shadow-sm text-lg  ">
+        <div className="w-full lg:w-1/4 filter p-5 border border-darkblue02 rounded-xl shadow-sm text-lg  hidden md:block ">
           <h1 className="text-2xl font-semibold">Filter</h1>
           <div>
             <Accordion type="single" collapsible className="w-full">
@@ -154,7 +293,6 @@ const BodyComponent = () => {
                     <img src="/src/assets/box.svg" alt="" />
                     <span>Transit</span>
                   </div>
-                  <img src="/src/assets/collaps.svg" alt="" />
                 </AccordionTrigger>
                 <AccordionContent className="flex flex-col gap-2">
                   <div className="flex items-center space-x-2">
@@ -198,7 +336,6 @@ const BodyComponent = () => {
                     <img src="/src/assets/pesawat.svg" alt="" />
                     <span>Maskapai</span>
                   </div>
-                  <img src="/src/assets/collaps.svg" alt="" />
                 </AccordionTrigger>
                 <AccordionContent className="flex flex-col gap-2">
                   <div className="flex items-center space-x-2">
@@ -245,7 +382,6 @@ const BodyComponent = () => {
                     <img src="/src/assets/dollar.svg" alt="" />
                     <span>Harga</span>
                   </div>
-                  <img src="/src/assets/collaps.svg" alt="" />
                 </AccordionTrigger>
                 <AccordionContent className="flex flex-col gap-2">
                   <div className="flex justify-end text-gray-500">
@@ -268,7 +404,7 @@ const BodyComponent = () => {
             </Accordion>
           </div>
         </div>
-        <div className="listt-flights w-full md:w-3/4">
+        <div className="listt-flights w-full lg:w-3/4">
           <ul className="flex flex-col gap-2">
             <li>
               <Accordion
@@ -284,10 +420,9 @@ const BodyComponent = () => {
                           <img src="/src/assets/logo-plane.svg" alt="" />
                           <span>Jet Air - Economy </span>
                         </div>
-                        <img src="/src/assets/collaps.svg" alt="" />
                       </div>
                       <div className="content grid grid-cols-7">
-                        <div className="route flex col-span-5 lg:col-span-6 px-5 justify-start font-bold text-lg md:text-xl items-center gap-3">
+                        <div className="route flex col-span-5 lg:col-span-6 px-5 justify-start font-bold text-sm md:text-xl items-center lg:gap-3 gap-1">
                           <div>
                             <span>07.00</span>
                             <p className="font-semibold text-lg">JKT</p>
@@ -312,9 +447,9 @@ const BodyComponent = () => {
                             className="w-10"
                           />
                         </div>
-                        <div className="price  text-xl font-bold text-darkblue04 w-full col-span-2 lg:col-span-1">
+                        <div className="price text-md  lg:text-xl font-bold text-darkblue04 w-full col-span-2 lg:col-span-1 ">
                           <h1>4.950.000</h1>
-                          <Button className="w-full rounded-2xl">Pilih</Button>
+                          <Button className="w-full rounded-2xl ">Pilih</Button>
                         </div>
                       </div>
                     </div>
@@ -370,7 +505,6 @@ const BodyComponent = () => {
               </Accordion>
             </li>
           </ul>
-          {/* <Loading /> */}
         </div>
       </div>
     </>

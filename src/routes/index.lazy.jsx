@@ -36,7 +36,7 @@ export const Route = createLazyFileRoute("/")({
 
 function HomePage() {
   return (
-    <>
+    <div className="px-5 md:px-0">
       <HeroSection />
       <div className="relative flex justify-center">
         <div className="absolute px-4 sm:px-6 lg:px-8 -top-24 z-10 flex flex-col justify-center items-center gap-y-5 max-w-full md:max-w-[55rem] lg:max-w-[80rem]">
@@ -44,16 +44,16 @@ function HomePage() {
           <ResultSection />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
 const HeroSection = () => {
   return (
     <>
-      <div className="bg-gradient-to-r from-darkblue04 to-darkblue03 my-28 relative h-32 w-full flex justify-center items-center">
-        <div className="hero absolute container mx-auto rounded-2xl overflow-hidden z-10 bg-[#ffe9ca]">
-          <div className="flex  md:flex-row justify-between h-auto md:h-72 bg-gradient-to-r from-[#ffe9ca] md:from-25% to-transparent">
+      <div className="bg-gradient-to-r from-darkblue04 to-darkblue03 my-16 md:my-28 relative h-32 w-full flex justify-center items-center  ">
+        <div className="hero absolute container mx-auto rounded-2xl overflow-hidden z-10 bg-[#ffe9ca] ">
+          <div className="flex  md:flex-row justify-between h-auto md:h-72 bg-gradient-to-r from-[#ffe9ca] md:from-25% to-transparent ">
             <div className="w-full md:w-1/4 h-full p-6 md:p-10 z-10 text-center md:text-left flex flex-col justify-center ">
               <h1 className="text-xl md:text-2xl lg:text-3xl font-bold italic">
                 Diskon Hari Ini
