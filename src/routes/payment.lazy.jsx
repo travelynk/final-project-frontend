@@ -6,19 +6,8 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-<<<<<<< HEAD
-import CountdownTimer from "@/components/Countdown";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-=======
+
 import NavigationBreadCr from "../pages/navigationBreadCr";
->>>>>>> feature/pemesanan-profile
 
 export const Route = createLazyFileRoute("/payment")({
   component: Payment,
@@ -26,45 +15,6 @@ export const Route = createLazyFileRoute("/payment")({
 
 function Payment() {
   return (
-<<<<<<< HEAD
-    <main className="container mx-auto max-w-5xl mt-8 px-4">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink>
-              <Link className="font-bold text-lg" href="/">
-                Isi Data Diri
-              </Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="font-bold text-lg">Bayar</BreadcrumbPage>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink>
-              <Link
-                className="font-bold text-lg text-gray-400"
-                href="/components"
-              >
-                Selesai
-              </Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <CountdownTimer />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-        {/* Left Section */}
-        <div className="md:col-span-2">
-          <h2 className="text-lg font-bold mb-4">Isi Data Pembayaran</h2>
-          <Accordion type="single" collapsible className="space-y-4">
-            {/* Virtual Account */}
-            <AccordionItem value="virtual-account">
-              <AccordionTrigger
-                className="flex justify-between items-center w-full px-4 py-2 rounded-lg bg-gray-800 text-white 
-=======
     <>
       {/*navigationbreadcr disini*/}
       <NavigationBreadCr
@@ -84,7 +34,6 @@ function Payment() {
               <AccordionItem value="virtual-account">
                 <AccordionTrigger
                   className="flex justify-between items-center w-full px-4 py-2 rounded-lg bg-gray-800 text-white 
->>>>>>> feature/pemesanan-profile
                                 hover:bg-purple-500 data-[state=open]:bg-purple-600 transition-colors"
                 >
                   Virtual Account
