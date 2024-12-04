@@ -1,5 +1,13 @@
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { Toast, ToastProvider, ToastViewport } from "@/components/ui/toast";
+import { useNavigate } from "@tanstack/react-router";
+import {
+  Toast,
+  ToastProvider,
+  ToastViewport,
+  ToastTitle,
+  ToastDescription,
+} from "@/components/ui/toast";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,19 +16,31 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Link, useMatch } from "@tanstack/react-router";
 
-export default function NavigationBreadCr() {
-  const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
+function NavigationBreadCr({
+  initialTime,
+  label,
+  expirationMessage,
+  redirectPath,
+}) {
+  const [timeLeft, setTimeLeft] = useState(initialTime);
+  const [showToast, setShowToast] = useState(false);
+
+  const [expired, setExpired] = useState(false);
+  const navigate = useNavigate(); // Use navigate hook for navigation
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          Toast({
-            title: "Peringatan!",
-            description: "Waktu telah habis! Selesaikan pemesanan Anda segera.",
-            variant: "destructive",
-          });
+          setShowToast(true);
+
+          setExpired(true);
+          console.log("Timer expired, navigating to:", redirectPath);
+
+          setTimeout(() => {
+            navigate({ to: redirectPath }); // Navigate to the path after 3 seconds
+          }, 3000);
           return 0;
         }
         return prev - 1;
@@ -28,7 +48,7 @@ export default function NavigationBreadCr() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [navigate, redirectPath]);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -36,7 +56,6 @@ export default function NavigationBreadCr() {
     return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
-  // Matching routes
   const matchSeat = useMatch("/seat");
   const matchPayment = useMatch("/seat/payment");
   const matchCompleted = useMatch("/seat/payment/selesai");
@@ -45,7 +64,6 @@ export default function NavigationBreadCr() {
     <ToastProvider>
       <div className="bg-white border-b h-[154px] p-3 shadow-md">
         <div className="flex flex-col justify-end h-full max-w-[936px] mx-auto">
-          {/* Breadcrumb */}
           <div className="mb-4">
             <Breadcrumb>
               <BreadcrumbList className="flex gap-2">
@@ -61,7 +79,7 @@ export default function NavigationBreadCr() {
                     Isi Data Diri
                   </Link>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="font-bold" />
+                <BreadcrumbSeparator className="!font-bold" />
                 <BreadcrumbItem>
                   <Link
                     className={
@@ -74,7 +92,7 @@ export default function NavigationBreadCr() {
                     Bayar
                   </Link>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="font-bold" />
+                <BreadcrumbSeparator className="!font-bold" />
                 <BreadcrumbItem>
                   <Link
                     className={
@@ -90,18 +108,29 @@ export default function NavigationBreadCr() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-
-          {/* Timer */}
-          <div className="p-3 ">
-            <div className="text-center text-white font-medium py-2 rounded-md bg-allertdanger ">
-              Selesaikan dalam {formatTime(timeLeft)}
+          <div className="p-3">
+            <div className="text-center text-white font-medium py-2 rounded-md bg-allertdanger">
+              {expired ? expirationMessage : `${label} ${formatTime(timeLeft)}`}
             </div>
           </div>
         </div>
-
-        {/* Toast Viewport */}
-        <ToastViewport />
+        {showToast && (
+          <Toast variant="destructive">
+            <ToastTitle>Peringatan!</ToastTitle>
+            <ToastDescription>{expirationMessage}</ToastDescription>
+          </Toast>
+        )}
+        <ToastViewport className="!top-0 !right-0 !p-4" />
       </div>
     </ToastProvider>
   );
 }
+
+NavigationBreadCr.propTypes = {
+  initialTime: PropTypes.number.isRequired,
+  label: PropTypes.string.isRequired,
+  expirationMessage: PropTypes.string.isRequired,
+  redirectPath: PropTypes.string.isRequired,
+};
+
+export default NavigationBreadCr;

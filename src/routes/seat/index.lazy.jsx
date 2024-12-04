@@ -10,7 +10,12 @@ export const Route = createLazyFileRoute("/seat/")({
 export default function Seat() {
   return (
     <>
-      <NavigationBreadCr />
+      <NavigationBreadCr
+        initialTime={5}
+        label="Selesaikan Dalam"
+        expirationMessage="Maaf, Waktu pemesanan habis. Silahkan ulangi lagi!"
+        redirectPath="/"
+      />
       <div className="flex flex-col md:flex-row gap-4 p-4 max-w-[936px] mx-auto ">
         <BookingForm />
         <FlightDetail />
