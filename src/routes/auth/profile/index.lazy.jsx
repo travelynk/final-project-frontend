@@ -43,22 +43,22 @@ function Profile() {
         </div>
       </div>
 
-      <Separator className="mt-[25px]  shadow" />
+      <Separator className="mt-[25px] shadow" />
 
-      <div className="flex justify-center items-center mt-10 ">
-        <div className="flex w-3/4 rounded-lg bg-white max-w-[936px] mb-4">
+      <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start mt-10 space-y-6 lg:space-y-0 lg:space-x-6 max-w-[936px] mx-auto mb-10">
+        <div className="flex flex-col w-[370px] lg:w-1/3 rounded-lg bg-white">
           {/* Left Menu */}
-          <div className="  border-gray-200 p-4 w-[370px] mr-4">
+          <div className="border-gray-200 p-4 w-full">
             <ul className="space-y-4">
-              <li className="flex items-center space-x-3 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-[328px] p-2 ">
+              <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
                 <FaPen />
                 <span>Ubah Profil</span>
               </li>
-              <li className="flex items-center space-x-3 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-[328px] p-2">
+              <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
                 <FaCog />
                 <span>Pengaturan Akun</span>
               </li>
-              <li className="flex items-center space-x-3 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-[328px] p-2">
+              <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
                 <FaSignOutAlt />
                 <span>Keluar</span>
               </li>
@@ -67,64 +67,63 @@ function Profile() {
               Version 1.1.0
             </div>
           </div>
+        </div>
 
-          {/* Profile Form */}
-          <div className="w-3/4 p-6 border  rounded-lg shadow-lg max-w-[550px] ml-4">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              Ubah Data Profil
-            </h2>
+        {/* Profile Form */}
+        <div className=" w-full sm:w-[550px] lg:w-2/3 px-6 pt-6 pb-4 border rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Ubah Data Profil
+          </h2>
 
-            <div className="bg-[#A06ECE] p-4 rounded-t-[12px] text-white  mb-2 font-bold">
-              Data Diri
+          <div className="bg-[#A06ECE] p-4 rounded-t-[12px] text-white mb-2 font-bold">
+            Data Diri
+          </div>
+
+          <form className="space-y-4 px-4 pt-2">
+            <div>
+              <Label className="font-bold text-[#4B1979]" htmlFor="nama">
+                Nama Lengkap
+              </Label>
+              <Input
+                type="text"
+                id="nama"
+                defaultValue="Harry"
+                className="mt-2"
+              />
             </div>
 
-            <form className="space-y-4 p-4">
-              <div>
-                <Label className="font-bold text-[#4B1979]" htmlFor="nama">
-                  Nama Lengkap
-                </Label>
-                <Input
-                  type="text"
-                  id="nama"
-                  defaultValue="Harry"
-                  className="mt-2"
-                />
-              </div>
+            <div>
+              <Label className="font-bold text-[#4B1979]" htmlFor="telepon">
+                Nomor Telepon
+              </Label>
+              <Input
+                type="tel"
+                id="telepon"
+                defaultValue="+62 897823232"
+                className="mt-2"
+              />
+            </div>
 
-              <div>
-                <Label className="font-bold text-[#4B1979]" htmlFor="telepon">
-                  Nomor Telepon
-                </Label>
-                <Input
-                  type="tel"
-                  id="telepon"
-                  defaultValue="+62 897823232"
-                  className="mt-2"
-                />
-              </div>
-
-              <div>
-                <Label className="font-bold text-[#4B1979]" htmlFor="email">
-                  Email
-                </Label>
-                <Input
-                  type="email"
-                  id="email"
-                  defaultValue="Johndoe@gmail.com"
-                  className="mt-2"
-                />
-              </div>
-
-              <div className="flex justify-center">
-                <Button
-                  type="submit"
-                  variant="default"
-                  className="w-[150px] bg-[#4B1979] mt-4 rounded-[12px]"
-                >
-                  Simpan
-                </Button>
-              </div>
-            </form>
+            <div>
+              <Label className="font-bold text-[#4B1979]" htmlFor="email">
+                Email
+              </Label>
+              <Input
+                type="email"
+                id="email"
+                defaultValue="Johndoe@gmail.com"
+                className="mt-2"
+              />
+            </div>
+          </form>
+          <div className="flex justify-center p-2 mt-8">
+            <Button
+              type="submit"
+              variant="default"
+              className="w-[150px] bg-[#4B1979]  rounded-[12px]"
+            >
+              Simpan
+            </Button>
           </div>
         </div>
       </div>
