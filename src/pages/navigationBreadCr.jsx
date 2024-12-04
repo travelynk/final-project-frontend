@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Toast,
   ToastProvider,
@@ -15,16 +16,31 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Link, useMatch } from "@tanstack/react-router";
 
-function NavigationBreadCr({ initialTime, label }) {
+function NavigationBreadCr({
+  initialTime,
+  label,
+  expirationMessage,
+  redirectPath,
+}) {
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [showToast, setShowToast] = useState(false);
+
+  const [expired, setExpired] = useState(false);
+  const navigate = useNavigate(); // Use navigate hook for navigation
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          setShowToast(true); // Show the toast
+          setShowToast(true);
+
+          setExpired(true);
+          console.log("Timer expired, navigating to:", redirectPath);
+
+          setTimeout(() => {
+            navigate({ to: redirectPath }); // Navigate to the path after 3 seconds
+          }, 3000);
           return 0;
         }
         return prev - 1;
@@ -32,7 +48,7 @@ function NavigationBreadCr({ initialTime, label }) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [navigate, redirectPath]);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -63,7 +79,7 @@ function NavigationBreadCr({ initialTime, label }) {
                     Isi Data Diri
                   </Link>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="font-bold" />
+                <BreadcrumbSeparator className="!font-bold" />
                 <BreadcrumbItem>
                   <Link
                     className={
@@ -76,7 +92,7 @@ function NavigationBreadCr({ initialTime, label }) {
                     Bayar
                   </Link>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="font-bold" />
+                <BreadcrumbSeparator className="!font-bold" />
                 <BreadcrumbItem>
                   <Link
                     className={
@@ -94,16 +110,14 @@ function NavigationBreadCr({ initialTime, label }) {
           </div>
           <div className="p-3">
             <div className="text-center text-white font-medium py-2 rounded-md bg-allertdanger">
-              {label} {formatTime(timeLeft)}
+              {expired ? expirationMessage : `${label} ${formatTime(timeLeft)}`}
             </div>
           </div>
         </div>
         {showToast && (
           <Toast variant="destructive">
             <ToastTitle>Peringatan!</ToastTitle>
-            <ToastDescription>
-              Waktu telah habis! Silahkan mengulangi pesanan anda.
-            </ToastDescription>
+            <ToastDescription>{expirationMessage}</ToastDescription>
           </Toast>
         )}
         <ToastViewport className="!top-0 !right-0 !p-4" />
@@ -115,6 +129,8 @@ function NavigationBreadCr({ initialTime, label }) {
 NavigationBreadCr.propTypes = {
   initialTime: PropTypes.number.isRequired,
   label: PropTypes.string.isRequired,
+  expirationMessage: PropTypes.string.isRequired,
+  redirectPath: PropTypes.string.isRequired,
 };
 
 export default NavigationBreadCr;
