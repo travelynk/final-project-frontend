@@ -1,6 +1,5 @@
 import * as React from "react";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
-import { Button } from "../components/ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -29,7 +28,7 @@ function Success() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink>
-              <Link className="font-bold text-lg " href="/components">
+              <Link className="font-bold text-lg " href="/payment">
                 Bayar
               </Link>
             </BreadcrumbLink>
@@ -42,10 +41,10 @@ function Success() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="bg-green-500 text-white text-center py-2 my-10 rounded-lg">
+      <div className="bg-green-500 text-white text-center py-2 my-4 rounded-lg">
         <p>Terimakasih atas pembayaran transaksi</p>
       </div>
-      <div className="flex justify-center mt-36">
+      <div className="flex justify-center mt-10">
         <img src="/picture-success.svg" alt="icon" />
       </div>
       <div className="flex flex-col items-center mt-4">

@@ -38,8 +38,8 @@ export default function NavigationBreadCr() {
 
   // Matching routes
   const matchSeat = useMatch("/seat");
-  const matchPayment = useMatch("/seat/payment");
-  const matchCompleted = useMatch("/seat/payment/selesai");
+  const matchPayment = useMatch("/payment");
+  const matchCompleted = useMatch("/success");
 
   return (
     <ToastProvider>
@@ -69,7 +69,7 @@ export default function NavigationBreadCr() {
                         ? "text-black text-[20px] font-bold"
                         : "text-gray-400 text-[20px] font-bold"
                     }
-                    to="/seat/payment"
+                    to="/payment"
                   >
                     Bayar
                   </Link>
@@ -82,7 +82,7 @@ export default function NavigationBreadCr() {
                         ? "text-black text-[20px] font-bold"
                         : "text-gray-400 text-[20px] font-bold"
                     }
-                    to="/seat/payment/selesai"
+                    to="/success"
                   >
                     Selesai
                   </Link>
