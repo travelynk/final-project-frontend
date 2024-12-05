@@ -50,6 +50,9 @@ export default function FlightDetail() {
           <span className="float-right text-purple-600">IDR 9.850.000</span>
         </p>
       </div>
+      <button className="mt-6 bg-[#FF0000] text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040]">
+        Lanjut Bayar
+      </button>
     </div>
   );
 }
