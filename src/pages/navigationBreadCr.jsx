@@ -20,13 +20,16 @@ function NavigationBreadCr({
   initialTime,
   label,
   expirationMessage,
+  successMessage, // Add the successMessage prop
   redirectPath,
+  showSuccess, // Add the showSuccess prop
 }) {
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [showToast, setShowToast] = useState(false);
-
   const [expired, setExpired] = useState(false);
-  const navigate = useNavigate(); // Use navigate hook for navigation
+  const [success, setSuccess] = useState(false); // State for success message
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -34,12 +37,11 @@ function NavigationBreadCr({
         if (prev <= 1) {
           clearInterval(timer);
           setShowToast(true);
-
           setExpired(true);
           console.log("Timer expired, navigating to:", redirectPath);
 
           setTimeout(() => {
-            navigate({ to: redirectPath }); // Navigate to the path after 3 seconds
+            navigate({ to: redirectPath });
           }, 3000);
           return 0;
         }
@@ -49,6 +51,12 @@ function NavigationBreadCr({
 
     return () => clearInterval(timer);
   }, [navigate, redirectPath]);
+
+  useEffect(() => {
+    if (showSuccess) {
+      setSuccess(true); // Show for 3 seconds
+    }
+  }, [showSuccess]);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -79,7 +87,7 @@ function NavigationBreadCr({
                     Isi Data Diri
                   </Link>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="!font-bold" />
+                <BreadcrumbSeparator className="!fontb" />
                 <BreadcrumbItem>
                   <Link
                     className={
@@ -109,9 +117,22 @@ function NavigationBreadCr({
             </Breadcrumb>
           </div>
           <div className="p-3">
-            <div className="text-center text-white font-medium py-2 rounded-md bg-allertdanger">
-              {expired ? expirationMessage : `${label} ${formatTime(timeLeft)}`}
-            </div>
+            {success ? (
+              // Display success message
+              <div className="text-center text-white font-medium py-2 rounded-md bg-green-500">
+                {successMessage}
+              </div>
+            ) : expired ? (
+              // Display expiration message
+              <div className="text-center text-white font-medium py-2 rounded-md bg-red-500">
+                {expirationMessage}
+              </div>
+            ) : (
+              // Display durasi pemesanan
+              <div className="text-center text-white font-medium py-2 rounded-md bg-allertdanger">
+                {label} {formatTime(timeLeft)}
+              </div>
+            )}
           </div>
         </div>
         {showToast && (
@@ -120,17 +141,21 @@ function NavigationBreadCr({
             <ToastDescription>{expirationMessage}</ToastDescription>
           </Toast>
         )}
-        <ToastViewport className="!top-0 !right-0 !p-4" />
+        <ToastViewport />
       </div>
     </ToastProvider>
   );
 }
 
 NavigationBreadCr.propTypes = {
-  initialTime: PropTypes.number.isRequired,
-  label: PropTypes.string.isRequired,
-  expirationMessage: PropTypes.string.isRequired,
-  redirectPath: PropTypes.string.isRequired,
+  initialTime: PropTypes.number,
+  label: PropTypes.string,
+  expirationMessage: PropTypes.string,
+  successMessage: PropTypes.string, // PropType for the success message
+  success: PropTypes.bool, // Add success validation
+  showSuccess: PropTypes.bool, // Add propType for showSuccess
+
+  redirectPath: PropTypes.string,
 };
 
 export default NavigationBreadCr;
