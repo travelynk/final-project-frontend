@@ -17,7 +17,7 @@ function Payment() {
     <>
       {/*navigationbreadcr disini*/}
       <NavigationBreadCr
-        initialTime={5}
+        initialTime={300}
         label="Selesaikan Pembayaran Dalam"
         expirationMessage="Maaf, Waktu pembayaran habis. Silahkan ulangi lagi!"
         redirectPath="/"
