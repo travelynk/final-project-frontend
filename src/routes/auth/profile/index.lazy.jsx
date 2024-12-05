@@ -22,19 +22,19 @@ function Profile() {
     <>
       <div className="container max-w-[1024px] mx-auto sm:pt-8 pt-2 px-4">
         {/* Header Section */}
-        <div className="flex justify-between items-center mt-5 sm:mb-10 mb-4">
+        <div className="flex justify-between items-center mt-5 sm:mb-6 mb-4">
           <h2 className="text-xl font-bold text-center sm:text-left">Akun</h2>
         </div>
 
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Beranda Card */}
-            <Card className="p-4 rounded-[12px] flex justify-between items-center bg-[#A06ECE] h-[50px] w-full sm:w-[777px]">
-              <div className="flex items-center space-x-4">
+            <Card className="p-4 rounded-[12px] flex justify-between items-center bg-[#A06ECE] w-full sm:w-[968px] h-[50px] mx-auto">
+              <div className="flex items-center space-x-4 w-full">
                 <Button variant="link" size="icon" className="p-0">
                   <ArrowLeft className="w-6 h-6 text-white" />
                 </Button>
-                <h1 className="font-normal text-lg text-white text-center flex-grow">
+                <h1 className="font-normal text-lg text-white text-left flex-grow">
                   Beranda
                 </h1>
               </div>
@@ -45,74 +45,85 @@ function Profile() {
 
       <Separator className="mt-[25px] shadow" />
 
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="flex w-3/4 rounded-lg bg-white">
+      <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start mt-10 space-y-6 lg:space-y-0 lg:space-x-6 max-w-[936px] mx-auto mb-10">
+        <div className="flex flex-col w-[370px] lg:w-1/3 rounded-lg bg-white">
           {/* Left Menu */}
-          <div className="w-1/4  border-gray-200 p-4">
+          <div className="border-gray-200 p-4 w-full">
             <ul className="space-y-4">
-              <li className="flex items-center space-x-3 text-gray-700 cursor-pointer hover:text-purple-600">
+              <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
                 <FaPen />
                 <span>Ubah Profil</span>
               </li>
-              <li className="flex items-center space-x-3 text-gray-700 cursor-pointer hover:text-purple-600">
+              <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
                 <FaCog />
                 <span>Pengaturan Akun</span>
               </li>
-              <li className="flex items-center space-x-3 text-gray-700 cursor-pointer hover:text-purple-600">
+              <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
                 <FaSignOutAlt />
                 <span>Keluar</span>
               </li>
             </ul>
-            <div className="mt-20 text-gray-400 text-sm">Version 1.1.0</div>
+            <div className="mt-4 text-gray-400 text-sm text-center">
+              Version 1.1.0
+            </div>
+          </div>
+        </div>
+
+        {/* Profile Form */}
+        <div className=" w-full sm:w-[550px] lg:w-2/3 px-6 pt-6 pb-4 border rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            Ubah Data Profil
+          </h2>
+
+          <div className="bg-[#A06ECE] p-4 rounded-t-[12px] text-white mb-2 font-bold">
+            Data Diri
           </div>
 
-          {/* Profile Form */}
-          <div className="w-3/4 p-6 border  rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              Ubah Data Profil
-            </h2>
-
-            <div className="bg-purple-100 p-4 rounded-md text-purple-800 font-semibold mb-4">
-              Data Diri
+          <form className="space-y-4 px-4 pt-2">
+            <div>
+              <Label className="font-bold text-[#4B1979]" htmlFor="nama">
+                Nama Lengkap
+              </Label>
+              <Input
+                type="text"
+                id="nama"
+                defaultValue="Harry"
+                className="mt-2"
+              />
             </div>
 
-            <form className="space-y-6">
-              <div>
-                <Label htmlFor="nama">Nama Lengkap</Label>
-                <Input
-                  type="text"
-                  id="nama"
-                  defaultValue="Harry"
-                  className="mt-2"
-                />
-              </div>
+            <div>
+              <Label className="font-bold text-[#4B1979]" htmlFor="telepon">
+                Nomor Telepon
+              </Label>
+              <Input
+                type="tel"
+                id="telepon"
+                defaultValue="+62 897823232"
+                className="mt-2"
+              />
+            </div>
 
-              <div>
-                <Label htmlFor="telepon">Nomor Telepon</Label>
-                <Input
-                  type="tel"
-                  id="telepon"
-                  defaultValue="+62 897823232"
-                  className="mt-2"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  type="email"
-                  id="email"
-                  defaultValue="Johndoe@gmail.com"
-                  className="mt-2"
-                />
-              </div>
-
-              <div className="flex justify-center">
-                <Button type="submit" variant="default" className="w-[150px]">
-                  Simpan
-                </Button>
-              </div>
-            </form>
+            <div>
+              <Label className="font-bold text-[#4B1979]" htmlFor="email">
+                Email
+              </Label>
+              <Input
+                type="email"
+                id="email"
+                defaultValue="Johndoe@gmail.com"
+                className="mt-2"
+              />
+            </div>
+          </form>
+          <div className="flex justify-center p-2 mt-8">
+            <Button
+              type="submit"
+              variant="default"
+              className="w-[150px] bg-[#4B1979]  rounded-[12px]"
+            >
+              Simpan
+            </Button>
           </div>
         </div>
       </div>
