@@ -18,7 +18,7 @@ export default function Seat() {
   return (
     <>
       <NavigationBreadCr
-        initialTime={5}
+        initialTime={15 * 60}
         label="Selesaikan Dalam"
         expirationMessage="Maaf, Waktu pemesanan habis. Silahkan ulangi lagi!"
         successMessage="Data Berhasil disimpan"

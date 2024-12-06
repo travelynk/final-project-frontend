@@ -10,17 +10,44 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { z } from "zod";
 
+// Schema Validasi Zod
+const bookingSchema = z.object({
+  fullname: z.string().min(1, "Nama lengkap wajib diisi"),
+  hasLastName: z.boolean().refine((val) => val === true, {
+    message: "Harap pilih apakah memiliki nama keluarga.",
+  }),
+  selectedSeats: z
+    .array(z.string())
+    .min(1, "Harap pilih setidaknya satu kursi."),
+});
 export default function BookingForm({ onFormSubmit }) {
   const [passengers, setPassengers] = useState([1]);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [errors, setErrors] = useState({});
 
-  const handleSubmit = () => {
-    // Perform any necessary form validation or processing here
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    // Trigger the success message
+    const formData = {
+      fullname: e.target.fullname.value,
+      hasLastName: e.target.lastNameSwitch.checked,
+      selectedSeats,
+    };
+
+    // Validasi menggunakan Zod
+    const validation = bookingSchema.safeParse(formData);
+    if (!validation.success) {
+      const errorMessages = validation.error.flatten();
+      setErrors(errorMessages.fieldErrors);
+      return;
+    }
+
+    setErrors({}); // Reset error jika validasi lolos
+
     if (onFormSubmit) {
-      onFormSubmit();
+      onFormSubmit(formData);
     }
   };
 
@@ -42,7 +69,10 @@ export default function BookingForm({ onFormSubmit }) {
   };
 
   return (
-    <div className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4"
+    >
       {/* Data Diri Pemesan */}
       <div className="border p-6 rounded-lg shadow-md bg-white">
         <p className="text-xl font-bold mb-4">Isi Data Pemesan</p>
@@ -61,8 +91,13 @@ export default function BookingForm({ onFormSubmit }) {
             <Input
               required
               id="fullname"
+              name="fullname"
               placeholder="Masukkan nama lengkap"
               className="mb-2"
+              onInvalid={(e) =>
+                e.target.setCustomValidity("Tolong isi fullname field.")
+              }
+              onInput={(e) => e.target.setCustomValidity("")}
             />
           </div>
           <div className="flex items-center justify-between mb-4">
@@ -316,12 +351,12 @@ export default function BookingForm({ onFormSubmit }) {
       </div>
 
       <button
-        onClick={handleSubmit}
+        type="submit"
         className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040]"
       >
         Simpan
       </button>
-    </div>
+    </form>
   );
 }
 
