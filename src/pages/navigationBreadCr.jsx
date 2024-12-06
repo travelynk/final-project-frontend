@@ -32,6 +32,11 @@ function NavigationBreadCr({
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (success) {
+      // Stop timer if success is true
+      return;
+    }
+
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -50,11 +55,12 @@ function NavigationBreadCr({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [navigate, redirectPath]);
+  }, [navigate, redirectPath, success]); // Add success as a dependency
 
   useEffect(() => {
     if (showSuccess) {
       setSuccess(true); // Show for 3 seconds
+      setShowToast(false); // Ensure toast doesn't show when success is true
     }
   }, [showSuccess]);
 
@@ -139,6 +145,12 @@ function NavigationBreadCr({
           <Toast variant="destructive">
             <ToastTitle>Peringatan!</ToastTitle>
             <ToastDescription>{expirationMessage}</ToastDescription>
+          </Toast>
+        )}
+        {showSuccess && (
+          <Toast variant="success">
+            <ToastTitle>Berhasil!</ToastTitle>
+            <ToastDescription>{successMessage}</ToastDescription>
           </Toast>
         )}
         <ToastViewport />
