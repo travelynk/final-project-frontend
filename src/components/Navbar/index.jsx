@@ -1,4 +1,13 @@
+import { useLocation } from "@tanstack/react-router";
+
 const NavigationBar = () => {
+  const location = useLocation();
+  const shouldHideNavbar = location.pathname.startsWith("/auth/");
+
+  if (shouldHideNavbar) {
+    return null; // Don't render the navbar if path starts with 'auth/'
+  }
+
   return (
     <header className="bg-white shadow-md py-3 border-b-2">
       <div className="container mx-auto flex flex-col md:flex-row md:justify-between items-center md:px-4">
