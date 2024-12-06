@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import PropTypes from "prop-types"; // Import PropTypes
+
 import {
   Accordion,
   AccordionItem,
@@ -9,9 +11,18 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 
-export default function BookingForm() {
+export default function BookingForm({ onFormSubmit }) {
   const [passengers, setPassengers] = useState([1]);
   const [selectedSeats, setSelectedSeats] = useState([]);
+
+  const handleSubmit = () => {
+    // Perform any necessary form validation or processing here
+
+    // Trigger the success message
+    if (onFormSubmit) {
+      onFormSubmit();
+    }
+  };
 
   const seatRows = 12;
   const seatColumns = ["A", "B", "C", "", "D", "E", "F"];
@@ -48,6 +59,7 @@ export default function BookingForm() {
               Nama Lengkap
             </Label>
             <Input
+              required
               id="fullname"
               placeholder="Masukkan nama lengkap"
               className="mb-2"
@@ -55,7 +67,7 @@ export default function BookingForm() {
           </div>
           <div className="flex items-center justify-between mb-4">
             <Label>Punya Nama Keluarga</Label>
-            <Switch />
+            <Switch required />
           </div>
           <div>
             <Label
@@ -65,6 +77,7 @@ export default function BookingForm() {
               Nama Keluarga
             </Label>
             <Input
+              required
               id="namakeluarga"
               placeholder="Masukan nama keluarga"
               className="mb-2"
@@ -78,6 +91,7 @@ export default function BookingForm() {
               Nomor Telepon
             </Label>
             <Input
+              required
               id="phone"
               placeholder="Masukkan nomor telepon"
               className="mb-2"
@@ -91,6 +105,7 @@ export default function BookingForm() {
               Email
             </Label>
             <Input
+              required
               id="email"
               placeholder="Contoh: johndoe@gmail.com"
               type="email"
@@ -119,6 +134,7 @@ export default function BookingForm() {
                       Title
                     </Label>
                     <Input
+                      required
                       id={`title-${index}`}
                       placeholder="Mr./Mrs./Miss"
                       className="mb-2"
@@ -132,6 +148,7 @@ export default function BookingForm() {
                       Nama Lengkap
                     </Label>
                     <Input
+                      required
                       id={`fullname-${index}`}
                       placeholder="Masukkan nama lengkap"
                       className="mb-2"
@@ -139,7 +156,7 @@ export default function BookingForm() {
                   </div>
                   <div className="flex items-center justify-between mb-4">
                     <Label>Punya Nama Keluarga?</Label>
-                    <Switch />
+                    <Switch required />
                   </div>
                   <div>
                     <Label
@@ -149,6 +166,7 @@ export default function BookingForm() {
                       Nama Keluarga
                     </Label>
                     <Input
+                      required
                       id={`namakeluarga-${index}`}
                       placeholder="Masukan Nama Keluarga"
                       className="mb-2"
@@ -162,6 +180,7 @@ export default function BookingForm() {
                       Tanggal Lahir
                     </Label>
                     <Input
+                      required
                       id={`birthdate-${index}`}
                       placeholder="dd/mm/yyyy"
                       type="date"
@@ -176,6 +195,7 @@ export default function BookingForm() {
                       Kewarganegaraan
                     </Label>
                     <Input
+                      required
                       id={`citizenship-${index}`}
                       placeholder="Indonesia"
                       className="mb-2"
@@ -189,6 +209,7 @@ export default function BookingForm() {
                       KTP/Paspor
                     </Label>
                     <Input
+                      required
                       id={`passport-${index}`}
                       placeholder="Masukkan nomor KTP atau paspor"
                       className="mb-2"
@@ -202,6 +223,7 @@ export default function BookingForm() {
                       Negara Penerbit
                     </Label>
                     <Input
+                      required
                       id={`negarapenerbit-${index}`}
                       placeholder="Masukan Negara Penerbit"
                       className="mb-2"
@@ -215,6 +237,7 @@ export default function BookingForm() {
                       Berlaku Sampai
                     </Label>
                     <Input
+                      required
                       id={`expiry-${index}`}
                       placeholder="dd/mm/yyyy"
                       type="date"
@@ -292,9 +315,16 @@ export default function BookingForm() {
         </div>
       </div>
 
-      <button className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040]">
+      <button
+        onClick={handleSubmit}
+        className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040]"
+      >
         Simpan
       </button>
     </div>
   );
 }
+
+BookingForm.propTypes = {
+  onFormSubmit: PropTypes.func.isRequired, // onFormSubmit is a required function
+};

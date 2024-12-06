@@ -5,7 +5,6 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import NavigationBreadCr from "../pages/navigationBreadCr";
 
@@ -18,7 +17,7 @@ function Payment() {
     <>
       {/*navigationbreadcr disini*/}
       <NavigationBreadCr
-        initialTime={5}
+        initialTime={300}
         label="Selesaikan Pembayaran Dalam"
         expirationMessage="Maaf, Waktu pembayaran habis. Silahkan ulangi lagi!"
         redirectPath="/"
@@ -30,20 +29,35 @@ function Payment() {
           <div className="md:col-span-2">
             <h2 className="text-lg font-bold mb-4">Isi Data Pembayaran</h2>
             <Accordion type="single" collapsible className="space-y-4">
-              {/* Virtual Account */}
-              <AccordionItem value="virtual-account">
+              {/* Debit */}
+              <AccordionItem value="debit-card">
                 <AccordionTrigger
                   className="flex justify-between items-center w-full px-4 py-2 rounded-lg bg-gray-800 text-white 
                                 hover:bg-purple-500 data-[state=open]:bg-purple-600 transition-colors"
                 >
-                  Virtual Account
-                  <ChevronDownIcon className="w-5 h-5" />
+                  Debit Card
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-gray-700">
-                    Gunakan Virtual Account untuk melakukan pembayaran melalui
-                    bank.
-                  </p>
+                  <div className="bg-white rounded-lg p-4">
+                    <form class="max-w-sm">
+                      <label
+                        for="bank"
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Pembayaran
+                      </label>
+                      <select
+                        id="banks"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      >
+                        <option selected>Pilih Bank</option>
+                        <option value="bca">BCA</option>
+                        <option value="bri">BRI</option>
+                        <option value="bni">BNI</option>
+                        <option value="mandiri">Mandiri</option>
+                      </select>
+                    </form>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
 
@@ -54,7 +68,6 @@ function Payment() {
                                 hover:bg-purple-500 data-[state=open]:bg-purple-600 transition-colors"
                 >
                   Credit Card
-                  <ChevronDownIcon className="w-5 h-5" />
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="bg-white rounded-lg p-4">
