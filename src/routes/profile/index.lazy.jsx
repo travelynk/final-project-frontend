@@ -1,21 +1,21 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from '@tanstack/react-router'
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { FaPen, FaCog, FaSignOutAlt } from "react-icons/fa";
-import { ArrowLeft } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { FaPen, FaCog, FaSignOutAlt } from 'react-icons/fa'
+import { ArrowLeft } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
 
-export const Route = createLazyFileRoute("/auth/profile/")({
+export const Route = createLazyFileRoute('/profile/')({
   component: Profile,
-});
+})
 
 function Profile() {
   return (
@@ -128,7 +128,7 @@ function Profile() {
         </div>
       </div>
     </>
-  );
+  )
 }
 
-export default Profile;
+export default Profile

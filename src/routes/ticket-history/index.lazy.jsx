@@ -201,11 +201,13 @@ function TicketHistory() {
               <p>
                 <strong>Informasi:</strong>
                 <br />
-                Baggage 20 kg
+                Penumpang 1: Mr. Harry Potter
                 <br />
-                Cabin baggage 7 kg
+                ID: 18398429
                 <br />
-                In-Flight Entertainment
+                Penumpang 2: Ms. Hermione Granger
+                <br />
+                ID: 13929303
               </p>
               <hr className="my-4" />
               <p className="mt-4">

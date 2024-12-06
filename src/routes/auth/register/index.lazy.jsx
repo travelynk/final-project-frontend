@@ -1,19 +1,71 @@
-import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Card } from "../../../components/ui/card";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useMutation } from "@tanstack/react-query";
+import { register } from "../../../service/auth";
+import { setEmailRegister } from "../../../redux/slices/auth";
 
 export const Route = createLazyFileRoute("/auth/register/")({
   component: Register,
 });
 
 function Register() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const { token } = useSelector((state) => state.auth);
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  // get token from local storage
+  if (token) {
+    navigate({ to: "/" });
+  }
+
+  const { mutate: registerUser } = useMutation({
+    mutationFn: (body) => {
+      return register(body); // Call the register function from the service
+    },
+    onSuccess: (result) => {
+      // Check if result contains a success message
+      console.log("Register Success:", result); // Debugging to verify the result
+
+      console.log("Email before navigate:", email);
+      // Store the email in Redux after successful registration
+      dispatch(setEmailRegister(email));
+      toast({
+        description: "Email OTP telah dikirm!",
+        variant: "info",
+      });
+      navigate({ to: "/auth/verify-otp" }, { state: { email } });
+    },
+    onError: (err) => {
+      toast.error(err?.message || "An error occurred during registration.");
+    },
+  });
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+
+    // hit API here
+    const request = {
+      fullName,
+      email,
+      phone,
+      password,
+    };
+    registerUser(request);
   };
 
   return (
@@ -37,39 +89,53 @@ function Register() {
       <div className="flex flex-col items-center justify-center w-full lg:w-[50%] px-6 py-12">
         <Card className="w-full max-w-lg p-8 space-y-6 bg-white rounded-lg lg:ms-24 lg:mb-12 border-none">
           <h2 className="text-2xl font-bold">Daftar</h2>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={onSubmit}>
             {/* Name Input */}
             <div>
               <Label
-                htmlFor="email"
+                htmlFor="fullName"
                 className="block text-sm font-medium text-gray-700"
               >
                 Nama
               </Label>
               <Input
-                id="email"
-                type="email"
+                id="fullName"
+                type="fullName"
                 placeholder="Nama Lengkap"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
               />
             </div>
 
             {/* Phone Number Input */}
             <div>
               <Label
-                htmlFor="phoneNumber"
+                htmlFor="phone"
                 className="block text-sm font-medium text-gray-700"
               >
                 Nomor Telepon
               </Label>
               <div className="relative mt-1">
-                {/* Phone Number Input with +62 as the placeholder */}
+                {/* Phone Number Input without the +62 visible */}
                 <Input
-                  id="phoneNumber"
+                  id="phone"
                   type="tel"
                   className="block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 pl-10"
+                  required
+                  value={phone.replace(/^62/, "")} // Only show the number after '62'
+                  onChange={(e) => {
+                    const input = e.target.value;
+                    // Automatically add '62' prefix but hide it from the user input field
+                    if (input.startsWith("62")) {
+                      setPhone(input); // Keep the input as is if it starts with '62'
+                    } else {
+                      setPhone("62" + input.replace(/^62/, "")); // Automatically add '62' as the prefix
+                    }
+                  }}
                 />
-                {/* Adding +62 as a static prefix */}
+                {/* Hidden +62 */}
                 <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 text-sm">
                   +62
                 </span>
@@ -82,13 +148,16 @@ function Register() {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Email/No Telepon
+                Email
               </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="Contoh: johndoe@gmail.com"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -106,6 +175,9 @@ function Register() {
                   type={isPasswordVisible ? "text" : "password"}
                   placeholder="Buat Password"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
@@ -144,7 +216,10 @@ function Register() {
             </div>
 
             {/* Submit Button */}
-            <Button className="w-full py-2 mt-4 bg-purple-500 text-white font-semibold rounded-[16px] hover:bg-purple-600">
+            <Button
+              type="submit"
+              className="w-full py-2 mt-4 bg-purple-500 text-white font-semibold rounded-[16px] hover:bg-purple-600"
+            >
               Daftar
             </Button>
           </form>

@@ -1,12 +1,12 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
-import { Label } from "../../../components/ui/label";
-import { Card } from "../../../components/ui/card";
+import { createLazyFileRoute } from '@tanstack/react-router'
+import { Button } from '../../../components/ui/button'
+import { Input } from '../../../components/ui/input'
+import { Label } from '../../../components/ui/label'
+import { Card } from '../../../components/ui/card'
 
-export const Route = createLazyFileRoute("/auth/send-otp/")({
+export const Route = createLazyFileRoute('/auth/send-reset-passwor/')({
   component: sendOTP,
-});
+})
 
 function sendOTP() {
   return (
@@ -17,12 +17,12 @@ function sendOTP() {
           <img
             src="/img/logo.png"
             alt="Cover Image"
-            style={{ marginLeft: "100px", marginTop: "200px" }}
+            style={{ marginLeft: '100px', marginTop: '200px' }}
           />
           <img
             src="/img/leaves.png"
             alt="Cover Image"
-            style={{ marginTop: "-80px" }}
+            style={{ marginTop: '-80px' }}
           />
         </div>
       </div>
@@ -37,7 +37,7 @@ function sendOTP() {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Email/No Telepon
+                Email
               </Label>
               <Input
                 id="email"
@@ -55,5 +55,5 @@ function sendOTP() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

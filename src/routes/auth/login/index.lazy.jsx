@@ -1,19 +1,83 @@
-import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Card } from "../../../components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setToken } from "../../../redux/slices/auth";
+import { login } from "../../../service/auth";
+import { useSelector } from "react-redux";
+import { useToast } from "../../../hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/auth/login/")({
   component: Login,
 });
 
 function Login() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const { token } = useSelector((state) => state.auth);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  useEffect(() => {
+    if (token) {
+      navigate({ to: "/" });
+    }
+  }, [token, navigate]);
+
+  // Mutation is used for POST, PUT, PATCH and DELETE
+  const { mutate: loginUser } = useMutation({
+    mutationFn: (body) => {
+      return login(body);
+    },
+    onSuccess: (data) => {
+      console.log(data);
+      // set token to global state
+      dispatch(setToken(data?.token));
+
+      // redirect to home
+      navigate({ to: "/" });
+    },
+    onError: (err) => {
+      // Handle different response formats
+      const errorMessage =
+        // Format 1: err.response.data.status.message
+        err?.response?.data?.status?.message ||
+        // Format 2: err.response.data.message
+        err?.response?.data?.message ||
+        // Default fallback message
+        "An unexpected error occurred.";
+
+      // Display the error in a toast notification
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+
+    /* hit the login API */
+    // define the request body
+    const body = {
+      email,
+      password,
+    };
+
+    // hit the login API with the data
+    loginUser(body);
   };
 
   return (
@@ -37,20 +101,23 @@ function Login() {
       <div className="flex flex-col items-center justify-center w-full lg:w-[50%] px-6 py-12">
         <Card className="w-full max-w-lg p-8 space-y-6 bg-white rounded-lg lg:ms-24 lg:mb-12 border-none">
           <h2 className="text-2xl font-bold">Masuk</h2>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={onSubmit}>
             {/* Email Input */}
             <div>
               <Label
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Email/No Telepon
+                Email
               </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="Contoh: johndoe@gmail.com"
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -75,6 +142,9 @@ function Login() {
                   type={isPasswordVisible ? "text" : "password"}
                   placeholder="Masukkan password"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
@@ -113,7 +183,10 @@ function Login() {
             </div>
 
             {/* Submit Button */}
-            <Button className="w-full py-2 mt-4 bg-purple-500 text-white font-semibold rounded-[16px] hover:bg-purple-600">
+            <Button
+              type="submit"
+              className="w-full py-2 mt-4 bg-purple-500 text-white font-semibold rounded-[16px] hover:bg-purple-600"
+            >
               Masuk
             </Button>
           </form>

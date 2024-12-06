@@ -11,17 +11,29 @@ import {
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { useState, useEffect, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "../../../hooks/use-toast";
+import { verifyOtp } from "../../../service/auth";
+import { useSelector, useDispatch } from "react-redux";
+import { setEmailRegister } from "../../../redux/slices/auth"; // Make sure you have a setEmail action in your authSlice
 
 export const Route = createLazyFileRoute("/auth/verify-otp/")({
   component: verifyOTP,
 });
 
 function verifyOTP() {
+  const [otp, setOtp] = useState(""); // Store OTP value as a string of 6 digits
   const [countdown, setCountdown] = useState(60);
   const [isResendEnabled, setIsResendEnabled] = useState(false);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const inputRefs = useRef([]); // Store references to input fields
+  const { toast } = useToast();
+  const email = useSelector((state) => state.auth.email);
+
+  useEffect(() => {
+    console.log("Email from Redux:", email);
+  }, [email]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -40,33 +52,58 @@ function verifyOTP() {
   };
 
   const handleInputChange = (event, index) => {
+    let newOtp = otp.split(""); // Convert OTP string to array for easier manipulation
+    newOtp[index] = event.target.value; // Update the value at the given index
+    setOtp(newOtp.join("")); // Join the array back into a string
+
+    // Move to the next input field when the user types a value
     if (
       event.target.value.length === 1 &&
       index < inputRefs.current.length - 1
     ) {
       inputRefs.current[index + 1].focus();
     }
-
+    // Move to the previous input field if the current value is deleted
     if (event.target.value.length === 0 && index > 0) {
       inputRefs.current[index - 1].focus();
     }
   };
 
-  const handlePaste = (event, index) => {
+  const handlePaste = (event) => {
+    event.preventDefault();
+    const pastedValue = event.clipboardData.getData("Text").slice(0, 6);
+    setOtp(pastedValue); // Directly set OTP when the user pastes the value
+  };
+
+  // Use mutation for OTP verification
+  const { mutate: verifyOtpMutation } = useMutation({
+    mutationFn: (data) => verifyOtp(data),
+    onSuccess: (data) => {
+      console.log("OTP Verified successfully:", data);
+      dispatch(setEmailRegister(null)); // Clear email from Redux after success
+      navigate({ to: "/auth/login/" }); // Redirect to the home page or another success page
+    },
+    onError: (err) => {
+      console.error("OTP Verification failed:", err.message);
+      // Optionally show error message (e.g., using a toast or alert)
+    },
+  });
+
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-    const pastedValue = event.clipboardData.getData("Text").slice(0, 6);
-    const inputArray = pastedValue.split("");
-
-    inputArray.forEach((char, idx) => {
-      if (inputRefs.current[idx]) {
-        inputRefs.current[idx].value = char;
-      }
-    });
-
-    if (inputArray.length > 0 && inputRefs.current[inputArray.length - 1]) {
-      inputRefs.current[inputArray.length - 1].focus();
+    if (otp.length !== 6) {
+      alert("Please enter a valid 6-digit OTP.");
+      return;
     }
+
+    const request = {
+      email: email, // Use email from Redux
+      otp: otp, // Use OTP state
+    };
+    console.log(request);
+
+    verifyOtpMutation(request); // Trigger OTP verification
   };
 
   return (
@@ -77,7 +114,7 @@ function verifyOTP() {
           <div className="absolute top-4 -ml-40">
             <Button
               onClick={() => {
-                navigate({ to: `/auth/send-otp` });
+                navigate({ to: `/auth/register` });
               }}
               variant="ghost"
               size="icon"
@@ -92,8 +129,9 @@ function verifyOTP() {
             <CardTitle className="text-2xl font-bold mb-8">
               Masukkan OTP
             </CardTitle>
-            <CardDescription className="flex justify-center mt-2 ">
-              Ketik 6 digit kode yang dikirimkan ke J*****@gmail.com
+            <CardDescription className="flex justify-center mt-2">
+              Ketik 6 digit kode yang dikirimkan ke {email}{" "}
+              {/* Display the email */}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 mt-6">
@@ -105,8 +143,9 @@ function verifyOTP() {
                   maxLength="1"
                   required
                   ref={(el) => (inputRefs.current[index] = el)}
+                  value={otp[index] || ""} // Set the current value of the OTP input
                   onInput={(e) => handleInputChange(e, index)}
-                  onPaste={(e) => handlePaste(e, index)}
+                  onPaste={handlePaste}
                   className="col-span-1 border border-gray-300 p-3 rounded-[16px] text-center"
                   style={{ width: "40px", height: "40px" }}
                 />
@@ -134,7 +173,10 @@ function verifyOTP() {
           </CardContent>
 
           <CardFooter>
-            <Button className="w-full py-2 mt-16 bg-[#7126B5] text-white font-semibold rounded-[16px] hover:bg-purple-600">
+            <Button
+              onClick={handleSubmit}
+              className="w-full py-2 mt-16 bg-[#7126B5] text-white font-semibold rounded-[16px] hover:bg-purple-600"
+            >
               Simpan
             </Button>
           </CardFooter>
