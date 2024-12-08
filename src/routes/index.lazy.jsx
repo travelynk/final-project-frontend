@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Card,
   CardContent,
@@ -18,7 +18,7 @@ import {
 } from "../components/ui/select";
 import { Button } from "../components/ui/button";
 import { Calendar } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MyCalendar } from "../components/ui/myCalendar";
 import { Switch } from "../components/ui/switch";
 import { Toggle } from "../components/ui/toggle";
@@ -29,6 +29,10 @@ import {
   PopoverTrigger,
 } from "../components/ui/popover";
 import { setQuarter } from "date-fns";
+import { getAirpots } from "../services/airports";
+import { useQuery } from "@tanstack/react-query";
+import { getCities } from "../services/cities";
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 
 export const Route = createLazyFileRoute("/")({
   component: HomePage,
@@ -71,38 +75,39 @@ const HeroSection = () => {
 };
 
 const MenuSection = () => {
-  const [date, setDate] = useState(new Date());
+  const [departureDate, setDepartureDate] = useState(new Date());
+  const [arrivalDate, setArivalDate] = useState(new Date());
   const [openFrom, setOpenFrom] = useState(false);
-  const [valueFrom, setValueFrom] = useState("");
+  const [originCity, setOriginCity] = useState("");
+  const [destinationCity, setDestinationCity] = useState("");
   const [openTo, setOpenTo] = useState(false);
-  const [valueTo, setValueTo] = useState("");
   const [countAdult, setCountAdult] = useState(0);
   const [countChild, setCountChild] = useState(0);
   const [countBaby, setCountBaby] = useState(0);
   const [returnCity, setReturnCity] = useState("true");
+  const [listCities, setListCities] = useState([]);
+  const [isToggled, setIsToggled] = useState(false);
+  const [classSeat, setClassSeat] = useState("");
 
-  const frameworks = [
-    {
-      value: "jakarta",
-      label: "Jakarta",
-    },
-    {
-      value: "surabaya",
-      label: "Surabaya",
-    },
-    {
-      value: "bandung",
-      label: "Bandung",
-    },
-    {
-      value: "medan",
-      label: "Medan",
-    },
-    {
-      value: "makassar",
-      label: "Makassar",
-    },
-  ];
+  const navigate = useNavigate();
+
+  const { data, isSuccess } = useQuery({
+    queryKey: ["airpots"],
+    queryFn: () => getCities(),
+    enabled: true,
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setListCities(data);
+    }
+  }, [isSuccess, listCities, data]);
+  const handleToggle = () => {
+    setIsToggled(!isToggled);
+    let temp = originCity;
+    setOriginCity(destinationCity);
+    setDestinationCity(temp);
+  };
 
   return (
     <Card className="max-w-full  md:max-w-[55rem] lg:min-w-[80rem] ">
@@ -124,17 +129,17 @@ const MenuSection = () => {
               </Label>
               <Combobox
                 className="w-full"
-                data={frameworks}
+                data={listCities}
                 open={openFrom}
                 setOpen={setOpenFrom}
-                value={valueFrom}
-                setValue={setValueFrom}
+                value={originCity}
+                setValue={setOriginCity}
                 placeholder="City"
               />
             </div>
 
             <div className="flex justify-center col-span-1 md:col-span-1 items-center">
-              <Toggle>
+              <Toggle onClick={handleToggle} checked={isToggled}>
                 <img src="/src/assets/change.svg" alt="toggle.icon" />
               </Toggle>
             </div>
@@ -148,11 +153,11 @@ const MenuSection = () => {
               </Label>
               <Combobox
                 className="w-full"
-                data={frameworks}
+                data={listCities}
                 open={openTo}
                 setOpen={setOpenTo}
-                value={valueTo}
-                setValue={setValueTo}
+                value={destinationCity}
+                setValue={setDestinationCity}
                 placeholder="City"
               />
             </div>
@@ -169,8 +174,8 @@ const MenuSection = () => {
                   <Label htmlFor="depature">Depature</Label>
                   <MyCalendar
                     mode="single"
-                    date={date}
-                    setDate={setDate}
+                    date={departureDate}
+                    setDate={setDepartureDate}
                     className="rounded-md border"
                   />
                 </div>
@@ -180,8 +185,8 @@ const MenuSection = () => {
                   <Label htmlFor="return">Return</Label>
                   <MyCalendar
                     mode="single"
-                    date={date}
-                    setDate={setDate}
+                    date={arrivalDate}
+                    setDate={setArivalDate}
                     className="rounded-md border"
                   />
                 </div>
@@ -207,12 +212,16 @@ const MenuSection = () => {
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline">Penumpang</Button>
+                    <Button variant="outline">
+                      {countAdult + countChild + countBaby !== 0
+                        ? `${countAdult + countBaby + countChild}  Penumpang`
+                        : "Penumpang"}
+                    </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-96">
                     <div className="grid gap-4 ">
                       <div className="flex justify-end border-b-2 border-gray-100 pb-2 ">
-                        <Button>X</Button>
+                        {/* <Button>X</Button> */}
                       </div>
                       <div className="grid gap-2">
                         <div className="grid grid-cols-2   gap-4  border-b-2 border-gray-100 pb-2 ">
@@ -329,7 +338,9 @@ const MenuSection = () => {
                         </div>
                       </div>
                       <div className="flex justify-end">
-                        <Button>Simpan</Button>
+                        {/* <PopoverTrigger asChild>
+                            <Button>simpan</Button>
+                          </PopoverTrigger> */}
                       </div>
                     </div>
                   </PopoverContent>
@@ -339,26 +350,56 @@ const MenuSection = () => {
                 <Label htmlFor="seat-class">Seat Class</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline">Class</Button>
+                    <Button variant="outline">
+                      {classSeat ? classSeat : "Class"}
+                    </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-96">
                     <div className="grid gap-4 ">
-                      <div className="flex justify-end border-b-2 border-gray-100 pb-2 ">
-                        <Button>X</Button>
-                      </div>
-
-                      <div className="grid gap-2 hover:bg-darkblue05 px-5 rounded-sm transition  cursor-pointer group">
-                        <div className="flex justify-between group-hover:text-white  gap-4  border-b-2 border-gray-100 pb-2 ">
-                          <div>
+                      <RadioGroup
+                        defaultValue={classSeat}
+                        onValueChange={(value) => setClassSeat(value)}
+                      >
+                        <div className="flex items-center gap-5 py-3 hover:bg-darkblue05 px-5 rounded-sm transition  cursor-pointer  group">
+                          <Label
+                            htmlFor="Economy"
+                            className=" group-hover:text-white  gap-4  border-b-2 border-gray-100 pb-2 w-full text-xl"
+                          >
                             <h1>Economy</h1>
-                            <p>IDR 4.950.000</p>
-                          </div>
-                          <img src="/src/assets/verification.svg" alt="" />
+                          </Label>
+                          <RadioGroupItem value="Economy" id="Economy" />
                         </div>
-                      </div>
-                      <div className="flex justify-end">
-                        <Button>Simpan</Button>
-                      </div>
+                        <div className="flex items-center gap-5 py-3 hover:bg-darkblue05 px-5 rounded-sm transition  cursor-pointer  group">
+                          <Label
+                            htmlFor="Business"
+                            className=" group-hover:text-white  gap-4  border-b-2 border-gray-100 pb-2 w-full text-xl"
+                          >
+                            <h1>Business</h1>
+                          </Label>
+                          <RadioGroupItem value="Business" id="Business" />
+                        </div>
+                        <div className="flex items-center gap-5 py-3 hover:bg-darkblue05 px-5 rounded-sm transition  cursor-pointer  group">
+                          <Label
+                            htmlFor="firstClass"
+                            className=" group-hover:text-white  gap-4  border-b-2 border-gray-100 pb-2 w-full text-xl"
+                          >
+                            <h1>First Class</h1>
+                          </Label>
+                          <RadioGroupItem value="First Class" id="firstClass" />
+                        </div>
+                        <div className="flex items-center gap-5 py-3 hover:bg-darkblue05 px-5 rounded-sm transition  cursor-pointer  group">
+                          <Label
+                            htmlFor="premiumEconomy"
+                            className=" group-hover:text-white  gap-4  border-b-2 border-gray-100 pb-2 w-full text-xl"
+                          >
+                            <h1>Premium Economy</h1>
+                          </Label>
+                          <RadioGroupItem
+                            value="Premium Economy"
+                            id="premiumEconomy"
+                          />
+                        </div>
+                      </RadioGroup>
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -368,7 +409,14 @@ const MenuSection = () => {
         </form>
       </CardContent>
       <CardFooter className="w-full">
-        <Button className="w-full bg-darkblue04 text-white">
+        <Button
+          className="w-full bg-darkblue04 text-white"
+          onClick={() =>
+            navigate({
+              to: `/flights/search?rf=${originCity}.${destinationCity}&dt=${new Date(departureDate).toISOString().substring(0, 10)}.${new Date(arrivalDate).toISOString().substring(0, 10)}&ps=${countAdult}.${countChild}.${countBaby}&sc=${classSeat}`,
+            })
+          }
+        >
           Cari Penerbangan
         </Button>
       </CardFooter>
