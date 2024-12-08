@@ -71,3 +71,24 @@ export const verifyOtp = async (request) => {
 
   return result?.data;
 };
+
+export const profile = async () => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/profile`, {
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+    method: "GET",
+  });
+
+  // Cek apakah respons berhasil
+  if (!response.ok) {
+    const errorResult = await response.json(); // Ambil detail error
+    console.error("Error:", errorResult); // Log error dari API
+    throw new Error(errorResult.message || "Error fetching profile");
+  }
+
+  const result = await response.json();
+  console.log("Profile data received:", result); // Debug untuk melihat respons data
+  return result;
+};
