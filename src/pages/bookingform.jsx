@@ -37,6 +37,7 @@ const bookingSchema = z.object({
 export default function BookingForm({ onFormSubmit }) {
   const [passengers, setPassengers] = useState([1]);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [formState, setFormState] = useState({
     fullname: "",
@@ -75,6 +76,7 @@ export default function BookingForm({ onFormSubmit }) {
       bookingSchema.parse({ ...formState, selectedSeats });
       if (onFormSubmit) {
         onFormSubmit();
+        setIsSubmitted(true); // Data berhasil disimpan
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -127,6 +129,7 @@ export default function BookingForm({ onFormSubmit }) {
               className="mb-2"
               value={formState.fullname}
               onChange={(e) => handleChange("fullname", e.target.value)}
+              disabled={isSubmitted}
             />
           </div>
           <div className="flex items-center justify-between mb-4">
@@ -161,6 +164,7 @@ export default function BookingForm({ onFormSubmit }) {
               className="mb-2"
               value={formState.phone}
               onChange={(e) => handleChange("phone", e.target.value)}
+              disabled={isSubmitted}
             />
           </div>
           <div>
@@ -178,6 +182,7 @@ export default function BookingForm({ onFormSubmit }) {
               className="mb-2"
               value={formState.email}
               onChange={(e) => handleChange("email", e.target.value)}
+              disabled={isSubmitted}
             />
           </div>
         </div>
@@ -209,6 +214,7 @@ export default function BookingForm({ onFormSubmit }) {
                       onChange={(e) =>
                         handleChange("title", e.target.value, index)
                       }
+                      disabled={isSubmitted}
                     />
                   </div>
                   <div>
@@ -227,6 +233,7 @@ export default function BookingForm({ onFormSubmit }) {
                       onChange={(e) =>
                         handleChange("fullname", e.target.value, index)
                       }
+                      disabled={isSubmitted}
                     />
                   </div>
                   <div className="flex items-center justify-between mb-4">
@@ -264,6 +271,7 @@ export default function BookingForm({ onFormSubmit }) {
                       onChange={(e) =>
                         handleChange("birthdate", e.target.value, index)
                       }
+                      disabled={isSubmitted}
                     />
                   </div>
                   <div>
@@ -282,6 +290,7 @@ export default function BookingForm({ onFormSubmit }) {
                       onChange={(e) =>
                         handleChange("citizenship", e.target.value, index)
                       }
+                      disabled={isSubmitted}
                     />
                   </div>
                   <div>
@@ -300,6 +309,7 @@ export default function BookingForm({ onFormSubmit }) {
                       onChange={(e) =>
                         handleChange("passport", e.target.value, index)
                       }
+                      disabled={isSubmitted}
                     />
                   </div>
                   <div>
@@ -318,6 +328,7 @@ export default function BookingForm({ onFormSubmit }) {
                       onChange={(e) =>
                         handleChange("negarapenerbit", e.target.value, index)
                       }
+                      disabled={isSubmitted}
                     />
                   </div>
                   <div>
@@ -337,6 +348,7 @@ export default function BookingForm({ onFormSubmit }) {
                       onChange={(e) =>
                         handleChange("expiry", e.target.value, index)
                       }
+                      disabled={isSubmitted}
                     />
                   </div>
                 </div>
@@ -347,6 +359,7 @@ export default function BookingForm({ onFormSubmit }) {
         <button
           onClick={addPassenger}
           className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
+          disabled={isSubmitted}
         >
           Tambah Penumpang
         </button>
@@ -393,8 +406,12 @@ export default function BookingForm({ onFormSubmit }) {
                             ? "bg-purple-500"
                             : "bg-gray-200"
                       }`}
-                      onClick={() => !isReserved && toggleSeatSelection(seatId)}
-                      disabled={isReserved}
+                      onClick={() =>
+                        !isReserved &&
+                        !isSubmitted &&
+                        toggleSeatSelection(seatId)
+                      }
+                      disabled={isReserved || isSubmitted}
                     >
                       {isSelected
                         ? `P${selectedSeats.indexOf(seatId) + 1}`
@@ -412,7 +429,12 @@ export default function BookingForm({ onFormSubmit }) {
 
       <button
         onClick={handleSubmit}
-        className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040]"
+        className={`mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040] ${
+          isSubmitted
+            ? "bg-gray-500 cursor-not-allowed"
+            : "bg-blue-500 text-white"
+        }`}
+        disabled={isSubmitted}
       >
         Simpan
       </button>
