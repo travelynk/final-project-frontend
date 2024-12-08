@@ -72,7 +72,7 @@ export default function BookingForm({ onFormSubmit }) {
 
   const handleSubmit = () => {
     try {
-      bookingSchema.parse(formState);
+      bookingSchema.parse({ ...formState, selectedSeats });
       if (onFormSubmit) {
         onFormSubmit();
       }
@@ -205,8 +205,10 @@ export default function BookingForm({ onFormSubmit }) {
                       id={`title-${index}`}
                       placeholder="Mr./Mrs./Miss"
                       className="mb-2"
-                      value={formState.passengers.title}
-                      onChange={(e) => handleChange("title", e.target.value)}
+                      value={formState.passengers[index]?.title}
+                      onChange={(e) =>
+                        handleChange("title", e.target.value, index)
+                      }
                     />
                   </div>
                   <div>
@@ -221,8 +223,10 @@ export default function BookingForm({ onFormSubmit }) {
                       id={`fullname-${index}`}
                       placeholder="Masukkan nama lengkap"
                       className="mb-2"
-                      value={formState.passengers.fullname}
-                      onChange={(e) => handleChange("fullname", e.target.value)}
+                      value={formState.passengers[index]?.fullname}
+                      onChange={(e) =>
+                        handleChange("fullname", e.target.value, index)
+                      }
                     />
                   </div>
                   <div className="flex items-center justify-between mb-4">
@@ -256,9 +260,9 @@ export default function BookingForm({ onFormSubmit }) {
                       placeholder="dd/mm/yyyy"
                       type="date"
                       className="mb-2"
-                      value={formState.passengers.birthdate}
+                      value={formState.passengers[index]?.birthdate}
                       onChange={(e) =>
-                        handleChange("birthdate", e.target.value)
+                        handleChange("birthdate", e.target.value, index)
                       }
                     />
                   </div>
@@ -274,9 +278,9 @@ export default function BookingForm({ onFormSubmit }) {
                       id={`citizenship-${index}`}
                       placeholder="Indonesia"
                       className="mb-2"
-                      value={formState.passengers.citizenship}
+                      value={formState.passengers[index]?.citizenship}
                       onChange={(e) =>
-                        handleChange("citizenship", e.target.value)
+                        handleChange("citizenship", e.target.value, index)
                       }
                     />
                   </div>
@@ -292,8 +296,10 @@ export default function BookingForm({ onFormSubmit }) {
                       id={`passport-${index}`}
                       placeholder="Masukkan nomor KTP atau paspor"
                       className="mb-2"
-                      value={formState.passengers.passport}
-                      onChange={(e) => handleChange("passport", e.target.value)}
+                      value={formState.passengers[index]?.passport}
+                      onChange={(e) =>
+                        handleChange("passport", e.target.value, index)
+                      }
                     />
                   </div>
                   <div>
@@ -308,9 +314,9 @@ export default function BookingForm({ onFormSubmit }) {
                       id={`negarapenerbit-${index}`}
                       placeholder="Masukan Negara Penerbit"
                       className="mb-2"
-                      value={formState.passengers.negarapenerbit}
+                      value={formState.passengers[index]?.negarapenerbit}
                       onChange={(e) =>
-                        handleChange("negarapenerbit", e.target.value)
+                        handleChange("negarapenerbit", e.target.value, index)
                       }
                     />
                   </div>
@@ -327,8 +333,10 @@ export default function BookingForm({ onFormSubmit }) {
                       placeholder="dd/mm/yyyy"
                       type="date"
                       className="mb-2"
-                      value={formState.passengers.expiry}
-                      onChange={(e) => handleChange("expiry", e.target.value)}
+                      value={formState.passengers[index]?.expiry}
+                      onChange={(e) =>
+                        handleChange("expiry", e.target.value, index)
+                      }
                     />
                   </div>
                 </div>
