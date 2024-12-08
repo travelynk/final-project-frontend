@@ -15,7 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useToast } from "../../../hooks/use-toast";
 import { verifyOtp } from "../../../service/auth";
 import { useSelector, useDispatch } from "react-redux";
-import { setEmailRegister } from "../../../redux/slices/auth"; // Make sure you have a setEmail action in your authSlice
+import { setEmailRegister } from "../../../redux/slices/auth";
 
 export const Route = createLazyFileRoute("/auth/verify-otp/")({
   component: verifyOTP,
@@ -29,11 +29,7 @@ function verifyOTP() {
   const dispatch = useDispatch();
   const inputRefs = useRef([]); // Store references to input fields
   const { toast } = useToast();
-  const email = useSelector((state) => state.auth.email);
-
-  useEffect(() => {
-    console.log("Email from Redux:", email);
-  }, [email]);
+  const email = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -79,13 +75,12 @@ function verifyOTP() {
   const { mutate: verifyOtpMutation } = useMutation({
     mutationFn: (data) => verifyOtp(data),
     onSuccess: (data) => {
-      console.log("OTP Verified successfully:", data);
-      dispatch(setEmailRegister(null)); // Clear email from Redux after success
-      navigate({ to: "/auth/login/" }); // Redirect to the home page or another success page
-    },
-    onError: (err) => {
-      console.error("OTP Verification failed:", err.message);
-      // Optionally show error message (e.g., using a toast or alert)
+      dispatch(setEmailRegister(null));
+      toast({
+        description: "Akun berhasil diverifikasi, silahkan login kembali!",
+        variant: "info",
+      });
+      navigate({ to: "/auth/login/" });
     },
   });
 

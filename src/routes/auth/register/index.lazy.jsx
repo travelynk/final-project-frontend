@@ -3,11 +3,12 @@ import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Card } from "../../../components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { register } from "../../../service/auth";
-import { setEmailRegister } from "../../../redux/slices/auth";
+import { setEmailRegister, setUser } from "../../../redux/slices/auth";
+import { useToast } from "../../../hooks/use-toast";
 
 export const Route = createLazyFileRoute("/auth/register/")({
   component: Register,
@@ -18,7 +19,7 @@ function Register() {
   const navigate = useNavigate();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { token } = useSelector((state) => state.auth);
-
+  const { toast } = useToast();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -28,30 +29,27 @@ function Register() {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  // get token from local storage
-  if (token) {
-    navigate({ to: "/" });
-  }
+  useEffect(() => {
+    if (token) {
+      navigate({ to: "/" });
+    }
+  }, [token, navigate]);
 
   const { mutate: registerUser } = useMutation({
     mutationFn: (body) => {
-      return register(body); // Call the register function from the service
+      return register(body);
     },
     onSuccess: (result) => {
-      // Check if result contains a success message
-      console.log("Register Success:", result); // Debugging to verify the result
-
-      console.log("Email before navigate:", email);
-      // Store the email in Redux after successful registration
-      dispatch(setEmailRegister(email));
+      console.log("Register Success:", result);
       toast({
-        description: "Email OTP telah dikirm!",
+        description: result.status.message || "Registrasi Sukses!",
         variant: "info",
       });
-      navigate({ to: "/auth/verify-otp" }, { state: { email } });
+      dispatch(setUser(email));
+      navigate({ to: "/auth/verify-otp/" });
     },
     onError: (err) => {
-      toast.error(err?.message || "An error occurred during registration.");
+      toast.error(err?.message || "Registrasi error.");
     },
   });
 

@@ -4,7 +4,6 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   user: null,
   token: localStorage.getItem("token") || null,
-  email: null, // Add email field here
 };
 
 // Slice action and reducer
@@ -22,9 +21,6 @@ export const authSlice = createSlice({
         localStorage.removeItem("token");
       }
       state.token = action.payload;
-    },
-    setEmailRegister: (state, action) => {
-      state.email = action.payload; // Store the email in Redux
     },
   },
 });
