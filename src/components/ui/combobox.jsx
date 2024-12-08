@@ -37,8 +37,9 @@ export function Combobox({
           className=" justify-between"
         >
           {value
-            ? data.find((data) => data.value === value)?.label
+            ? `${data.find((city) => city.code === value)?.name} (${value})`
             : placeholder}
+
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -48,20 +49,20 @@ export function Combobox({
           <CommandList>
             <CommandEmpty>No data found.</CommandEmpty>
             <CommandGroup>
-              {data.map((data) => (
+              {data.map((city) => (
                 <CommandItem
-                  key={data.value}
-                  value={data.value}
+                  key={city.id}
+                  value={city.name}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    setValue(currentValue === value ? "" : city.code);
                     setOpen(false);
                   }}
                 >
-                  {data.label}
+                  {city.name} - {city.code}
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === data.value ? "opacity-100" : "opacity-0"
+                      value === city.code ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
