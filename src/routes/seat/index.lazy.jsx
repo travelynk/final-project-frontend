@@ -27,7 +27,7 @@ export default function Seat() {
       />
       <div className="flex flex-col md:flex-row gap-4 p-4 max-w-[936px] mx-auto ">
         <BookingForm onFormSubmit={handleFormSubmit} />
-        <FlightDetail />
+        <FlightDetail isSubmitted={successMessageVisible} />
       </div>
     </>
   );
