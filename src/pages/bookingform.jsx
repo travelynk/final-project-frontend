@@ -14,40 +14,76 @@ import { z } from "zod";
 
 // Schema Validasi Zod
 const bookingSchema = z.object({
-  fullname: z.string().min(1, "Nama lengkap wajib diisi"),
-  hasLastName: z.boolean().refine((val) => val === true, {
-    message: "Harap pilih apakah memiliki nama keluarga.",
-  }),
+  fullname: z.string().nonempty("Nama lengkap harus diisi"),
+  namakeluarga: z.string().optional(),
+  phone: z.string().min(10, "Nomor telepon minimal 10 karakter"),
+  email: z.string().email("Email tidak valid"),
+  passengers: z.array(
+    z.object({
+      title: z.string().nonempty("Title harus diisi"),
+      fullname: z.string().nonempty("Nama lengkap harus diisi"),
+      namakeluarga: z.string().optional(),
+      birthdate: z.string().nonempty("Tanggal lahir harus diisi"),
+      citizenship: z.string().nonempty("Kewarganegaraan harus diisi"),
+      passport: z.string().nonempty("KTP/Paspor harus diisi"),
+      negarapenerbit: z.string().nonempty("Negara penerbit harus diisi"),
+      expiry: z.string().nonempty("Berlaku sampai harus diisi"),
+    })
+  ),
   selectedSeats: z
     .array(z.string())
-    .min(1, "Harap pilih setidaknya satu kursi."),
+    .min(1, "Setidaknya satu kursi harus dipilih"),
 });
 export default function BookingForm({ onFormSubmit }) {
   const [passengers, setPassengers] = useState([1]);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [errors, setErrors] = useState({});
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const [formState, setFormState] = useState({
+    fullname: "",
+    namakeluarga: "",
+    phone: "",
+    email: "",
+    passengers: [
+      {
+        title: "",
+        fullname: "",
+        namakeluarga: "",
+        birthdate: "",
+        citizenship: "",
+        passport: "",
+        negarapenerbit: "",
+        expiry: "",
+      },
+    ],
+    selectedSeats: [],
+  });
 
-    const formData = {
-      fullname: e.target.fullname.value,
-      hasLastName: e.target.lastNameSwitch.checked,
-      selectedSeats,
-    };
-
-    // Validasi menggunakan Zod
-    const validation = bookingSchema.safeParse(formData);
-    if (!validation.success) {
-      const errorMessages = validation.error.flatten();
-      setErrors(errorMessages.fieldErrors);
-      return;
+  const handleChange = (field, value, index = null) => {
+    if (index !== null) {
+      setFormState((prev) => {
+        const passengers = [...prev.passengers];
+        passengers[index][field] = value;
+        return { ...prev, passengers };
+      });
+    } else {
+      setFormState((prev) => ({ ...prev, [field]: value }));
     }
+  };
 
-    setErrors({}); // Reset error jika validasi lolos
-
-    if (onFormSubmit) {
-      onFormSubmit(formData);
+  const handleSubmit = () => {
+    try {
+      bookingSchema.parse(formState);
+      if (onFormSubmit) {
+        onFormSubmit();
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        alert(
+          error.errors
+            .map((err) => `${err.path.join(" -> ")}: ${err.message}`)
+            .join("\n")
+        );
+      }
     }
   };
 
@@ -69,10 +105,7 @@ export default function BookingForm({ onFormSubmit }) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4"
-    >
+    <div className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4">
       {/* Data Diri Pemesan */}
       <div className="border p-6 rounded-lg shadow-md bg-white">
         <p className="text-xl font-bold mb-4">Isi Data Pemesan</p>
@@ -89,20 +122,16 @@ export default function BookingForm({ onFormSubmit }) {
               Nama Lengkap
             </Label>
             <Input
-              required
               id="fullname"
-              name="fullname"
               placeholder="Masukkan nama lengkap"
               className="mb-2"
-              onInvalid={(e) =>
-                e.target.setCustomValidity("Tolong isi fullname field.")
-              }
-              onInput={(e) => e.target.setCustomValidity("")}
+              value={formState.fullname}
+              onChange={(e) => handleChange("fullname", e.target.value)}
             />
           </div>
           <div className="flex items-center justify-between mb-4">
             <Label>Punya Nama Keluarga</Label>
-            <Switch required />
+            <Switch required id="lastNameSwitch" name="lastNameSwitch" />
           </div>
           <div>
             <Label
@@ -130,6 +159,8 @@ export default function BookingForm({ onFormSubmit }) {
               id="phone"
               placeholder="Masukkan nomor telepon"
               className="mb-2"
+              value={formState.phone}
+              onChange={(e) => handleChange("phone", e.target.value)}
             />
           </div>
           <div>
@@ -145,6 +176,8 @@ export default function BookingForm({ onFormSubmit }) {
               placeholder="Contoh: johndoe@gmail.com"
               type="email"
               className="mb-2"
+              value={formState.email}
+              onChange={(e) => handleChange("email", e.target.value)}
             />
           </div>
         </div>
@@ -169,10 +202,11 @@ export default function BookingForm({ onFormSubmit }) {
                       Title
                     </Label>
                     <Input
-                      required
                       id={`title-${index}`}
                       placeholder="Mr./Mrs./Miss"
                       className="mb-2"
+                      value={formState.passengers.title}
+                      onChange={(e) => handleChange("title", e.target.value)}
                     />
                   </div>
                   <div>
@@ -187,6 +221,8 @@ export default function BookingForm({ onFormSubmit }) {
                       id={`fullname-${index}`}
                       placeholder="Masukkan nama lengkap"
                       className="mb-2"
+                      value={formState.passengers.fullname}
+                      onChange={(e) => handleChange("fullname", e.target.value)}
                     />
                   </div>
                   <div className="flex items-center justify-between mb-4">
@@ -220,6 +256,10 @@ export default function BookingForm({ onFormSubmit }) {
                       placeholder="dd/mm/yyyy"
                       type="date"
                       className="mb-2"
+                      value={formState.passengers.birthdate}
+                      onChange={(e) =>
+                        handleChange("birthdate", e.target.value)
+                      }
                     />
                   </div>
                   <div>
@@ -234,6 +274,10 @@ export default function BookingForm({ onFormSubmit }) {
                       id={`citizenship-${index}`}
                       placeholder="Indonesia"
                       className="mb-2"
+                      value={formState.passengers.citizenship}
+                      onChange={(e) =>
+                        handleChange("citizenship", e.target.value)
+                      }
                     />
                   </div>
                   <div>
@@ -248,6 +292,8 @@ export default function BookingForm({ onFormSubmit }) {
                       id={`passport-${index}`}
                       placeholder="Masukkan nomor KTP atau paspor"
                       className="mb-2"
+                      value={formState.passengers.passport}
+                      onChange={(e) => handleChange("passport", e.target.value)}
                     />
                   </div>
                   <div>
@@ -262,6 +308,10 @@ export default function BookingForm({ onFormSubmit }) {
                       id={`negarapenerbit-${index}`}
                       placeholder="Masukan Negara Penerbit"
                       className="mb-2"
+                      value={formState.passengers.negarapenerbit}
+                      onChange={(e) =>
+                        handleChange("negarapenerbit", e.target.value)
+                      }
                     />
                   </div>
                   <div>
@@ -277,6 +327,8 @@ export default function BookingForm({ onFormSubmit }) {
                       placeholder="dd/mm/yyyy"
                       type="date"
                       className="mb-2"
+                      value={formState.passengers.expiry}
+                      onChange={(e) => handleChange("expiry", e.target.value)}
                     />
                   </div>
                 </div>
@@ -351,12 +403,12 @@ export default function BookingForm({ onFormSubmit }) {
       </div>
 
       <button
-        type="submit"
+        onClick={handleSubmit}
         className="mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040]"
       >
         Simpan
       </button>
-    </form>
+    </div>
   );
 }
 
