@@ -139,6 +139,7 @@ function Profile() {
                 id="fullName"
                 defaultValue={user.data?.fullName} // Pre-fill with fetched user data?.data
                 className="mt-2"
+                placeholder="masukan nama lengkap"
               />
             </div>
 
@@ -151,6 +152,7 @@ function Profile() {
                 id="phone"
                 defaultValue={user.data?.phone} // Pre-fill with fetched user data?.data
                 className="mt-2"
+                placeholder="masukan phone"
               />
             </div>
 
@@ -163,6 +165,7 @@ function Profile() {
                 id="email"
                 defaultValue={user.data?.email} // Pre-fill with fetched user data
                 className="mt-2"
+                placeholder="masukan email"
               />
             </div>
 
