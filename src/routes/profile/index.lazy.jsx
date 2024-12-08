@@ -1,23 +1,73 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { FaPen, FaCog, FaSignOutAlt } from 'react-icons/fa'
-import { ArrowLeft } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { FaPen, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { ArrowLeft } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
+import { profile } from "../../service/auth"; // Assuming profile function is in src/service/auth
 
-export const Route = createLazyFileRoute('/profile/')({
+export const Route = createLazyFileRoute("/profile/")({
   component: Profile,
-})
+});
 
 function Profile() {
+  const navigate = useNavigate();
+  const { token } = useSelector((state) => state.auth);
+
+  // Use TanStack Query to fetch profile data
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["profile"], // Unique key for caching
+    queryFn: profile, // Function to fetch profile data
+    enabled: !!token, // Only fetch if token is available
+  });
+
+  useEffect(() => {
+    if (!token) {
+      navigate({ to: "/login" });
+    }
+  }, [navigate, token]);
+
+  if (!token) return null;
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (isError) {
+    console.log("Error fetching profile");
+    return <p>Failed to load profile. Please try again.</p>;
+  }
+
+  if (!user) {
+    console.log("No user data available");
+    return <p>No user data available</p>;
+  }
+
+  // Handle form submission (you can call an update function here)
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Here, you can implement the logic to update the profile (e.g., calling an API)
+    console.log("Updated profile:", {
+      fullName: e.target.fullName.value,
+      phone: e.target.phone.value,
+      email: e.target.email.value,
+    });
+  };
   return (
     <>
       <div className="container max-w-[1024px] mx-auto sm:pt-8 pt-2 px-4">
@@ -79,27 +129,27 @@ function Profile() {
             Data Diri
           </div>
 
-          <form className="space-y-4 px-4 pt-2">
+          <form className="space-y-4 px-4 pt-2" onSubmit={handleSubmit}>
             <div>
-              <Label className="font-bold text-[#4B1979]" htmlFor="nama">
+              <Label className="font-bold text-[#4B1979]" htmlFor="fullName">
                 Nama Lengkap
               </Label>
               <Input
                 type="text"
-                id="nama"
-                defaultValue="Harry"
+                id="fullName"
+                defaultValue={user.data?.fullName} // Pre-fill with fetched user data?.data
                 className="mt-2"
               />
             </div>
 
             <div>
-              <Label className="font-bold text-[#4B1979]" htmlFor="telepon">
+              <Label className="font-bold text-[#4B1979]" htmlFor="phone">
                 Nomor Telepon
               </Label>
               <Input
                 type="tel"
-                id="telepon"
-                defaultValue="+62 897823232"
+                id="phone"
+                defaultValue={user.data?.phone} // Pre-fill with fetched user data?.data
                 className="mt-2"
               />
             </div>
@@ -111,24 +161,25 @@ function Profile() {
               <Input
                 type="email"
                 id="email"
-                defaultValue="Johndoe@gmail.com"
+                defaultValue={user.data?.email} // Pre-fill with fetched user data
                 className="mt-2"
               />
             </div>
+
+            <div className="flex justify-center p-2 mt-8">
+              <Button
+                type="submit"
+                variant="default"
+                className="w-[150px] bg-[#4B1979] rounded-[12px]"
+              >
+                Simpan
+              </Button>
+            </div>
           </form>
-          <div className="flex justify-center p-2 mt-8">
-            <Button
-              type="submit"
-              variant="default"
-              className="w-[150px] bg-[#4B1979]  rounded-[12px]"
-            >
-              Simpan
-            </Button>
-          </div>
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default Profile
+export default Profile;
