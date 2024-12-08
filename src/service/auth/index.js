@@ -72,6 +72,33 @@ export const verifyOtp = async (request) => {
   return result?.data;
 };
 
+export const sendOtp = async (email) => {
+  console.log(email);
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/auth/send-otp`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Explicitly send JSON
+      },
+      body: JSON.stringify({ email }), // Send email as a JSON object
+    }
+  );
+
+  // Parse the response JSON
+  const result = await response.json();
+  console.log(result);
+
+  // Handle errors if the response is not successful
+  if (!response.ok) {
+    const error = new Error(result?.message || "Failed to send OTP");
+    error.response = { data: result };
+    throw error;
+  }
+
+  return result; // Return success message if available
+};
+
 export const profile = async () => {
   const token = localStorage.getItem("token");
   const response = await fetch(`${import.meta.env.VITE_API_URL}/profile`, {

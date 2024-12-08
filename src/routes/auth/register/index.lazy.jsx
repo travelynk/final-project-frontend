@@ -42,14 +42,17 @@ function Register() {
     onSuccess: (result) => {
       console.log("Register Success:", result);
       toast({
-        description: result.status.message || "Registrasi Sukses!",
+        description: result.status.message,
         variant: "info",
       });
       dispatch(setUser(email));
       navigate({ to: "/auth/verify-otp/" });
     },
     onError: (err) => {
-      toast.error(err?.message || "Registrasi error.");
+      toast({
+        description: err.message || "Registrasi Sukses!",
+        variant: "destructive",
+      });
     },
   });
 

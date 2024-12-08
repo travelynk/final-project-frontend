@@ -13,9 +13,9 @@ import { Button } from "../../../components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "../../../hooks/use-toast";
-import { verifyOtp } from "../../../service/auth";
+import { verifyOtp, sendOtp } from "../../../service/auth";
 import { useSelector, useDispatch } from "react-redux";
-import { setEmailRegister } from "../../../redux/slices/auth";
+import { setUser } from "../../../redux/slices/auth";
 
 export const Route = createLazyFileRoute("/auth/verify-otp/")({
   component: verifyOTP,
@@ -23,7 +23,7 @@ export const Route = createLazyFileRoute("/auth/verify-otp/")({
 
 function verifyOTP() {
   const [otp, setOtp] = useState(""); // Store OTP value as a string of 6 digits
-  const [countdown, setCountdown] = useState(60);
+  const [countdown, setCountdown] = useState(30);
   const [isResendEnabled, setIsResendEnabled] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -40,11 +40,33 @@ function verifyOTP() {
     }
   }, [countdown]);
 
-  const handleResend = () => {
-    setCountdown(30);
-    setIsResendEnabled(false);
-    // Add logic here to resend OTP
-    console.log("Resending OTP...");
+  const { mutate: sendOtpMutation } = useMutation({
+    mutationFn: sendOtp,
+    onSuccess: (result) => {
+      console.log(result);
+      setCountdown(30);
+      setIsResendEnabled(false);
+
+      // Safely access the message from the response
+      const message = result?.status?.message || "OTP successfully sent!";
+
+      toast({
+        description: message, // Display the message
+        variant: "info",
+      });
+    },
+    onError: (error) => {
+      console.error("Resend OTP Error: ", error);
+      toast({
+        description: error?.response?.data?.message || "Gagal mengirim OTP.",
+        variant: "error",
+      });
+    },
+  });
+
+  const handleResend = async () => {
+    // Trigger the mutation instead of calling sendOtp directly
+    sendOtpMutation(email); // Pass the email as part of the mutation
   };
 
   const handleInputChange = (event, index) => {
@@ -74,8 +96,8 @@ function verifyOTP() {
   // Use mutation for OTP verification
   const { mutate: verifyOtpMutation } = useMutation({
     mutationFn: (data) => verifyOtp(data),
-    onSuccess: (data) => {
-      dispatch(setEmailRegister(null));
+    onSuccess: () => {
+      dispatch(setUser(null));
       toast({
         description: "Akun berhasil diverifikasi, silahkan login kembali!",
         variant: "info",
@@ -153,7 +175,7 @@ function verifyOTP() {
                   onClick={handleResend}
                   style={{ color: "#FF0000", fontWeight: "bold" }}
                 >
-                  Kirim Ulang
+                  Kirim Ulang OTP
                 </Button>
               ) : (
                 <div className="text-sm text-gray-500 dark:text-gray-400">
