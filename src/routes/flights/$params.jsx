@@ -371,15 +371,15 @@ const BodyComponent = ({ filters, sort }) => {
             index === self.findIndex((t) => t.name === value.name)
         );
 
-      const prices = data.outboundFlights.map((flight) => {
+      const prices = data?.outboundFlights.map((flight) => {
         const priceString = flight.price.replace(/[^0-9]/g, "");
         return parseInt(priceString, 10);
       });
 
       setListFlights(data?.outboundFlights);
       setAirlines(airlines);
-      setCheckedAirlines(airlines.map((airline) => airline.name));
-      if (prices.length > 0) {
+      setCheckedAirlines(airlines?.map((airline) => airline.name));
+      if (prices?.length > 0) {
         setMinprize(Math.min(...prices));
         setMaxprize(Math.max(...prices));
         setSliderValue(minPrize);
@@ -504,7 +504,7 @@ const BodyComponent = ({ filters, sort }) => {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="flex flex-col gap-2">
-                  {airlines.map((data, i) => {
+                  {airlines?.map((data, i) => {
                     return (
                       <div className="flex items-center space-x-2" key={i}>
                         <Checkbox
@@ -579,278 +579,289 @@ const BodyComponent = ({ filters, sort }) => {
 
         <div className="list-flights w-full lg:w-3/4">
           <ul className="flex flex-col gap-2">
-            {isLoading && <Loading />}
-            {listFlights
-              .filter((data) => {
-                const price = parseFloat(
-                  data.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
-                );
-                const isPriceMatch = price >= sliderValue;
+            {isLoading ? (
+              <Loading />
+            ) : listFlights === null || listFlights?.length > 0 ? (
+              listFlights
+                .filter((data) => {
+                  const price = parseFloat(
+                    data.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
+                  );
+                  const isPriceMatch = price >= sliderValue;
 
-                const isAirlineMatch =
-                  checkedAirlines.length === 0 ||
-                  checkedAirlines.includes(data.flights[0].airline.name);
+                  const isAirlineMatch =
+                    checkedAirlines.length === 0 ||
+                    checkedAirlines.includes(data.flights[0].airline.name);
 
-                const isDirectMatch =
-                  transitFilter.isDirect && data.flights.length === 1;
-                const isOneTransitMatch =
-                  transitFilter.isOneTransit && data.flights.length === 2;
-                const isTwoPlusTransitMatch =
-                  transitFilter.isTwoPlusTransit && data.flights.length > 2;
+                  const isDirectMatch =
+                    transitFilter.isDirect && data.flights.length === 1;
+                  const isOneTransitMatch =
+                    transitFilter.isOneTransit && data.flights.length === 2;
+                  const isTwoPlusTransitMatch =
+                    transitFilter.isTwoPlusTransit && data.flights.length > 2;
 
-                return (
-                  isPriceMatch &&
-                  isAirlineMatch &&
-                  (isDirectMatch || isOneTransitMatch || isTwoPlusTransitMatch)
-                );
-              })
-              .sort((a, b) => {
-                const priceA = parseFloat(
-                  a.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
-                );
-                const priceB = parseFloat(
-                  b.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
-                );
+                  return (
+                    isPriceMatch &&
+                    isAirlineMatch &&
+                    (isDirectMatch ||
+                      isOneTransitMatch ||
+                      isTwoPlusTransitMatch)
+                  );
+                })
+                .sort((a, b) => {
+                  const priceA = parseFloat(
+                    a.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
+                  );
+                  const priceB = parseFloat(
+                    b.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
+                  );
 
-                const departureTimeA = new Date(
-                  `1970-01-01T${a.departureTime}:00`
-                ).getTime();
-                const departureTimeB = new Date(
-                  `1970-01-01T${b.departureTime}:00`
-                ).getTime();
+                  const departureTimeA = new Date(
+                    `1970-01-01T${a.departureTime}:00`
+                  ).getTime();
+                  const departureTimeB = new Date(
+                    `1970-01-01T${b.departureTime}:00`
+                  ).getTime();
 
-                const arrivalTimeA = new Date(
-                  `1970-01-01T${a.arrivalTime}:00`
-                ).getTime();
-                const arrivalTimeB = new Date(
-                  `1970-01-01T${b.arrivalTime}:00`
-                ).getTime();
+                  const arrivalTimeA = new Date(
+                    `1970-01-01T${a.arrivalTime}:00`
+                  ).getTime();
+                  const arrivalTimeB = new Date(
+                    `1970-01-01T${b.arrivalTime}:00`
+                  ).getTime();
 
-                return sort == "1"
-                  ? priceA - priceB
-                  : sort == "2"
-                    ? priceB - priceA
-                    : sort == "3"
-                      ? departureTimeA - departureTimeB
-                      : sort == "4"
-                        ? departureTimeB - departureTimeA
-                        : sort == "5"
-                          ? arrivalTimeA - arrivalTimeB
-                          : sort == "6" && arrivalTimeB - arrivalTimeA;
-              })
-              .map((data) => {
-                return (
-                  <li key={data.id}>
-                    <Accordion
-                      type="single"
-                      collapsible
-                      className="p-5 border border-darkblue02 rounded-xl shadow-sm "
-                    >
-                      <AccordionItem value="item-1 ">
-                        <AccordionTrigger className="w-full bg-transparent hover:bg-transparent">
-                          <div className="w-full">
-                            <div className="header flex justify-between items-center">
-                              <div className="flex gap-2 h-[2rem] w-auto">
-                                <img
-                                  src={data.flights[0].airline.image}
-                                  alt=""
-                                />
-                                <span>
-                                  {data.flights[0].airline.name} -{" "}
-                                  {data.seatClass}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="content grid grid-cols-7">
-                              <div className="route flex col-span-5 lg:col-span-6 px-5 justify-start font-bold text-sm md:text-xl items-center lg:gap-3 gap-1">
-                                <div>
-                                  <span>{data.departureTime}</span>
-                                  <p className="font-semibold text-lg">
-                                    {data.flights[0].departure.city.code}
-                                  </p>
-                                </div>
-                                <div className="flex flex-col justify-center items-center  text-sm md:text-xl  w-full font-semibold text-gray-400 text-center">
-                                  <span>{data.estimatedDuration}</span>
+                  return sort == "1"
+                    ? priceA - priceB
+                    : sort == "2"
+                      ? priceB - priceA
+                      : sort == "3"
+                        ? departureTimeA - departureTimeB
+                        : sort == "4"
+                          ? departureTimeB - departureTimeA
+                          : sort == "5"
+                            ? arrivalTimeA - arrivalTimeB
+                            : sort == "6" && arrivalTimeB - arrivalTimeA;
+                })
+                ?.map((data) => {
+                  return (
+                    <li key={data.id}>
+                      <Accordion
+                        type="single"
+                        collapsible
+                        className="p-5 border border-darkblue02 rounded-xl shadow-sm "
+                      >
+                        <AccordionItem value="item-1 ">
+                          <AccordionTrigger className="w-full bg-transparent hover:bg-transparent">
+                            <div className="w-full">
+                              <div className="header flex justify-between items-center">
+                                <div className="flex gap-2 h-[2rem] w-auto">
                                   <img
-                                    src="/src/assets/route.svg"
+                                    src={data.flights[0].airline.image}
                                     alt=""
-                                    className="w-full"
                                   />
                                   <span>
-                                    {data.isTransit ? "Transit" : "Langsung"}
+                                    {data.flights[0].airline.name} -{" "}
+                                    {data.seatClass}
                                   </span>
                                 </div>
-                                <div>
-                                  <span>{data.arrivalTime}</span>
-                                  <p className="font-semibold text-lg">
-                                    {
-                                      data.flights[data.flights.length - 1]
-                                        .arrival.city.code
-                                    }
-                                  </p>
-                                </div>
-
-                                <img
-                                  src="/src/assets/bagasi.svg"
-                                  alt=""
-                                  className="w-10"
-                                />
                               </div>
-                              <div className="price text-md  lg:text-lg font-bold text-darkblue04 w-full col-span-2 lg:col-span-1 ">
-                                <h1>{data.price}</h1>
-                                <Button className="w-full rounded-2xl ">
-                                  Pilih
-                                </Button>
+                              <div className="content grid grid-cols-7">
+                                <div className="route flex col-span-5 lg:col-span-6 px-5 justify-start font-bold text-sm md:text-xl items-center lg:gap-3 gap-1">
+                                  <div>
+                                    <span>{data.departureTime}</span>
+                                    <p className="font-semibold text-lg">
+                                      {data.flights[0].departure.city.code}
+                                    </p>
+                                  </div>
+                                  <div className="flex flex-col justify-center items-center  text-sm md:text-xl  w-full font-semibold text-gray-400 text-center">
+                                    <span>{data.estimatedDuration}</span>
+                                    <img
+                                      src="/src/assets/route.svg"
+                                      alt=""
+                                      className="w-full"
+                                    />
+                                    <span>
+                                      {data.isTransit ? "Transit" : "Langsung"}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span>{data.arrivalTime}</span>
+                                    <p className="font-semibold text-lg">
+                                      {
+                                        data.flights[data.flights.length - 1]
+                                          .arrival.city.code
+                                      }
+                                    </p>
+                                  </div>
+
+                                  <img
+                                    src="/src/assets/bagasi.svg"
+                                    alt=""
+                                    className="w-10"
+                                  />
+                                </div>
+                                <div className="price text-md  lg:text-lg font-bold text-darkblue04 w-full col-span-2 lg:col-span-1 ">
+                                  <h1>{data.price}</h1>
+                                  <Button className="w-full rounded-2xl ">
+                                    Pilih
+                                  </Button>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <h1 className="text-darkblue05 text-xl font-bold">
-                            Detail Penerbangan
-                          </h1>
-                          {data.flights.length === 1 ? (
-                            <>
-                              <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
-                                <h1 className="text-darkblue05  font-bold col-end-10 px-5">
-                                  Keberangkatan
-                                </h1>
-                                <div className="col-span-9 ">
-                                  <h1 className="font-bold ">
-                                    {data.flights[0].departure.time}
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <h1 className="text-darkblue05 text-xl font-bold">
+                              Detail Penerbangan
+                            </h1>
+                            {data.flights.length === 1 ? (
+                              <>
+                                <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
+                                  <h1 className="text-darkblue05  font-bold col-end-10 px-5">
+                                    Keberangkatan
                                   </h1>
-                                  <p>
-                                    {format(
-                                      data.flights[0].departure.date,
-                                      "d MMMM"
-                                    )}
-                                  </p>
-                                  <span className="font-semibold text-lg">
-                                    {data.flights[0].departure.airport} -
-                                    {data.flights[0].departure.terminal}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
-                                <div className="col-span-9 ">
-                                  <div className="flex gap-2">
-                                    <img
-                                      src={data.flights[0].airline.image}
-                                      alt="logo airlines"
-                                      className="h-auto w-7"
-                                    />
+                                  <div className="col-span-9 ">
                                     <h1 className="font-bold ">
-                                      {data.flights[0].airline.name} -{" "}
-                                      {data.seatClass}
+                                      {data.flights[0].departure.time}
                                     </h1>
+                                    <p>
+                                      {format(
+                                        data.flights[0].departure.date,
+                                        "d MMMM"
+                                      )}
+                                    </p>
+                                    <span className="font-semibold text-lg">
+                                      {data.flights[0].departure.airport} -
+                                      {data.flights[0].departure.terminal}
+                                    </span>
                                   </div>
-                                  <h1 className="font-bold ">
-                                    {data.flights[0].flightNum}
-                                  </h1>
-
-                                  <span className="font-bold text-lg">
-                                    Informasi
-                                  </span>
-
-                                  <ul className="px-10">
-                                    <li> {data.flights[0].facility}</li>
-                                  </ul>
                                 </div>
-                              </div>
-                              <div className="return text-lg grid grid-cols-10 justify-items-stretch">
-                                <h1 className="text-darkblue05  font-bold col-end-10 px-5">
-                                  Kedatangan
-                                </h1>
-                                <div className="col-span-9 ">
-                                  <h1 className="font-bold ">
-                                    {data.flights[0].arrival.time}
-                                  </h1>
-                                  <p>
-                                    {format(
-                                      data.flights[0].arrival.date,
-                                      "d MMMM"
-                                    )}
-                                  </p>
-                                  <span className="font-semibold text-lg">
-                                    {data.flights[0].arrival.airport} -
-                                    {data.flights[0].arrival.terminal}
-                                  </span>
-                                </div>
-                              </div>
-                            </>
-                          ) : (
-                            data.flights.map((data) => {
-                              return (
-                                <div key={data.id}>
-                                  <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
-                                    <h1 className="text-darkblue05  font-bold col-end-10 px-5">
-                                      Keberangkatan
-                                    </h1>
-                                    <div className="col-span-9 ">
+                                <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
+                                  <div className="col-span-9 ">
+                                    <div className="flex gap-2">
+                                      <img
+                                        src={data.flights[0].airline.image}
+                                        alt="logo airlines"
+                                        className="h-auto w-7"
+                                      />
                                       <h1 className="font-bold ">
-                                        {data.departure.time}
+                                        {data.flights[0].airline.name} -{" "}
+                                        {data.seatClass}
                                       </h1>
-                                      <p>
-                                        {format(data.departure.date, "d MMMM")}
-                                      </p>
-                                      <span className="font-semibold text-lg">
-                                        {data.departure.airport} -
-                                        {data.departure.terminal}
-                                      </span>
                                     </div>
+                                    <h1 className="font-bold ">
+                                      {data.flights[0].flightNum}
+                                    </h1>
+
+                                    <span className="font-bold text-lg">
+                                      Informasi
+                                    </span>
+
+                                    <ul className="px-10">
+                                      <li> {data.flights[0].facility}</li>
+                                    </ul>
                                   </div>
-                                  <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
-                                    <div className="col-span-9 ">
-                                      <div className="flex gap-2">
-                                        <img
-                                          src={data.airline.image}
-                                          alt="logo airlines"
-                                          className="h-auto w-7"
-                                        />
+                                </div>
+                                <div className="return text-lg grid grid-cols-10 justify-items-stretch">
+                                  <h1 className="text-darkblue05  font-bold col-end-10 px-5">
+                                    Kedatangan
+                                  </h1>
+                                  <div className="col-span-9 ">
+                                    <h1 className="font-bold ">
+                                      {data.flights[0].arrival.time}
+                                    </h1>
+                                    <p>
+                                      {format(
+                                        data.flights[0].arrival.date,
+                                        "d MMMM"
+                                      )}
+                                    </p>
+                                    <span className="font-semibold text-lg">
+                                      {data.flights[0].arrival.airport} -
+                                      {data.flights[0].arrival.terminal}
+                                    </span>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              data.flights.map((data) => {
+                                return (
+                                  <div key={data.id}>
+                                    <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
+                                      <h1 className="text-darkblue05  font-bold col-end-10 px-5">
+                                        Keberangkatan
+                                      </h1>
+                                      <div className="col-span-9 ">
                                         <h1 className="font-bold ">
-                                          {data.airline.name} - {data.seatClass}
+                                          {data.departure.time}
                                         </h1>
+                                        <p>
+                                          {format(
+                                            data.departure.date,
+                                            "d MMMM"
+                                          )}
+                                        </p>
+                                        <span className="font-semibold text-lg">
+                                          {data.departure.airport} -
+                                          {data.departure.terminal}
+                                        </span>
                                       </div>
-                                      <h1 className="font-bold ">
-                                        {data.flightNum}
+                                    </div>
+                                    <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
+                                      <div className="col-span-9 ">
+                                        <div className="flex gap-2">
+                                          <img
+                                            src={data.airline.image}
+                                            alt="logo airlines"
+                                            className="h-auto w-7"
+                                          />
+                                          <h1 className="font-bold ">
+                                            {data.airline.name} -{" "}
+                                            {data.seatClass}
+                                          </h1>
+                                        </div>
+                                        <h1 className="font-bold ">
+                                          {data.flightNum}
+                                        </h1>
+
+                                        <span className="font-bold text-lg">
+                                          Informasi
+                                        </span>
+
+                                        <ul className="px-10">
+                                          <li> {data.facility}</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                    <div className="return text-lg grid grid-cols-10 justify-items-stretch">
+                                      <h1 className="text-darkblue05  font-bold col-end-10 px-5">
+                                        Kedatangan
                                       </h1>
-
-                                      <span className="font-bold text-lg">
-                                        Informasi
-                                      </span>
-
-                                      <ul className="px-10">
-                                        <li> {data.facility}</li>
-                                      </ul>
+                                      <div className="col-span-9 ">
+                                        <h1 className="font-bold ">
+                                          {data.arrival.time}
+                                        </h1>
+                                        <p>
+                                          {format(data.arrival.date, "d MMMM")}
+                                        </p>
+                                        <span className="font-semibold text-lg">
+                                          {data.arrival.airport} -
+                                          {data.arrival.terminal}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="return text-lg grid grid-cols-10 justify-items-stretch">
-                                    <h1 className="text-darkblue05  font-bold col-end-10 px-5">
-                                      Kedatangan
-                                    </h1>
-                                    <div className="col-span-9 ">
-                                      <h1 className="font-bold ">
-                                        {data.arrival.time}
-                                      </h1>
-                                      <p>
-                                        {format(data.arrival.date, "d MMMM")}
-                                      </p>
-                                      <span className="font-semibold text-lg">
-                                        {data.arrival.airport} -
-                                        {data.arrival.terminal}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            })
-                          )}
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </li>
-                );
-              })}
+                                );
+                              })
+                            )}
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    </li>
+                  );
+                })
+            ) : (
+              <NotFound />
+            )}
           </ul>
         </div>
       </div>
