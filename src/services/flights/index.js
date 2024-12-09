@@ -1,6 +1,6 @@
-export const findFlights = async (filters) => {
+export const getFlights = async (filters) => {
   const token = localStorage.getItem("token");
-  const url = new URL(`${import.meta.env.VITE_API_URL}/flights`);
+  const url = new URL(`${import.meta.env.VITE_API_URL}/flights/search`);
 
   Object.keys(filters).forEach((key) => {
     if (filters[key]) {

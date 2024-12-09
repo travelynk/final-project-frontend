@@ -28,11 +28,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../components/ui/popover";
-import { setQuarter } from "date-fns";
+import { format, setQuarter } from "date-fns";
 import { getAirpots } from "../services/airports";
 import { useQuery } from "@tanstack/react-query";
 import { getCities } from "../services/cities";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
+import { useParams } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/")({
   component: HomePage,
@@ -410,12 +412,21 @@ const MenuSection = () => {
       </CardContent>
       <CardFooter className="w-full">
         <Button
-          className="w-full bg-darkblue04 text-white"
           onClick={() =>
             navigate({
-              to: `/flights/search?rf=${originCity}.${destinationCity}&dt=${new Date(departureDate).toISOString().substring(0, 10)}.${new Date(arrivalDate).toISOString().substring(0, 10)}&ps=${countAdult}.${countChild}.${countBaby}&sc=${classSeat}`,
+              to: "/flights/search",
+              search: {
+                rf: `${originCity}.${destinationCity}`,
+                dt: returnCity
+                  ? `${format(new Date(departureDate), "yyyy-MM-dd")}.${format(new Date(arrivalDate), "yyyy-MM-dd")}`
+                  : `${format(new Date(departureDate), "yyyy-MM-dd")}`,
+
+                ps: `${countAdult}.${countChild}.${countBaby}`,
+                sc: classSeat,
+              },
             })
           }
+          className="w-full bg-darkblue04 text-white block text-center py-2 rounded"
         >
           Cari Penerbangan
         </Button>
