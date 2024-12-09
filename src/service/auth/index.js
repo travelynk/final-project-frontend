@@ -101,7 +101,7 @@ export const sendOtp = async (email) => {
 
 export const profile = async () => {
   const token = localStorage.getItem("token");
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/profile`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/profiles`, {
     headers: {
       authorization: `Bearer ${token}`,
     },
@@ -117,5 +117,27 @@ export const profile = async () => {
 
   const result = await response.json();
   console.log("Profile data received:", result); // Debug untuk melihat respons data
-  return result;
+  return result?.data;
+};
+
+export const ProfileUpdate = async (profileData) => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/profiles`, {
+    headers: {
+      authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    method: "PATCH",
+    body: JSON.stringify(profileData), // Kirim data sebagai JSON
+  });
+
+  if (!response.ok) {
+    const errorResult = await response.json();
+    console.error("Error:", errorResult);
+    throw new Error(errorResult.message || "Error updating profile");
+  }
+
+  const result = await response.json();
+  console.log("Profile updated successfully:", result);
+  return result?.data;
 };

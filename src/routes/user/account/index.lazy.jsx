@@ -15,9 +15,10 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import { profile } from "../../service/auth"; // Assuming profile function is in src/service/auth
+import { profile } from "../../../service/auth"; // Assuming profile function is in src/service/auth
+import { ProfileUpdate } from "../../../service/auth"; // Assuming profile function is in src/service/auth
 
-export const Route = createLazyFileRoute("/profile/")({
+export const Route = createLazyFileRoute("/user/account/")({
   component: Profile,
 });
 
@@ -31,14 +32,14 @@ function Profile() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["profile"], // Unique key for caching
+    queryKey: ["profile", token], // Unique key for caching
     queryFn: profile, // Function to fetch profile data
     enabled: !!token, // Only fetch if token is available
   });
 
   useEffect(() => {
     if (!token) {
-      navigate({ to: "/login" });
+      navigate({ to: "/auth/login" });
     }
   }, [navigate, token]);
 
@@ -59,15 +60,7 @@ function Profile() {
   }
 
   // Handle form submission (you can call an update function here)
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here, you can implement the logic to update the profile (e.g., calling an API)
-    console.log("Updated profile:", {
-      fullName: e.target.fullName.value,
-      phone: e.target.phone.value,
-      email: e.target.email.value,
-    });
-  };
+
   return (
     <>
       <div className="container max-w-[1024px] mx-auto sm:pt-8 pt-2 px-4">
@@ -137,7 +130,7 @@ function Profile() {
               <Input
                 type="text"
                 id="fullName"
-                defaultValue={user.data?.fullName} // Pre-fill with fetched user data?.data
+                defaultValue={user.fullName} // Pre-fill with fetched user data?.data
                 className="mt-2"
                 placeholder="masukan nama lengkap"
               />
@@ -150,7 +143,7 @@ function Profile() {
               <Input
                 type="tel"
                 id="phone"
-                defaultValue={user.data?.phone} // Pre-fill with fetched user data?.data
+                defaultValue={user.phone} // Pre-fill with fetched user data?.data
                 className="mt-2"
                 placeholder="masukan phone"
               />
@@ -163,7 +156,7 @@ function Profile() {
               <Input
                 type="email"
                 id="email"
-                defaultValue={user.data?.email} // Pre-fill with fetched user data
+                defaultValue={user.email} // Pre-fill with fetched user data
                 className="mt-2"
                 placeholder="masukan email"
               />

@@ -92,7 +92,7 @@ const NavigationBar = () => {
               </Link>
               <Link
                 as={Link}
-                to="/profile"
+                to="/user/account"
                 className="p-2 rounded-full hover:bg-gray-200"
               >
                 <svg
