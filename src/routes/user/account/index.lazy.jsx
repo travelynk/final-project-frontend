@@ -60,7 +60,24 @@ function Profile() {
   }
 
   // Handle form submission (you can call an update function here)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    const profileData = {
+      fullName: e.target.fullName.value,
+      phone: e.target.phone.value,
+      email: e.target.email.value,
+    };
+
+    try {
+      const updatedProfile = await ProfileUpdate(profileData);
+      console.log("Updated profile:", updatedProfile);
+      alert("Profil berhasil diperbarui!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Gagal memperbarui profil. Silakan coba lagi.");
+    }
+  };
   return (
     <>
       <div className="container max-w-[1024px] mx-auto sm:pt-8 pt-2 px-4">
