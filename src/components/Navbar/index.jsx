@@ -12,8 +12,6 @@ const NavigationBar = () => {
     return null; // Don't render the navbar if path starts with 'auth/'
   }
 
-  console.log(token);
-
   return (
     <header className="bg-white shadow-md py-3 border-b-2">
       <div className="container mx-auto flex flex-col md:flex-row md:justify-between md:px-4">
