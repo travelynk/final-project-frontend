@@ -26,7 +26,7 @@ const RadioGroupItem = React.forwardRef(({ className, ...props }, ref) => {
       {...props}
     >
       <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-        <img src="/src/assets/verification.svg" alt="" />
+        <img src="/svg/verification.svg" alt="" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   );

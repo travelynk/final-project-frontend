@@ -17,6 +17,8 @@ function Success() {
       <main className="container mx-auto max-w-5xl mt-8 px-4">
         <div className="flex justify-center mt-16">
           <img src="/picture-success.svg" alt="icon" />
+        <div className="flex justify-center mt-36">
+          <img src="/svg/picture-success.svg" alt="icon" />
         </div>
         <div className="flex flex-col items-center mt-4">
           <p className="text-purple-600">Selamat!</p>

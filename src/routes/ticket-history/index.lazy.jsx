@@ -108,7 +108,7 @@ function TicketHistory() {
                 <div className="col-span-2">
                   <div className="flex items-center gap-2">
                     <img
-                      src="/src/assets/live-area.svg"
+                      src="/svg/live-area.svg"
                       alt="Departure Icon"
                       className="w-[20px] h-[20px]"
                     />
@@ -124,7 +124,7 @@ function TicketHistory() {
                 <div className="col-span-3 flex flex-col items-center">
                   <span className=" text-xs mt-1">4h 0m</span>
                   <img
-                    src="/src/assets/route.svg"
+                    src="/svg/route.svg"
                     alt="Flight Route"
                     className="w-full"
                   />
@@ -134,7 +134,7 @@ function TicketHistory() {
                 <div className="col-span-2 text-right">
                   <div className="flex justify-end items-center gap-2">
                     <img
-                      src="/src/assets/live-area.svg"
+                      src="/svg/live-area.svg"
                       alt="Arrival Icon"
                       className="w-[20px] h-[20px]"
                     />
