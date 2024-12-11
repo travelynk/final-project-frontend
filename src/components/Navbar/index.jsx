@@ -17,7 +17,7 @@ const NavigationBar = () => {
       <div className="container mx-auto flex flex-col md:flex-row md:justify-between md:px-4">
         <div className="hidden md:flex items-center space-x-2 mb-3 md:mb-0">
           <Link as={Link} to="/">
-            <img src="/binar.svg" alt="TraveLynk" className="w-24 h-8" />
+            <img src="/svg/binar.svg" alt="TraveLynk" className="w-24 h-8" />
           </Link>
         </div>
         <div className="flex flex-1 justify-between mx-6 mb-1 md:mb-0">

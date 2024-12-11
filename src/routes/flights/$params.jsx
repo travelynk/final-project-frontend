@@ -76,7 +76,7 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
         </h1>
         <div className="navigation px-2 grid grid-cols-1 sm:grid-cols-7 gap-3 text-white">
           <div className="labels col-span-1 sm:col-span-6 flex gap-x-3 bg-darkblue03 p-3 rounded-lg">
-            <img src="/src/assets/arrow-left.svg" alt="" />
+            <img src="/svg/arrow-left.svg" alt="" />
             <p className="text-sm sm:text-base">
               {flightDetails.origin} {">"} {flightDetails.destination} -{" "}
               {flightDetails.totalPassengers} Penumpang - {flightDetails.sc}
@@ -116,7 +116,7 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
             <Popover>
               <PopoverTrigger asChild>
                 <Button className="bg-transparent border border-darkblue03 px-3 text-darkblue05 hover:text-white rounded-full  hover:fill-white text-lg transition">
-                  <img src="/src/assets/fitler.svg" alt="" />
+                  <img src="/svg/fitler.svg" alt="" />
                   Filter
                 </Button>
               </PopoverTrigger>
@@ -128,7 +128,7 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
                   >
                     <AccordionTrigger className="w-full bg-transparent ">
                       <div className="flex gap-3">
-                        <img src="/src/assets/box.svg" alt="" />
+                        <img src="/svg/box.svg" alt="" />
                         <span>Transit</span>
                       </div>
                     </AccordionTrigger>
@@ -171,14 +171,14 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
                   >
                     <AccordionTrigger className="w-full bg-transparent ">
                       <div className="flex gap-3">
-                        <img src="/src/assets/pesawat.svg" alt="" />
+                        <img src="/svg/pesawat.svg" alt="" />
                         <span>Maskapai</span>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="flex flex-col gap-2">
                       <div className="flex items-center space-x-2">
                         <Checkbox id="terms" />
-                        <img src="/src/assets/logo-plane.svg" alt="" />
+                        <img src="/svg/logo-plane.svg" alt="" />
                         <label
                           htmlFor="terms"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -188,7 +188,7 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <Checkbox id="terms" />
-                        <img src="/src/assets/logo-plane.svg" alt="" />
+                        <img src="/svg/logo-plane.svg" alt="" />
                         <label
                           htmlFor="terms"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -198,7 +198,7 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <Checkbox id="terms" />
-                        <img src="/src/assets/logo-plane.svg" alt="" />
+                        <img src="/svg/logo-plane.svg" alt="" />
                         <label
                           htmlFor="terms"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -217,7 +217,7 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
                   >
                     <AccordionTrigger className="w-full bg-transparent ">
                       <div className="flex gap-3">
-                        <img src="/src/assets/dollar.svg" alt="" />
+                        <img src="/svg/dollar.svg" alt="" />
                         <span>Harga</span>
                       </div>
                     </AccordionTrigger>
@@ -246,7 +246,7 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
           <Popover>
             <PopoverTrigger asChild>
               <Button className="bg-transparent border border-darkblue03 px-3 text-darkblue05 hover:text-white rounded-full  hover:fill-white text-lg transition">
-                <img src="/src/assets/fitler.svg" alt="" />
+                <img src="/svg/fitler.svg" alt="" />
                 Termurah
               </Button>
             </PopoverTrigger>
@@ -437,7 +437,7 @@ const BodyComponent = ({ filters, sort }) => {
               >
                 <AccordionTrigger className="w-full bg-transparent ">
                   <div className="flex gap-3">
-                    <img src="/src/assets/box.svg" alt="" />
+                    <img src="/svg/box.svg" alt="" />
                     <span>Transit</span>
                   </div>
                 </AccordionTrigger>
@@ -499,7 +499,7 @@ const BodyComponent = ({ filters, sort }) => {
               >
                 <AccordionTrigger className="w-full bg-transparent ">
                   <div className="flex gap-3">
-                    <img src="/src/assets/pesawat.svg" alt="" />
+                    <img src="/svg/pesawat.svg" alt="" />
                     <span>Maskapai</span>
                   </div>
                 </AccordionTrigger>
@@ -539,7 +539,7 @@ const BodyComponent = ({ filters, sort }) => {
               >
                 <AccordionTrigger className="w-full bg-transparent ">
                   <div className="flex gap-3">
-                    <img src="/src/assets/dollar.svg" alt="" />
+                    <img src="/svg/dollar.svg" alt="" />
                     <span>Harga</span>
                   </div>
                 </AccordionTrigger>
@@ -676,7 +676,7 @@ const BodyComponent = ({ filters, sort }) => {
                                   <div className="flex flex-col justify-center items-center  text-sm md:text-xl  w-full font-semibold text-gray-400 text-center">
                                     <span>{data.estimatedDuration}</span>
                                     <img
-                                      src="/src/assets/route.svg"
+                                      src="/svg/route.svg"
                                       alt=""
                                       className="w-full"
                                     />
@@ -695,7 +695,7 @@ const BodyComponent = ({ filters, sort }) => {
                                   </div>
 
                                   <img
-                                    src="/src/assets/bagasi.svg"
+                                    src="/svg/bagasi.svg"
                                     alt=""
                                     className="w-10"
                                   />
@@ -887,7 +887,7 @@ const SoldOut = () => {
   return (
     <>
       <div className="flex flex-col justify-center items-center w-full gap-2 text-gray-500 font-semibold ">
-        <img src="/src/assets/sold-out.svg" alt="" />
+        <img src="/svg/sold-out.svg" alt="" />
         <h1>Maaf, Tiket terjual habis!</h1>
         <span>Coba cari perjalanan lainnya!</span>
       </div>
@@ -902,28 +902,28 @@ const NotFound = () => {
         <div className="flex  gap-2 w-full justify-center">
           <div className="skeleton flex flex-col gap-3 w-1/4">
             <Skeleton className=" p-2 grid grid-cols-12 w-full">
-              <img src="/src/assets/verification.svg" alt="" />
+              <img src="/svg/verification.svg" alt="" />
               <div className="flex flex-col gap-1 col-span-11">
                 <div className="animate-pulse rounded-md bg-muted w-full  h-3" />
                 <div className="animate-pulse rounded-md bg-muted w-8/12  h-3" />
               </div>
             </Skeleton>
             <Skeleton className=" p-2 grid grid-cols-12 w-full">
-              <img src="/src/assets/verification.svg" alt="" />
+              <img src="/svg/verification.svg" alt="" />
               <div className="flex flex-col gap-1 col-span-11">
                 <div className="animate-pulse rounded-md bg-muted w-full  h-3" />
                 <div className="animate-pulse rounded-md bg-muted w-8/12  h-3" />
               </div>
             </Skeleton>{" "}
             <Skeleton className=" p-2 grid grid-cols-12 w-full">
-              <img src="/src/assets/verification.svg" alt="" />
+              <img src="/svg/verification.svg" alt="" />
               <div className="flex flex-col gap-1 col-span-11">
                 <div className="animate-pulse rounded-md bg-muted w-full  h-3" />
                 <div className="animate-pulse rounded-md bg-muted w-8/12  h-3" />
               </div>
             </Skeleton>
           </div>
-          <img src="/src/assets/man2.svg" alt="" className="w-20 mt-10" />
+          <img src="/svg/man2.svg" alt="" className="w-20 mt-10" />
         </div>
         <h1>Maaf, pencarian Anda tidak ditemukan</h1>
         <span className="text-darkblue04"> Coba cari perjalanan lainnya!</span>
