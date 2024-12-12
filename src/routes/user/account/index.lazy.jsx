@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Toast,
   ToastProvider,
@@ -6,6 +6,8 @@ import {
   ToastTitle,
   ToastDescription,
 } from "@/components/ui/toast";
+import { useSelector } from "react-redux";
+
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +27,16 @@ export const Route = createLazyFileRoute("/user/account/")({
 function Profile() {
   const [toastVisible, setToastVisible] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const { token } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+
+  // Cek token saat komponen pertama kali di-render
+  useEffect(() => {
+    if (!token) {
+      navigate({ to: "/auth/login" }); // Arahkan ke halaman login jika token tidak ada
+    }
+  }, [token, navigate]);
+
   const queryClient = useQueryClient();
   const profileData = queryClient.getQueryData(["profile"]); // Retrieve cached profile data
 
