@@ -120,8 +120,12 @@ export default function BookingForm({ onFormSubmit }) {
 
   const toggleSeatSelection = (seat) => {
     if (selectedSeats.includes(seat)) {
+      console.log(`Seat deselected: ${seat}`);
+
       setSelectedSeats(selectedSeats.filter((s) => s !== seat));
     } else {
+      console.log(`Seat selected: ${seat}`);
+
       setSelectedSeats([...selectedSeats, seat]);
     }
   };
