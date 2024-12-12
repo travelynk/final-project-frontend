@@ -116,7 +116,7 @@ export const profile = async () => {
   }
 
   const result = await response.json();
-  console.log("Profile data received:", result); // Debug untuk melihat respons data
+  // console.log("Profile data received:", result); // Debug untuk melihat respons data
   return result?.data;
 };
 

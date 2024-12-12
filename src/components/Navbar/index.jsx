@@ -1,12 +1,22 @@
+import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "@tanstack/react-router";
 import { useSelector } from "react-redux";
 import { Link } from "@tanstack/react-router";
+import { profile } from "../../service/auth"; // Ensure this is the correct path to your API function
 
 const NavigationBar = () => {
   const { token } = useSelector((state) => state.auth);
 
   const location = useLocation();
   const shouldHideNavbar = location.pathname.startsWith("/auth/");
+
+  // Fetch profile data once
+  const { data: profileData } = useQuery({
+    queryKey: ["profile"], // Cache key
+    queryFn: profile, // Query function
+    enabled: !!token, // Only fetch if the user is logged in
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
 
   if (shouldHideNavbar) {
     return null; // Don't render the navbar if path starts with 'auth/'

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import PropTypes from "prop-types"; // Import PropTypes
+import { useQueryClient } from "@tanstack/react-query"; // Import React Query Client
 
 import {
   Accordion,
@@ -35,15 +36,17 @@ const bookingSchema = z.object({
     .min(1, "Setidaknya satu kursi harus dipilih"),
 });
 export default function BookingForm({ onFormSubmit }) {
+  const queryClient = useQueryClient(); // Inisialisasi query client
+  const profileData = queryClient.getQueryData(["profile"]); // Ambil data cache profil
   const [passengers, setPassengers] = useState([1]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [formState, setFormState] = useState({
-    fullname: "",
+    fullname: profileData?.fullName || "",
     namakeluarga: "",
-    phone: "",
-    email: "",
+    phone: profileData?.phone || "",
+    email: profileData?.email || "",
     passengers: [
       {
         title: "",
