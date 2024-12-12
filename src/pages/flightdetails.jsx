@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getVouchers, getVoucherByCode } from "../services/vouchers";
@@ -27,6 +27,7 @@ export default function FlightDetail({ isSubmitted }) {
   const { data: vouchers = [], isLoading: isFetchingVouchers } = useQuery({
     queryKey: ["vouchers"],
     queryFn: getVouchers,
+    staleTime: 1000 * 60 * 5, // Cache data 5 minutes
   });
 
   // Apply voucher mutation

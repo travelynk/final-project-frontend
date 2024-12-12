@@ -4,6 +4,7 @@ export const getVouchers = async () => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    method: "GET",
   });
 
   if (!response.ok) {
