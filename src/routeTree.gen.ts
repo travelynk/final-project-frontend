@@ -25,8 +25,8 @@ const SeatIndexLazyImport = createFileRoute('/seat/')()
 const ProfileIndexLazyImport = createFileRoute('/profile/')()
 const NotificationIndexLazyImport = createFileRoute('/notification/')()
 const AuthVerifyOtpIndexLazyImport = createFileRoute('/auth/verify-otp/')()
-const AuthSendResetPassworIndexLazyImport = createFileRoute(
-  '/auth/send-reset-passwor/',
+const AuthSendResetPasswordIndexLazyImport = createFileRoute(
+  '/auth/send-reset-password/',
 )()
 const AuthResetPasswordIndexLazyImport = createFileRoute(
   '/auth/reset-password/',
@@ -96,13 +96,13 @@ const AuthVerifyOtpIndexLazyRoute = AuthVerifyOtpIndexLazyImport.update({
   import('./routes/auth/verify-otp/index.lazy').then((d) => d.Route),
 )
 
-const AuthSendResetPassworIndexLazyRoute =
-  AuthSendResetPassworIndexLazyImport.update({
-    id: '/auth/send-reset-passwor/',
-    path: '/auth/send-reset-passwor/',
+const AuthSendResetPasswordIndexLazyRoute =
+  AuthSendResetPasswordIndexLazyImport.update({
+    id: '/auth/send-reset-password/',
+    path: '/auth/send-reset-password/',
     getParentRoute: () => rootRoute,
   } as any).lazy(() =>
-    import('./routes/auth/send-reset-passwor/index.lazy').then((d) => d.Route),
+    import('./routes/auth/send-reset-password/index.lazy').then((d) => d.Route),
   )
 
 const AuthResetPasswordIndexLazyRoute = AuthResetPasswordIndexLazyImport.update(
@@ -212,11 +212,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthResetPasswordIndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/auth/send-reset-passwor/': {
-      id: '/auth/send-reset-passwor/'
-      path: '/auth/send-reset-passwor'
-      fullPath: '/auth/send-reset-passwor'
-      preLoaderRoute: typeof AuthSendResetPassworIndexLazyImport
+    '/auth/send-reset-password/': {
+      id: '/auth/send-reset-password/'
+      path: '/auth/send-reset-password'
+      fullPath: '/auth/send-reset-password'
+      preLoaderRoute: typeof AuthSendResetPasswordIndexLazyImport
       parentRoute: typeof rootRoute
     }
     '/auth/verify-otp/': {
@@ -243,7 +243,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginIndexLazyRoute
   '/auth/register': typeof AuthRegisterIndexLazyRoute
   '/auth/reset-password': typeof AuthResetPasswordIndexLazyRoute
-  '/auth/send-reset-passwor': typeof AuthSendResetPassworIndexLazyRoute
+  '/auth/send-reset-password': typeof AuthSendResetPasswordIndexLazyRoute
   '/auth/verify-otp': typeof AuthVerifyOtpIndexLazyRoute
 }
 
@@ -259,7 +259,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginIndexLazyRoute
   '/auth/register': typeof AuthRegisterIndexLazyRoute
   '/auth/reset-password': typeof AuthResetPasswordIndexLazyRoute
-  '/auth/send-reset-passwor': typeof AuthSendResetPassworIndexLazyRoute
+  '/auth/send-reset-password': typeof AuthSendResetPasswordIndexLazyRoute
   '/auth/verify-otp': typeof AuthVerifyOtpIndexLazyRoute
 }
 
@@ -276,7 +276,7 @@ export interface FileRoutesById {
   '/auth/login/': typeof AuthLoginIndexLazyRoute
   '/auth/register/': typeof AuthRegisterIndexLazyRoute
   '/auth/reset-password/': typeof AuthResetPasswordIndexLazyRoute
-  '/auth/send-reset-passwor/': typeof AuthSendResetPassworIndexLazyRoute
+  '/auth/send-reset-password/': typeof AuthSendResetPasswordIndexLazyRoute
   '/auth/verify-otp/': typeof AuthVerifyOtpIndexLazyRoute
 }
 
@@ -294,7 +294,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/reset-password'
-    | '/auth/send-reset-passwor'
+    | '/auth/send-reset-password'
     | '/auth/verify-otp'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -309,7 +309,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/auth/reset-password'
-    | '/auth/send-reset-passwor'
+    | '/auth/send-reset-password'
     | '/auth/verify-otp'
   id:
     | '__root__'
@@ -324,7 +324,7 @@ export interface FileRouteTypes {
     | '/auth/login/'
     | '/auth/register/'
     | '/auth/reset-password/'
-    | '/auth/send-reset-passwor/'
+    | '/auth/send-reset-password/'
     | '/auth/verify-otp/'
   fileRoutesById: FileRoutesById
 }
@@ -341,7 +341,7 @@ export interface RootRouteChildren {
   AuthLoginIndexLazyRoute: typeof AuthLoginIndexLazyRoute
   AuthRegisterIndexLazyRoute: typeof AuthRegisterIndexLazyRoute
   AuthResetPasswordIndexLazyRoute: typeof AuthResetPasswordIndexLazyRoute
-  AuthSendResetPassworIndexLazyRoute: typeof AuthSendResetPassworIndexLazyRoute
+  AuthSendResetPasswordIndexLazyRoute: typeof AuthSendResetPasswordIndexLazyRoute
   AuthVerifyOtpIndexLazyRoute: typeof AuthVerifyOtpIndexLazyRoute
 }
 
@@ -357,7 +357,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginIndexLazyRoute: AuthLoginIndexLazyRoute,
   AuthRegisterIndexLazyRoute: AuthRegisterIndexLazyRoute,
   AuthResetPasswordIndexLazyRoute: AuthResetPasswordIndexLazyRoute,
-  AuthSendResetPassworIndexLazyRoute: AuthSendResetPassworIndexLazyRoute,
+  AuthSendResetPasswordIndexLazyRoute: AuthSendResetPasswordIndexLazyRoute,
   AuthVerifyOtpIndexLazyRoute: AuthVerifyOtpIndexLazyRoute,
 }
 
@@ -382,7 +382,7 @@ export const routeTree = rootRoute
         "/auth/login/",
         "/auth/register/",
         "/auth/reset-password/",
-        "/auth/send-reset-passwor/",
+        "/auth/send-reset-password/",
         "/auth/verify-otp/"
       ]
     },
@@ -419,8 +419,8 @@ export const routeTree = rootRoute
     "/auth/reset-password/": {
       "filePath": "auth/reset-password/index.lazy.jsx"
     },
-    "/auth/send-reset-passwor/": {
-      "filePath": "auth/send-reset-passwor/index.lazy.jsx"
+    "/auth/send-reset-password/": {
+      "filePath": "auth/send-reset-password/index.lazy.jsx"
     },
     "/auth/verify-otp/": {
       "filePath": "auth/verify-otp/index.lazy.jsx"

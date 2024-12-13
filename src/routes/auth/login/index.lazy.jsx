@@ -129,7 +129,7 @@ function Login() {
               >
                 Password
                 <Link
-                  to="/auth/send-otp"
+                  to="/auth/send-reset-password"
                   className="text-purple-600"
                   style={{ fontWeight: "semibold" }}
                 >

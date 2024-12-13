@@ -75,7 +75,7 @@ export const verifyOtp = async (request) => {
 export const sendOtp = async (email) => {
   console.log(email);
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/auth/send-otp`,
+    `${import.meta.env.VITE_API_URL}/auth/reset-password/send-email`,
     {
       method: "POST",
       headers: {
@@ -99,9 +99,97 @@ export const sendOtp = async (email) => {
   return result; // Return success message if available
 };
 
+export const resetPassword = async ({
+  token,
+  newPassword,
+  confirmPassword,
+}) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/auth/reset-password?token=${token}`, // Send token as query parameter
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Explicitly send JSON
+      },
+      body: JSON.stringify({ newPassword, confirmPassword }), // Send both newPassword and confirmPassword in the body
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(result?.message || "Reset password failed");
+    error.response = { data: result };
+    throw error;
+  }
+
+  return result; // Return the successful response
+};
+
+export const exchangeGoogleToken = async (googleToken) => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/auth/google/callback`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: googleToken }), // Send the Google token to the backend
+      }
+    );
+
+    const result = await response.json();
+
+    // Handle errors if the response is not successful
+    if (!response.ok) {
+      const error = new Error(
+        result?.message || "Failed to exchange Google token"
+      );
+      error.response = { data: result };
+      throw error;
+    }
+
+    return result.data; // Return the app's JWT token
+  } catch (error) {
+    console.error("Google token exchange error:", error);
+    throw error;
+  }
+};
+
+export const googleLogin = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/auth/google`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    // Handle errors if the response is not successful
+    if (!response.ok) {
+      const error = new Error(
+        result?.message || "Failed to get Google Authorization URL"
+      );
+      error.response = { data: result };
+      throw error;
+    }
+
+    return result.data; // Return the Google authorization URL
+  } catch (error) {
+    console.error("Google login error:", error);
+    throw error;
+  }
+};
+
 export const profile = async () => {
   const token = localStorage.getItem("token");
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/profile`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/profiles`, {
     headers: {
       authorization: `Bearer ${token}`,
     },
