@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import { profile } from "../../service/auth"; // Assuming profile function is in src/service/auth
+import { profile } from "../../services/auth"; // Assuming profile function is in src/service/auth
 
 export const Route = createLazyFileRoute("/profile/")({
   component: Profile,
