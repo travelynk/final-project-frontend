@@ -13,7 +13,7 @@ import { Button } from "../../../components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "../../../hooks/use-toast";
-import { verifyOtp, sendOtp } from "../../../service/auth";
+import { verifyOtp, sendOtp } from "../../../services/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../../../redux/slices/auth";
 
