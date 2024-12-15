@@ -28,13 +28,8 @@ export const Route = createFileRoute("/flights/$params")({
 });
 
 function Flight() {
-  const [countAdult, setCountAdult] = useState(0);
-  const [countChild, setCountChild] = useState(0);
-  const [countBaby, setCountBaby] = useState(0);
-  const [roundTrip, setRoundTrip] = useState(true);
-  const [departureData, setDepartureData] = useState();
-  const [arrivalData, setArrivalData] = useState();
-  const [seatClass, setSeatClass] = useState();
+  const [roundTrip, setRoundTrip] = useState(false);
+
   const [airlines, setAirlines] = useState([]);
   const [sliderValue, setSliderValue] = useState();
   const [listFlights, setListFlights] = useState([]);
@@ -42,6 +37,8 @@ function Flight() {
   const [maxPrize, setMaxprize] = useState();
   const [checkedAirlines, setCheckedAirlines] = useState([]);
   const [sort, setSort] = useState("1");
+  const [cartDepartureFlight, setCartDepartureFlight] = useState([]);
+  const [cartArrivalFlight, setCartArrivalFlight] = useState([]);
   const [transitFilter, setTransitFilter] = useState({
     isDirect: true,
     isOneTransit: true,
@@ -58,58 +55,70 @@ function Flight() {
   });
 
   useEffect(() => {
-    if (!isSuccess) return;
+    const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
+      pessanger: null,
+      flights: [{ departure: null, arrival: null }],
+    };
 
-    const flights = !roundTrip
-      ? data?.outboundFlights || []
-      : data?.returnFlights || [];
+    if (storedCart.flights.length > 0) {
+      const { departure, arrival } = storedCart.flights[0];
 
-    const [countAdult, countChild, countBaby] = searchQuery.ps
-      .split(".")
-      .map(Number);
+      if (departure) {
+        setCartDepartureFlight(departure);
+      }
 
-    const airlines = flights
-      .flatMap((flight) =>
-        flight.flights.map((f) => ({
-          name: f.airline.name,
-          image: f.airline.image,
-        }))
-      )
-      .filter(
-        (value, index, self) =>
-          index === self.findIndex((t) => t.name === value.name)
-      );
+      if (arrival) {
+        setCartArrivalFlight(arrival);
+      }
 
-    const prices = flights.map((flight) =>
-      parseInt(flight.price.replace(/[^0-9]/g, ""), 10)
-    );
+      if (arrival) {
+        setRoundTrip(true);
+      }
+    }
 
-    setDepartureData(flights[0]?.flights[0]?.departure);
-    setArrivalData(
-      flights[0]?.flights[flights[0]?.flights.length - 1]?.arrival
-    );
+    if (isSuccess) {
+      if (data === null) {
+        return <NotFound />;
+      }
 
-    setCountAdult(countAdult);
-    setCountChild(countChild);
-    setCountBaby(countBaby);
-    setSeatClass(searchQuery.sc);
-    setListFlights(flights);
-    setMinprize(Math.min(...prices));
-    setMaxprize(Math.max(...prices));
-    setSliderValue(Math.min(...prices));
-    setCheckedAirlines(airlines.map((airline) => airline.name));
-  }, [data, isSuccess, searchQuery.ps, searchQuery.sc]);
-  console.log(listFlights);
+      const flights = !roundTrip
+        ? data.outboundFlights || []
+        : data.returnFlights || [];
 
-  const searchCriteria = {
+      if (flights) {
+        const airlines = flights
+          .flatMap((flight) =>
+            flight.flights.map((f) => ({
+              name: f.airline.name,
+              image: f.airline.image,
+            }))
+          )
+          .filter(
+            (value, index, self) =>
+              index === self.findIndex((t) => t.name === value.name)
+          );
+
+        const prices = flights.map((flight) =>
+          parseInt(flight.price.replace(/[^0-9]/g, ""), 10)
+        );
+
+        setAirlines(airlines);
+        setListFlights(flights);
+        setMinprize(Math.min(...prices));
+        setMaxprize(Math.max(...prices));
+        setSliderValue(Math.min(...prices));
+        setCheckedAirlines(airlines.map((airline) => airline.name));
+      }
+    }
+  }, [
+    isSuccess,
+    data,
     roundTrip,
-    departureData,
-    arrivalData,
-    seatClass,
-    countAdult,
-    countChild,
-    countBaby,
-  };
+    searchQuery.ps,
+    searchQuery.sc,
+    setRoundTrip,
+    cartArrivalFlight,
+  ]);
 
   const flightFilter = {
     airlines,
@@ -117,10 +126,17 @@ function Flight() {
     maxPrize,
     sliderValue,
     checkedAirlines,
+    setSliderValue,
     setCheckedAirlines,
     sort,
     transitFilter,
     setTransitFilter,
+  };
+  const cart = {
+    cartDepartureFlight,
+    cartArrivalFlight,
+    setCartArrivalFlight,
+    setCartDepartureFlight,
   };
 
   const handleCheckboxChange = (event, airlineName) => {
@@ -159,6 +175,9 @@ function Flight() {
           isLoading={isLoading}
           handleCheckboxChange={handleCheckboxChange}
           handleTransitChange={handleTransitChange}
+          roundTrip={roundTrip}
+          setRoundTrip={setRoundTrip}
+          cart={cart}
         />
       </div>
     </>
@@ -179,7 +198,7 @@ const HeaderComponent = ({
   const [returnDate, setReturnDate] = useState();
   const navigate = useNavigate();
   const prevRfRef = useRef();
-
+  const prevRoundTripRef = useRef();
   const { rf, dt, ps, sc } = flightDetails;
 
   if (dt.includes(".")) {
@@ -210,7 +229,7 @@ const HeaderComponent = ({
         ? Math.ceil(
             (new Date(returnDate) - new Date(departureDate)) /
               (1000 * 3600 * 24)
-          )
+          ) + 1
         : 8;
 
       for (let i = 0; i < length; i++) {
@@ -225,13 +244,13 @@ const HeaderComponent = ({
       return dates;
     };
 
-    if (rf !== prevRfRef.current) {
+    if (rf !== prevRfRef.current || roundTrip !== prevRoundTripRef.current) {
       if (dt.includes(".")) {
         setDates(listDates(roundTrip ? returnDate : departureDate));
       } else {
         setDates(listDates(dt));
       }
-
+      prevRoundTripRef.current = roundTrip;
       prevRfRef.current = rf;
     }
   }, [rf, dt, roundTrip, returnDate, departureDate]);
@@ -541,58 +560,99 @@ const HeaderComponent = ({
 };
 
 const BodyComponent = ({
+  cart,
   listFlights,
   filters,
   isLoading,
   handleCheckboxChange,
   handleTransitChange,
+  roundTrip,
+  setRoundTrip,
 }) => {
-  const [departureFlight, setDepartureFlight] = useState([]);
-  const [arrivalFlight, setArrivalFlight] = useState([]);
-  const [cart, setCart] = useState([]);
-  const [returnFlight, setReturnFlight] = useState(false);
-
+  // const [cart, setCart] = useState([]);
+  const [hovered, setHovered] = useState(false);
   const {
     airlines,
     minPrize,
     maxPrize,
     sliderValue,
+    setSliderValue,
     checkedAirlines,
     setCheckedAirlines,
     sort,
     transitFilter,
     setTransitFilter,
   } = filters;
+  const {
+    cartDepartureFlight,
+    cartArrivalFlight,
+    setCartArrivalFlight,
+    setCartDepartureFlight,
+  } = cart;
+  const searchQuery = { ...Route.useSearch() };
+  const navigate = useNavigate();
 
   const handleCart = (event, data) => {
     event.preventDefault();
 
-    const updatedCart = JSON.parse(localStorage.getItem("cartTicket")) || [];
+    const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
+      pessanger: null,
+      flights: [{ departure: null, arrival: null }],
+    };
 
-    const isDeparture = !returnFlight;
-    const newCart = isDeparture
-      ? [data, updatedCart[1]]
-      : [updatedCart[0], data];
+    const updatedFlights = !roundTrip
+      ? [{ departure: data, arrival: storedCart.flights[0].arrival }]
+      : [{ departure: storedCart.flights[0].departure, arrival: data }];
 
-    localStorage.setItem("cartTicket", JSON.stringify(newCart));
+    const updatedCart = { ...storedCart, flights: updatedFlights };
+    localStorage.setItem("cartTicket", JSON.stringify(updatedCart));
 
-    if (isDeparture) {
-      setDepartureFlight(data);
-      setReturnFlight(true);
+    if (!roundTrip) {
+      setCartDepartureFlight(data);
+      if (searchQuery.dt.includes(".") && !roundTrip) {
+        setRoundTrip(true);
+      }
     } else {
-      setArrivalFlight(data);
-      setReturnFlight(false);
+      setCartArrivalFlight(data);
     }
   };
 
-  useEffect(() => {
-    const storedFlights = JSON.parse(localStorage.getItem("cartTicket"));
-    if (storedFlights) {
-      setDepartureFlight(storedFlights[0]);
-      setArrivalFlight(storedFlights[1]);
-    }
-  }, []);
+  const deleteHandle = (flightNumber) => {
+    const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
+      pessanger: null,
+      flights: [{ departure: null, arrival: null }],
+    };
 
+    if (flightNumber === 1) {
+      storedCart.flights[0].departure = null;
+      setCartDepartureFlight(null);
+      setRoundTrip(false);
+    } else if (flightNumber === 2) {
+      storedCart.flights[0].arrival = null;
+      setCartArrivalFlight(null);
+    }
+
+    localStorage.setItem("cartTicket", JSON.stringify(storedCart));
+  };
+
+  const handlePay = (pessanger) => {
+    const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
+      pessanger: null,
+      flights: [{ departure: null, arrival: null }],
+    };
+    const [countAdult, countChild, countBaby] = pessanger
+      .split(".")
+      .map(Number);
+
+    const updatedCart = {
+      ...storedCart,
+      pessanger: { adult: countAdult, child: countChild, babby: countBaby },
+    };
+
+    localStorage.setItem("cartTicket", JSON.stringify(updatedCart));
+
+    navigate({ to: "/seat" });
+  };
   return (
     <>
       <div className="flex   flex-col lg:flex-row gap-3 pb-5">
@@ -601,62 +661,74 @@ const BodyComponent = ({
             <h1 className="text-2xl font-semibold">Penerbangan Anda</h1>
             <div className="flex flex-col gap-1">
               <div className=" flex gap-3 items-center ">
-                <div className="px-4 py-1 text-white bg-darkblue05 rounded-xl shadow-md">
-                  1
-                </div>
+                <Button
+                  className="px-4 py-1 text-white bg-darkblue05 rounded-xl shadow-md"
+                  onClick={() => deleteHandle(1)}
+                  onMouseEnter={() => setHovered(true)}
+                  onMouseLeave={() => setHovered(false)}
+                >
+                  {hovered ? "x" : "1"}
+                </Button>
                 <div className="flex flex-col font-semibold">
                   <h1>
-                    {departureFlight &&
-                      departureFlight.flightDate &&
-                      new Date(departureFlight.flightDate).toLocaleDateString(
-                        "id-ID",
-                        {
-                          weekday: "long",
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        }
-                      )}
+                    {cartDepartureFlight &&
+                      cartDepartureFlight.flightDate &&
+                      new Date(
+                        cartDepartureFlight.flightDate
+                      ).toLocaleDateString("id-ID", {
+                        weekday: "long",
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                   </h1>
                   <p className="font-light">
-                    {departureFlight &&
-                    departureFlight.flights &&
-                    departureFlight.flights.length > 0
-                      ? `${departureFlight.flights[0]?.departure?.city?.name} - ${departureFlight?.flights?.[departureFlight.flights.length - 1]?.arrival?.city?.name}`
+                    {cartDepartureFlight &&
+                    cartDepartureFlight.flights &&
+                    cartDepartureFlight.flights.length > 0
+                      ? `${cartDepartureFlight.flights[0]?.departure?.city?.name} - ${cartDepartureFlight?.flights?.[cartDepartureFlight.flights.length - 1]?.arrival?.city?.name}`
                       : ""}
                   </p>
                 </div>
               </div>
-
-              <div className="flex gap-3 items-center">
-                <div className="px-4 py-1 text-white bg-darkblue05 rounded-xl shadow-md">
-                  2
-                </div>
-                <div className="flex flex-col font-semibold">
-                  <h1>
-                    {arrivalFlight &&
-                      arrivalFlight.flightDate &&
-                      new Date(arrivalFlight.flightDate).toLocaleDateString(
-                        "id-ID",
-                        {
+              {roundTrip && (
+                <div className="flex gap-3 items-center">
+                  <Button
+                    className="px-4 py-1 text-white bg-darkblue05 rounded-xl shadow-md"
+                    onClick={() => deleteHandle(2)}
+                    onMouseEnter={() => setHovered(true)}
+                    onMouseLeave={() => setHovered(false)}
+                  >
+                    {hovered ? "x" : "2"}
+                  </Button>
+                  <div className="flex flex-col font-semibold">
+                    <h1>
+                      {cartArrivalFlight &&
+                        cartArrivalFlight.flightDate &&
+                        new Date(
+                          cartArrivalFlight.flightDate
+                        ).toLocaleDateString("id-ID", {
                           weekday: "long",
                           day: "2-digit",
                           month: "short",
                           year: "numeric",
-                        }
-                      )}
-                  </h1>
-                  <p className="font-light">
-                    {arrivalFlight &&
-                    arrivalFlight.flights &&
-                    arrivalFlight.flights.length > 0
-                      ? `${arrivalFlight.flights[0]?.departure?.city?.name} - ${departureFlight?.flights?.[departureFlight.flights.length - 1]?.arrival?.city?.name}`
-                      : ""}
-                  </p>
+                        })}
+                    </h1>
+                    <p className="font-light">
+                      {cartArrivalFlight &&
+                      cartArrivalFlight.flights &&
+                      cartArrivalFlight.flights.length > 0
+                        ? `${cartArrivalFlight.flights[0]?.departure?.city?.name} - ${cartArrivalFlight?.flights?.[cartArrivalFlight.flights.length - 1]?.arrival?.city?.name}`
+                        : ""}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
-            <Button className="rounded-xl bg-darkblue04 w-full">
+            <Button
+              className="rounded-xl bg-darkblue04 w-full"
+              onClick={() => handlePay(searchQuery.ps)}
+            >
               Pembayaran
             </Button>
           </div>
@@ -951,7 +1023,7 @@ const BodyComponent = ({
 
                             {data.flights.map((data) => {
                               return (
-                                <div key={data.id}>
+                                <div key={data.flightId}>
                                   <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
                                     <h1 className="text-darkblue05  font-bold lg:col-end-10 col-end-7 px-5">
                                       Keberangkatan
@@ -961,7 +1033,15 @@ const BodyComponent = ({
                                         {data.departure.time}
                                       </h1>
                                       <p>
-                                        {format(data.departure.date, "d MMMM")}
+                                        {/* {new Date(data.departure.date)} */}
+                                        {/* {format(data.departure.date, "d MMMM")} */}
+                                        {new Date(
+                                          data.departure.date
+                                        ).toLocaleDateString("id-ID", {
+                                          day: "numeric",
+                                          month: "long",
+                                        })}
+                                        {/* {new Date(data.departure.date)} */}
                                       </p>
                                       <span className="font-semibold text-lg">
                                         {data.departure.airport} -
@@ -1003,7 +1083,7 @@ const BodyComponent = ({
                                         {data.arrival.time}
                                       </h1>
                                       <p>
-                                        {format(data.arrival.date, "d MMMM")}
+                                        {/* {format(data.arrival.date, "d MMMM")} */}
                                       </p>
                                       <span className="font-semibold text-lg">
                                         {data.arrival.airport} -
