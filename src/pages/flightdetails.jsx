@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getVouchers, getVoucherByCode } from "../services/vouchers";
@@ -17,11 +17,87 @@ import {
 
 export default function FlightDetail({ isSubmitted }) {
   const [selectedVoucher, setSelectedVoucher] = useState(null);
-  const [totalPrice, setTotalPrice] = useState(9850000); // Base total price
+  const [totalPrice, setTotalPrice] = useState(0); // Base total price
   const [showToast, setShowToast] = useState(false);
   const [toastVariant, setToastVariant] = useState("default");
   const [toastTitle, setToastTitle] = useState("");
   const [toastDescription, setToastDescription] = useState("");
+  const [localData, setLocalData] = useState(null);
+
+  const [flightData, setFlightData] = useState(null);
+  // Tambahkan state baru untuk passengerCount dan seatClass
+  const [passengerCount, setPassengerCount] = useState(null);
+  const [seatClass, setSeatClass] = useState(null);
+
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem("selectedFlights");
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        console.log("Data berhasil diambil:", parsedData);
+
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+          const flight = parsedData[0]?.flights?.[0];
+          const passengerCount = parsedData[0]?.passengerCount;
+          const seatClass = parsedData[0]?.seatClass;
+
+          if (flight) {
+            // Jika facility berupa string yang dipisahkan oleh koma, ubah menjadi array
+            if (flight.facility && typeof flight.facility === "string") {
+              flight.facility = flight.facility.split(",").map((f) => f.trim());
+            }
+            setFlightData(flight);
+          }
+          if (passengerCount) {
+            setPassengerCount(passengerCount);
+          }
+          if (seatClass) {
+            setSeatClass(seatClass);
+          }
+
+          setLocalData(parsedData);
+        } else {
+          console.warn("Data flights tidak valid atau kosong.");
+        }
+      } else {
+        console.warn("Data tidak ditemukan di localStorage.");
+      }
+    } catch (error) {
+      console.error("Error parsing localStorage data:", error);
+    }
+  }, []);
+
+  //price calculation
+  const calculatePassengerPrice = (price, count, discount = 1) => {
+    const parsedPrice = parsePrice(price); // Pastikan price diproses dengan aman
+    return parsedPrice * count * discount;
+  };
+  function parsePrice(price) {
+    if (typeof price === "string") {
+      return parseInt(price.replace(/[^\d]/g, ""), 10); // Hilangkan karakter non-digit
+    } else if (typeof price === "number") {
+      return price; // Jika sudah berupa angka, langsung gunakan
+    }
+    return 0; // Jika tidak valid, kembalikan 0 sebagai fallback
+  }
+  useEffect(() => {
+    if (localData && passengerCount && flightData?.price) {
+      const basePrice = parsePrice(flightData.price); // Konversi price ke angka
+      const adultCount = parseInt(passengerCount.adult || "0", 10);
+      const childCount = parseInt(passengerCount.child || "0", 10);
+      const infantCount = parseInt(passengerCount.infant || "0", 10);
+
+      // Harga per kategori penumpang
+      const adultPrice = basePrice * adultCount;
+      const childPrice = basePrice * childCount; // Diskon anak-anak (contoh 75%)
+      const infantPrice = basePrice * infantCount; // Diskon bayi (contoh 50%)
+
+      const tax = 300000; // Pajak tetap
+      const total = adultPrice + childPrice + infantPrice + tax;
+
+      setTotalPrice(total); // Update state totalPrice
+    }
+  }, [localData, passengerCount, flightData?.price]);
 
   // Fetch vouchers
   const { data: vouchers = [], isLoading: isFetchingVouchers } = useQuery({
@@ -66,25 +142,52 @@ export default function FlightDetail({ isSubmitted }) {
         <h2 className="text-lg font-bold">
           Booking Code: <span className="text-purple-600">6723y2GHK</span>
         </h2>
+        {/*data penerbangan */}
         <div className="mt-4 text-sm">
           <p>
-            <strong>07:00</strong>
+            <strong>{flightData?.departure?.time}</strong>
             <span className="float-right text-purple-500">Keberangkatan</span>
           </p>
-          <p>3 Maret 2023</p>
-          <p>Soekarno Hatta - Terminal 1A Domestik</p>
+          <p>{flightData?.departure?.date}</p>
+          <p>
+            {flightData?.departure?.airport || "Bandara tidak tersedia"} -
+            {flightData?.departure?.terminal || "Terminal tidak tersedia"}
+          </p>
           <hr className="my-4" />
           <p>
-            <strong>Jet Air - Economy</strong>
+            <strong>
+              {flightData?.airline?.name || "Air line tidak tersedia"} -{" "}
+              {seatClass || "Kelas penumpang tidak tersedia"}
+            </strong>
           </p>
           <p className="mb-4">
-            <strong>JT - 203</strong>
+            <strong>{flightData?.flightNum}</strong>
+          </p>
+          <div>
+            <strong>Informasi:</strong>
+            <br />
+            {Array.isArray(flightData?.facility) ? (
+              <ul>
+                {flightData.facility.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            ) : (
+              flightData?.facility || "Fasilitas tidak tersedia"
+            )}
+          </div>
+          <hr className="my-4" />
+          <p>
+            <strong>{flightData?.arrival?.time}</strong>
+            <span className="float-right text-purple-500">Kedatangan</span>
+          </p>
+          <p>{flightData?.arrival?.date}</p>
+          <p>
+            {flightData?.arrival?.airport} - {flightData?.arrival?.terminal}
           </p>
           <hr className="my-4" />
-        </div>
 
-        {/* Voucher Section */}
-        <div className="text-sm">
+          {/* Voucher Section */}
           <div className="flex justify-between items-center mt-4">
             <div className="flex items-center gap-2">
               <span className="font-bold">Voucher:</span>
@@ -118,12 +221,36 @@ export default function FlightDetail({ isSubmitted }) {
             </Popover>
           </div>
 
-          {/* Pricing Section */}
+          {/* Pricing Section berdasarkan flight id*/}
           <p>
-            2 Adults<span className="float-right">IDR 9.550.000</span>
+            {passengerCount?.adult || "Penumpang dewasa tidak ada"} Adult
+            <span className="float-right">
+              IDR{" "}
+              {calculatePassengerPrice(
+                flightData?.price,
+                passengerCount?.adult || 0
+              ).toLocaleString()}
+            </span>
           </p>
           <p>
-            1 Baby<span className="float-right">IDR 0</span>
+            {passengerCount?.child || "Penumpang anak tidak ada"} Children
+            <span className="float-right">
+              IDR{" "}
+              {calculatePassengerPrice(
+                flightData?.price,
+                passengerCount?.child || 0
+              ).toLocaleString()}
+            </span>
+          </p>
+          <p>
+            {passengerCount?.infant || "Penumpang bayi tidak ada"} Baby
+            <span className="float-right">
+              IDR{" "}
+              {calculatePassengerPrice(
+                flightData?.price,
+                passengerCount?.infant || 0
+              ).toLocaleString()}
+            </span>
           </p>
           <p>
             Tax<span className="float-right">IDR 300.000</span>

@@ -1,19 +1,19 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
-import BookingForm from '../../../pages/bookingform'
-import FlightDetail from '../../../pages/flightdetails'
-import NavigationBreadCr from '../../../pages/navigationBreadCr'
-import { useState } from 'react'
+import { createLazyFileRoute } from "@tanstack/react-router";
+import BookingForm from "../../../pages/bookingform";
+import FlightDetail from "../../../pages/flightdetails";
+import NavigationBreadCr from "../../../pages/navigationBreadCr";
+import { useState } from "react";
 
-export const Route = createLazyFileRoute('/flights/booking/')({
+export const Route = createLazyFileRoute("/flights/booking/")({
   component: Booking,
-})
+});
 
 export default function Booking() {
-  const [successMessageVisible, setSuccessMessageVisible] = useState(false)
+  const [successMessageVisible, setSuccessMessageVisible] = useState(false);
 
   const handleFormSubmit = () => {
-    setSuccessMessageVisible(true)
-  }
+    setSuccessMessageVisible(true);
+  };
 
   return (
     <>
@@ -30,5 +30,5 @@ export default function Booking() {
         <FlightDetail isSubmitted={successMessageVisible} />
       </div>
     </>
-  )
+  );
 }
