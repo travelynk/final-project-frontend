@@ -127,7 +127,7 @@ const MenuSection = () => {
                 htmlFor="from"
                 className="flex align-middle items-center gap-1"
               >
-                <img src="/src/assets/pesawat.svg" alt="pesawat.icon" /> From
+                <img src="/svg/pesawat.svg" alt="pesawat.icon" /> From
               </Label>
               <Combobox
                 className="w-full"
@@ -142,7 +142,7 @@ const MenuSection = () => {
 
             <div className="flex justify-center col-span-1 md:col-span-1 items-center">
               <Toggle onClick={handleToggle} checked={isToggled}>
-                <img src="/src/assets/change.svg" alt="toggle.icon" />
+                <img src="/svg/change.svg" alt="toggle.icon" />
               </Toggle>
             </div>
 
@@ -151,7 +151,7 @@ const MenuSection = () => {
                 htmlFor="to"
                 className="flex align-middle items-center gap-1"
               >
-                <img src="/src/assets/pesawat.svg" alt="pesawat.icon" /> To
+                <img src="/svg/pesawat.svg" alt="pesawat.icon" /> To
               </Label>
               <Combobox
                 className="w-full"
@@ -169,7 +169,7 @@ const MenuSection = () => {
                 htmlFor="date"
                 className="flex align-middle items-center gap-1"
               >
-                <img src="/src/assets/calendar.svg" alt="calendar.icon" /> Date
+                <img src="/svg/calendar.svg" alt="calendar.icon" /> Date
               </Label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-3">
@@ -206,7 +206,7 @@ const MenuSection = () => {
               <div className="flex flex-col ">
                 <Label htmlFor="passengers">
                   <img
-                    src="/src/assets/passengers.svg"
+                    src="/svg/passengers.svg"
                     alt="passengers.icon"
                     className="inline-block"
                   />
@@ -229,7 +229,7 @@ const MenuSection = () => {
                         <div className="grid grid-cols-2   gap-4  border-b-2 border-gray-100 pb-2 ">
                           <div className="grid grid-cols-6  ">
                             <img
-                              src="/src/assets/adult.svg"
+                              src="/svg/adult.svg"
                               alt="adult"
                               className="w-4 "
                             />
@@ -267,7 +267,7 @@ const MenuSection = () => {
                         <div className="grid grid-cols-2   gap-4 border-b-2 border-gray-100 pb-2 ">
                           <div className="grid grid-cols-6  ">
                             <img
-                              src="/src/assets/child.svg"
+                              src="/svg/child.svg"
                               alt="adult"
                               className="w-4 "
                             />
@@ -306,7 +306,7 @@ const MenuSection = () => {
                         <div className="grid grid-cols-2   gap-4  border-b-2 border-gray-100 pb-2 ">
                           <div className="grid grid-cols-6  ">
                             <img
-                              src="/src/assets/baby.svg"
+                              src="/svg/baby.svg"
                               alt="adult"
                               className="w-4 "
                             />
@@ -442,16 +442,16 @@ const ResultSection = () => {
         <h1 className="font-bold text-3xl">Destinasi Favorit</h1>
         <div className="filter text-white grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-7 gap-5">
           <Button className="bg-darkblue03 py-4 px-6 rounded-lg">
-            <img src="/src/assets/search.svg" alt="" /> Semua
+            <img src="/svg/search.svg" alt="" /> Semua
           </Button>
           <Button className="bg-darkblue03 py-4 px-6 rounded-lg">
-            <img src="/src/assets/search.svg" alt="" /> Asia
+            <img src="/svg/search.svg" alt="" /> Asia
           </Button>
           <Button className="bg-darkblue03 py-4 px-6 rounded-lg">
-            <img src="/src/assets/search.svg" alt="" /> Amerika
+            <img src="/svg/search.svg" alt="" /> Amerika
           </Button>
           <Button className="bg-darkblue03 py-4 px-6 rounded-lg">
-            <img src="/src/assets/search.svg" alt="" /> Eropa
+            <img src="/svg/search.svg" alt="" /> Eropa
           </Button>
         </div>
       </div>

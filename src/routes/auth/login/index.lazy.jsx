@@ -6,7 +6,7 @@ import { Card } from "../../../components/ui/card";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setToken } from "../../../redux/slices/auth";
-import { login } from "../../../service/auth";
+import { login } from "../../../services/auth";
 import { useSelector } from "react-redux";
 import { useToast } from "../../../hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -129,7 +129,7 @@ function Login() {
               >
                 Password
                 <Link
-                  to="/auth/send-otp"
+                  to="/auth/send-reset-password"
                   className="text-purple-600"
                   style={{ fontWeight: "semibold" }}
                 >

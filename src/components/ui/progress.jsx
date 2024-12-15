@@ -16,7 +16,7 @@ const Progress = React.forwardRef(({ className, value, ...props }, ref) => (
       className="h-full w-full flex-1 bg-darkblue05 transition-all flex justify-end"
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     >
-      <img src="/src/assets/man.svg" alt="" className="z-10" />
+      <img src="/svg/man.svg" alt="" className="z-10" />
     </ProgressPrimitive.Indicator>
   </ProgressPrimitive.Root>
 ));

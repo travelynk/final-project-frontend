@@ -72,14 +72,14 @@ function Payment() {
                 <AccordionContent>
                   <div className="bg-white rounded-lg p-4">
                     <div className="flex justify-evenly mb-4">
-                      <img src="/visa-payment.svg" alt="Visa" className="h-8" />
+                      <img src="/svg/visa-payment.svg" alt="Visa" className="h-8" />
                       <img
-                        src="/mastercard-payment.svg"
+                        src="/svg/mastercard-payment.svg"
                         alt="MasterCard"
                         className="h-8"
                       />
                       <img
-                        src="/paypal-payment.svg"
+                        src="/svg/paypal-payment.svg"
                         alt="PayPal"
                         className="h-8"
                       />
