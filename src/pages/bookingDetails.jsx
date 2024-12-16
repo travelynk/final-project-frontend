@@ -2,8 +2,9 @@
 import { Button } from "../components/ui/button";
 
 const BookingDetails = ({ selectedBooking }) => {
+  console.log(selectedBooking);
   return (
-    <div className="bg-white rounded-lg py-4 pr-4">
+    <div className="bg-white rounded-lg py-4 pr-4 ms-2">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Detail Pesanan</h2>
         <div
@@ -27,6 +28,15 @@ const BookingDetails = ({ selectedBooking }) => {
           {selectedBooking.bookingCode || "N/A"}
         </span>
       </h2>
+
+      {/* Conditionally render QR code when status is "Issued" */}
+      {selectedBooking.status === "Issued" && (
+        <img
+          className="ms-[75px] mt-2 h-[200px] w-[200px]"
+          src={selectedBooking.urlQrcode || "/path/to/default-image.png"}
+          alt="airline logo"
+        />
+      )}
 
       <div className="mt-4 text-sm">
         {selectedBooking.segments &&
