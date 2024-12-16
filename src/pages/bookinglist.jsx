@@ -92,19 +92,21 @@ const BookingList = ({
                             className="grid grid-cols-12 gap-4 items-center border-b-2 border-[#B2BEB5] pb-4 last:border-b-0"
                           >
                             {/* Departure Info */}
-                            <div className="col-span-3">
+                            <div className="lg:col-span-3 col-span-4">
+                              {/* First row: Live area icon, city name */}
                               <div className="flex items-center gap-2">
                                 <img
                                   src="/svg/live-area.svg"
                                   alt="Departure Icon"
                                   className="w-[20px] h-[20px]"
                                 />
-                                <span className="text-sm font-bold w-full break-words">
+                                <span className="lg:text-sm text-xs font-bold w-full break-words">
                                   {segment.flight.departure.city.name ||
                                     "Departure City"}
                                 </span>
                               </div>
-                              <div className="text-xs mt-1 ms-7">
+                              {/* Second row: Schedule */}
+                              <div className="text-xs mt-2 lg:ms-7 ms-[15px]">
                                 {segment.flight.departure.schedule ? (
                                   <>
                                     <div>
@@ -129,32 +131,36 @@ const BookingList = ({
                             </div>
 
                             {/* Route Image */}
-                            <div className="col-span-6 flex flex-col items-center">
-                              <span className="text -xs mt-1 text-gray-500">
-                                {`${segment.flight.estimatedDuration} Jam` ||
-                                  "N.A"}
-                              </span>
-                              <img
-                                src="/svg/route.svg"
-                                alt="Flight Route"
-                                className="w-full max-w-[250px] my-2"
-                              />
+                            <div className="lg:col-span-6 col-span-4 flex flex-col items-center">
+                              <div>
+                                <span className="flex justify-center text-xs mt-1 text-gray-500">
+                                  {`${segment.flight.estimatedDuration} Jam` ||
+                                    "N.A"}
+                                </span>
+                                <img
+                                  src="/svg/route.svg"
+                                  alt="Flight Route"
+                                  className="w-full max-w-[250px] my-2"
+                                />
+                              </div>
                             </div>
 
                             {/* Arrival Info */}
-                            <div className="col-span-3 ">
+                            <div className="lg:col-span-3 col-span-4">
+                              {/* First row: Live area icon, city name */}
                               <div className="flex items-center gap-2">
                                 <img
                                   src="/svg/live-area.svg"
                                   alt="Arrival Icon"
                                   className="w-[20px] h-[20px]"
                                 />
-                                <span className="text-sm font-bold w-full break-words">
+                                <span className="lg:text-sm text-xs font-bold w-full break-words">
                                   {segment.flight.arrival.city.name ||
                                     "Arrival City"}
                                 </span>
                               </div>
-                              <div className="text-xs mt-1 ms-7">
+                              {/* Second row: Schedule */}
+                              <div className="text-xs mt-2 lg:ms-7 ms-[24px]">
                                 {segment.flight.arrival.schedule ? (
                                   <>
                                     <div>

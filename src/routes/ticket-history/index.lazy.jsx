@@ -33,6 +33,18 @@ function TicketHistory() {
     to: null,
   });
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile mode
+  useEffect(() => {
+    const updateIsMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    updateIsMobile();
+    window.addEventListener("resize", updateIsMobile);
+    return () => window.removeEventListener("resize", updateIsMobile);
+  }, []);
+
   // Determine which booking fetch function to use based on date range
   const fetchBookingsQuery = useQuery({
     queryKey: [
@@ -245,23 +257,49 @@ function TicketHistory() {
         {fetchBookingsQuery.error && (
           <div>{fetchBookingsQuery.error.message}</div>
         )}
+        {/* Conditional rendering for mobile mode */}
         <div className="grid grid-cols-1 md:grid-cols-[550px_370px] gap-2 mt-8">
-          <BookingList
-            bookings={bookings}
-            setSelectedBooking={setSelectedBooking}
-            isLoading={fetchBookingsQuery.isLoading}
-            error={fetchBookingsQuery.error}
-            groupedBookings={groupedBookings}
-            openMonth={openMonth}
-            setOpenMonth={setOpenMonth}
-          />
-          {selectedBooking && (
-            <BookingDetails selectedBooking={selectedBooking} />
+          {isMobile ? (
+            selectedBooking ? (
+              <div>
+                <Button
+                  variant="outline"
+                  className="mb-4  bg-[#A06ECE] text-white rounded-[12px]"
+                  onClick={() => setSelectedBooking(null)}
+                >
+                  Back to List
+                </Button>
+                <BookingDetails selectedBooking={selectedBooking} />
+              </div>
+            ) : (
+              <BookingList
+                bookings={bookings}
+                setSelectedBooking={setSelectedBooking}
+                isLoading={fetchBookingsQuery.isLoading}
+                error={fetchBookingsQuery.error}
+                groupedBookings={groupedBookings}
+                openMonth={openMonth}
+                setOpenMonth={setOpenMonth}
+              />
+            )
+          ) : (
+            <>
+              <BookingList
+                bookings={bookings}
+                setSelectedBooking={setSelectedBooking}
+                isLoading={fetchBookingsQuery.isLoading}
+                error={fetchBookingsQuery.error}
+                groupedBookings={groupedBookings}
+                openMonth={openMonth}
+                setOpenMonth={setOpenMonth}
+              />
+              {selectedBooking && (
+                <BookingDetails selectedBooking={selectedBooking} />
+              )}
+            </>
           )}
         </div>
       </div>
     </>
   );
 }
-
-export default TicketHistory;
