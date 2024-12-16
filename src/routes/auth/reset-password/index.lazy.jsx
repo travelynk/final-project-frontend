@@ -5,7 +5,7 @@ import { Label } from "../../../components/ui/label";
 import { Card } from "../../../components/ui/card";
 import { useState } from "react";
 import { useToast } from "../../../hooks/use-toast";
-import { resetPassword } from "../../../service/auth";
+import { resetPassword } from "../../../services/auth";
 
 export const Route = createLazyFileRoute("/auth/reset-password/")({
   component: ResetPassword,

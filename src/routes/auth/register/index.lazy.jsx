@@ -6,7 +6,7 @@ import { Card } from "../../../components/ui/card";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
-import { register } from "../../../service/auth";
+import { register } from "../../../services/auth";
 import { setEmailRegister, setUser } from "../../../redux/slices/auth";
 import { useToast } from "../../../hooks/use-toast";
 
