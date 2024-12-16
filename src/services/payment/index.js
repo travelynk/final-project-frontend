@@ -74,13 +74,36 @@ export const CreateVa = async (bookingId, bank) => {
 
 export const checkPayment = async (params) => {
   const token = localStorage.getItem("token");
-  const url = new URL(`${import.meta.env.VITE_API_URL}/payments/${params}`);
+  const url = `${import.meta.env.VITE_API_URL}/payments/${params}`;
 
-  const response = await fetch(url, {
-    headers: { authorization: `bearer ${token}` },
-    method: "GET",
-  });
-  const data = await response.json();
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  return data.data.transaction_status;
+    return response.data.data.transaction_status;
+  } catch (error) {
+    console.error("Error checking payment:", error);
+    throw error;
+  }
+};
+
+export const getBookingData = async (params) => {
+  const token = localStorage.getItem("token");
+  const url = new URL(`${import.meta.env.VITE_API_URL}/bookings/${params}`);
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error getting booking data:", error);
+    throw error;
+  }
 };

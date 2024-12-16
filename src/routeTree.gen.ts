@@ -17,7 +17,6 @@ import { Route as FlightsParamsImport } from './routes/flights/$params'
 
 // Create Virtual Routes
 
-const PaymentLazyImport = createFileRoute('/payment')()
 const IndexLazyImport = createFileRoute('/')()
 const TicketHistoryIndexLazyImport = createFileRoute('/ticket-history/')()
 const SuccessIndexLazyImport = createFileRoute('/success/')()
@@ -36,12 +35,6 @@ const AuthRegisterIndexLazyImport = createFileRoute('/auth/register/')()
 const AuthLoginIndexLazyImport = createFileRoute('/auth/login/')()
 
 // Create/Update Routes
-
-const PaymentLazyRoute = PaymentLazyImport.update({
-  id: '/payment',
-  path: '/payment',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/payment.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   id: '/',
@@ -76,9 +69,9 @@ const ProfileIndexLazyRoute = ProfileIndexLazyImport.update({
 } as any).lazy(() => import('./routes/profile/index.lazy').then((d) => d.Route))
 
 const PaymentIndexLazyRoute = PaymentIndexLazyImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PaymentLazyRoute,
+  id: '/payment/',
+  path: '/payment/',
+  getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/payment/index.lazy').then((d) => d.Route))
 
 const NotificationIndexLazyRoute = NotificationIndexLazyImport.update({
@@ -149,13 +142,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/payment': {
-      id: '/payment'
-      path: '/payment'
-      fullPath: '/payment'
-      preLoaderRoute: typeof PaymentLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/flights/$params': {
       id: '/flights/$params'
       path: '/flights/$params'
@@ -172,10 +158,10 @@ declare module '@tanstack/react-router' {
     }
     '/payment/': {
       id: '/payment/'
-      path: '/'
-      fullPath: '/payment/'
+      path: '/payment'
+      fullPath: '/payment'
       preLoaderRoute: typeof PaymentIndexLazyImport
-      parentRoute: typeof PaymentLazyImport
+      parentRoute: typeof rootRoute
     }
     '/profile/': {
       id: '/profile/'
@@ -245,24 +231,11 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-interface PaymentLazyRouteChildren {
-  PaymentIndexLazyRoute: typeof PaymentIndexLazyRoute
-}
-
-const PaymentLazyRouteChildren: PaymentLazyRouteChildren = {
-  PaymentIndexLazyRoute: PaymentIndexLazyRoute,
-}
-
-const PaymentLazyRouteWithChildren = PaymentLazyRoute._addFileChildren(
-  PaymentLazyRouteChildren,
-)
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
-  '/payment': typeof PaymentLazyRouteWithChildren
   '/flights/$params': typeof FlightsParamsRoute
   '/notification': typeof NotificationIndexLazyRoute
-  '/payment/': typeof PaymentIndexLazyRoute
+  '/payment': typeof PaymentIndexLazyRoute
   '/profile': typeof ProfileIndexLazyRoute
   '/seat': typeof SeatIndexLazyRoute
   '/success': typeof SuccessIndexLazyRoute
@@ -293,7 +266,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
-  '/payment': typeof PaymentLazyRouteWithChildren
   '/flights/$params': typeof FlightsParamsRoute
   '/notification/': typeof NotificationIndexLazyRoute
   '/payment/': typeof PaymentIndexLazyRoute
@@ -312,10 +284,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/payment'
     | '/flights/$params'
     | '/notification'
-    | '/payment/'
+    | '/payment'
     | '/profile'
     | '/seat'
     | '/success'
@@ -343,7 +314,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/payment'
     | '/flights/$params'
     | '/notification/'
     | '/payment/'
@@ -361,9 +331,9 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
-  PaymentLazyRoute: typeof PaymentLazyRouteWithChildren
   FlightsParamsRoute: typeof FlightsParamsRoute
   NotificationIndexLazyRoute: typeof NotificationIndexLazyRoute
+  PaymentIndexLazyRoute: typeof PaymentIndexLazyRoute
   ProfileIndexLazyRoute: typeof ProfileIndexLazyRoute
   SeatIndexLazyRoute: typeof SeatIndexLazyRoute
   SuccessIndexLazyRoute: typeof SuccessIndexLazyRoute
@@ -377,9 +347,9 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
-  PaymentLazyRoute: PaymentLazyRouteWithChildren,
   FlightsParamsRoute: FlightsParamsRoute,
   NotificationIndexLazyRoute: NotificationIndexLazyRoute,
+  PaymentIndexLazyRoute: PaymentIndexLazyRoute,
   ProfileIndexLazyRoute: ProfileIndexLazyRoute,
   SeatIndexLazyRoute: SeatIndexLazyRoute,
   SuccessIndexLazyRoute: SuccessIndexLazyRoute,
@@ -402,9 +372,9 @@ export const routeTree = rootRoute
       "filePath": "__root.jsx",
       "children": [
         "/",
-        "/payment",
         "/flights/$params",
         "/notification/",
+        "/payment/",
         "/profile/",
         "/seat/",
         "/success/",
@@ -419,12 +389,6 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.lazy.jsx"
     },
-    "/payment": {
-      "filePath": "payment.lazy.jsx",
-      "children": [
-        "/payment/"
-      ]
-    },
     "/flights/$params": {
       "filePath": "flights/$params.jsx"
     },
@@ -432,8 +396,7 @@ export const routeTree = rootRoute
       "filePath": "notification/index.lazy.jsx"
     },
     "/payment/": {
-      "filePath": "payment/index.lazy.jsx",
-      "parent": "/payment"
+      "filePath": "payment/index.lazy.jsx"
     },
     "/profile/": {
       "filePath": "profile/index.lazy.jsx"

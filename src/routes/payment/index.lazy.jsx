@@ -5,19 +5,44 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { createCredit, CreateVa, checkPayment } from "../../services/payment";
+import {
+  createCredit,
+  CreateVa,
+  checkPayment,
+  getBookingData,
+} from "../../services/payment";
 import NavigationBreadCr from "../../pages/navigationBreadCr";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const Route = createLazyFileRoute("/payment/")({
   component: Payment,
 });
 
 function Payment() {
-  const bookingData = new URLSearchParams(window.location.search);
-  const bookingId = bookingData.get("bookingId");
+  const urlParams = new URLSearchParams(window.location.search);
+  const bookingId = urlParams.get("bookingId");
 
   console.log(bookingId);
+
+  const [bookingInfo, setBookingInfo] = useState(null);
+  useEffect(() => {
+    const fetchBookingData = async () => {
+      if (bookingId) {
+        try {
+          const data = await getBookingData(bookingId);
+          setBookingInfo(data);
+        } catch (error) {
+          console.error("Error fetching booking data: ", error);
+        }
+      } else {
+        console.log("Booking id is not available in the URL");
+      }
+    };
+
+    fetchBookingData();
+  }, [bookingId]);
+
+  console.log(bookingInfo);
 
   const [creditValue, setCredit] = useState({
     card_number: "",
@@ -30,24 +55,6 @@ function Payment() {
   });
   const [vaNumber, setVaNumber] = useState("");
   const [loading, setLoading] = useState("");
-  // const [bookingId, setBookingId] = useState("null");
-
-  // useEffect(() => {
-  //   const fetchBookingData = async () => {
-  //     if (id) {
-  //       try {
-  //         const data = await getBookingData(id); // Fetch booking data
-  //         setBookingId(data.bookingId); // Set bookingId from fetched data
-  //       } catch (error) {
-  //         console.error("Error fetching booking data:", error);
-  //       }
-  //     } else {
-  //       console.log("Booking ID is not available in the URL");
-  //     }
-  //   };
-  //   console.log(id);
-  //   fetchBookingData();
-  // }, [id]);
 
   const handleCardNumberChange = (e) => {
     let value = e.target.value.replace(/\s+/g, ""); // Hilangkan spasi
@@ -143,17 +150,12 @@ function Payment() {
       {!loading && (
         <main className="container mx-auto max-w-4xl mt-8 px-4">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mt-8">
-            {/* Left Section */}
-            <div className="md:col-span-3">
+            {/* Pembayaran */}
+            <div className="md:col-span-2">
               <h2 className="text-lg font-bold mb-4">
                 Pilih Metode Pembayaran
               </h2>
-              <Accordion
-                type="single"
-                defaultValue="virtual-account"
-                collapsible
-                className="space-y-4"
-              >
+              <Accordion type="single" collapsible className="space-y-4">
                 {/* Virtual Account */}
                 <AccordionItem value="virtual-account">
                   <AccordionTrigger
@@ -262,7 +264,7 @@ function Payment() {
                             />
                           </div>
                           <div>
-                            <p className="font-medium mb-2">Expiry Month</p>
+                            <p className="font-medium mb-2">Exp Month</p>
                             <input
                               type="text"
                               placeholder="MM"
@@ -278,7 +280,7 @@ function Payment() {
                             />
                           </div>
                           <div>
-                            <p className="font-medium mb-2">Expiry Year</p>
+                            <p className="font-medium mb-2">Exp Year</p>
                             <input
                               type="text"
                               placeholder="YYYY"
@@ -307,63 +309,108 @@ function Payment() {
               </Accordion>
             </div>
 
-            {/* Right Section */}
-            <div className="md:col-span-2 bg-white rounded-lg p-4">
-              <h2 className="text-lg font-bold">
-                Booking Id: <span className="text-purple-600">6723y2GHK</span>
-              </h2>
-              <div className="mt-4 text-sm">
-                <p>
-                  <strong>07:00</strong>
-                  <span className="float-right text-purple-500">
-                    Keberangkatan
-                  </span>
-                </p>
-                <p>3 Maret 2023</p>
-                <p>Soekarno Hatta - Terminal 1A Domestik</p>
-                <hr className="my-4" />
-                <p className="mt-4">
-                  <strong>Jet Air - Economy</strong>
-                </p>
-                <p className="mb-4">
-                  <strong>JT - 203</strong>
-                </p>
-                <p>
-                  <strong>Informasi:</strong>
-                  <br />
-                  Baggage 20 kg
-                  <br />
-                  Cabin baggage 7 kg
-                  <br />
-                  In-Flight Entertainment
-                </p>
-                <hr className="my-4" />
-                <p className="mt-4">
-                  <strong>11:00</strong>
-                  <span className="float-right text-purple-500">
-                    Keberangkatan
-                  </span>
-                </p>
-                <p>3 Maret 2023</p>
-                <p>Melbourne International Airport</p>
-                <hr className="my-4" />
-                <p>
-                  2 Adults<span className="float-right">IDR 9.550.000</span>
-                </p>
-                <p>
-                  1 Baby<span className="float-right">IDR 0</span>
-                </p>
-                <p>
-                  Tax<span className="float-right">IDR 300.000</span>
-                </p>
-                <hr className="my-4" />
-                <p className="text-lg font-bold">
-                  Total
-                  <span className="float-right text-purple-600">
-                    IDR 9.850.000
-                  </span>
-                </p>
-              </div>
+            {/* Booking Details */}
+            <div className="md:col-span-3 bg-white rounded-lg p-4">
+              {bookingInfo ? (
+                <>
+                  <h2 className="text-lg font-bold">
+                    Booking Code:{" "}
+                    <span className="text-purple-600">
+                      {bookingInfo.data.bookingCode}
+                    </span>
+                  </h2>
+                  <div className="mt-4 text-sm">
+                    {bookingInfo.data.segments.map((segment, index) => (
+                      <div key={index}>
+                        <p className="font-bold">
+                          {segment?.flight?.departureTime && (
+                            <p className="font-bold">
+                              {new Date(
+                                segment.flight.departureTime
+                              ).toLocaleString("id-ID", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                day: "2-digit",
+                                month: "long",
+                                year: "numeric",
+                              })}{" "}
+                              <span className="float-right text-purple-500">
+                                Keberangkatan
+                              </span>
+                            </p>
+                          )}
+                        </p>
+                        <p>
+                          {segment?.flight?.departureTerminal?.airport?.name} -{" "}
+                          {segment?.flight?.departureTerminal.name}
+                        </p>
+                        <hr className="my-4 border-1 border-gray-400" />
+                        <p>
+                          {segment?.flight?.airline?.name} -{" "}
+                          {segment?.flight?.seatClass}
+                        </p>
+                        <p className="mb-3">{segment?.flight?.flightNum}</p>
+                        <div>
+                          <p>
+                            <strong>Informasi:</strong>
+                            <br />
+                            Baggage 20 kg
+                            <br />
+                            Cabin baggage 7 kg
+                            <br />
+                            In-Flight Entertainment
+                          </p>
+                        </div>
+                        <hr className="my-4 border-1 border-gray-400" />
+                        <p className="font-bold">
+                          {segment?.flight?.arrivalTime && (
+                            <p className="font-bold">
+                              {new Date(
+                                segment.flight.arrivalTime
+                              ).toLocaleString("id-ID", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                day: "2-digit",
+                                month: "long",
+                                year: "numeric",
+                              })}{" "}
+                              <span className="float-right text-purple-500">
+                                Kedatangan
+                              </span>
+                            </p>
+                          )}
+                        </p>
+                        <p>
+                          {segment?.flight?.arrivalTerminal?.airport?.name} -{" "}
+                          {segment?.flight?.arrivalTerminal.name}
+                        </p>
+                        <hr className="my-4 border-2 border-gray-800" />
+                      </div>
+                    ))}
+                    <p>
+                      {bookingInfo.data.passengerCount.adult} Adults
+                      <span className="float-right">IDR 9.550.000</span>
+                    </p>
+                    <p>
+                      {bookingInfo.data.passengerCount.child} Childs
+                      <span className="float-right">IDR 0</span>
+                    </p>
+                    <p>
+                      Tax<span className="float-right">IDR 300.000</span>
+                    </p>
+                    <hr className="my-4 border-2 border-gray-400" />
+                    <p className="text-lg font-bold">
+                      Total
+                      <span className="float-right text-purple-600">
+                        IDR{" "}
+                        {bookingInfo.data.totalPrice.toLocaleString("id-ID")}
+                      </span>
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <p>Loading booking indormation...</p>
+              )}
             </div>
           </div>
         </main>
