@@ -148,8 +148,12 @@ function Payment() {
               <h2 className="text-lg font-bold mb-4">
                 Pilih Metode Pembayaran
               </h2>
-              <Accordion type="single" collapsible className="space-y-4">
-                {/* Virtual Account */}
+              <Accordion
+                type="single"
+                defaultValue="virtual-account"
+                collapsible
+                className="space-y-4"
+              >
                 {/* Virtual Account */}
                 <AccordionItem value="virtual-account">
                   <AccordionTrigger

@@ -14,9 +14,10 @@ const NavigationBar = () => {
 
   return (
     <header className="bg-white shadow-md py-3 border-b-2">
-      <div className="container mx-auto flex flex-col md:flex-row md:justify-between md:px-4">
-        <div className="hidden md:flex items-center space-x-2 mb-3 md:mb-0">
-          <Link as={Link} to="/">
+      <div className="container mx-auto flex flex-wrap items-center justify-between">
+        {/* Logo Section */}
+        <div className="flex items-center space-x-2 ms-5">
+          <Link to="/">
             <img src="/svg/binar.svg" alt="TraveLynk" className="w-24 h-8" />
           </Link>
         </div>
