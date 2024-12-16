@@ -95,7 +95,7 @@ const BookingList = ({
                             <div className="col-span-3">
                               <div className="flex items-center gap-2">
                                 <img
-                                  src="/src/assets/live-area.svg"
+                                  src="/svg/live-area.svg"
                                   alt="Departure Icon"
                                   className="w-[20px] h-[20px]"
                                 />
@@ -135,7 +135,7 @@ const BookingList = ({
                                   "N.A"}
                               </span>
                               <img
-                                src="/src/assets/route.svg"
+                                src="/svg/route.svg"
                                 alt="Flight Route"
                                 className="w-full max-w-[250px] my-2"
                               />
@@ -145,7 +145,7 @@ const BookingList = ({
                             <div className="col-span-3 ">
                               <div className="flex items-center gap-2">
                                 <img
-                                  src="/src/assets/live-area.svg"
+                                  src="/svg/live-area.svg"
                                   alt="Arrival Icon"
                                   className="w-[20px] h-[20px]"
                                 />
