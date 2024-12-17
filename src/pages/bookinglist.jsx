@@ -204,7 +204,7 @@ const BookingList = ({
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="md:text-base font-bold text-purple-700">
+                          <p className="md:text-base font-bold text-darkblue05">
                             {`IDR ${booking.totalPrice?.toLocaleString() || "N/A"}`}
                           </p>
                         </div>
