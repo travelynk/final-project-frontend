@@ -14,8 +14,9 @@ import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { profile } from "../../services/auth"; // Assuming profile function is in src/service/auth
+import { setToken } from "../../redux/slices/auth";
 
 export const Route = createLazyFileRoute("/profile/")({
   component: Profile,
@@ -23,6 +24,7 @@ export const Route = createLazyFileRoute("/profile/")({
 
 function Profile() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
 
   // Use TanStack Query to fetch profile data
@@ -38,7 +40,7 @@ function Profile() {
 
   useEffect(() => {
     if (!token) {
-      navigate({ to: "/login" });
+      navigate({ to: "/" });
     }
   }, [navigate, token]);
 
@@ -68,6 +70,13 @@ function Profile() {
       email: e.target.email.value,
     });
   };
+
+  const handleLogout = () => {
+    dispatch(setToken(null));
+
+    navigate({ to: "/" });
+  };
+
   return (
     <>
       <div className="container max-w-[1024px] mx-auto sm:pt-8 pt-2 px-4">
@@ -108,7 +117,10 @@ function Profile() {
                 <FaCog />
                 <span>Pengaturan Akun</span>
               </li>
-              <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2">
+              <li
+                onClick={handleLogout}
+                className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2"
+              >
                 <FaSignOutAlt />
                 <span>Keluar</span>
               </li>
