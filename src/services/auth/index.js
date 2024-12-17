@@ -126,65 +126,21 @@ export const resetPassword = async ({
   return result; // Return the successful response
 };
 
-export const exchangeGoogleToken = async (googleToken) => {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/auth/google/callback`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token: googleToken }), // Send the Google token to the backend
-      }
-    );
-
-    const result = await response.json();
-
-    // Handle errors if the response is not successful
-    if (!response.ok) {
-      const error = new Error(
-        result?.message || "Failed to exchange Google token"
-      );
-      error.response = { data: result };
-      throw error;
-    }
-
-    return result.data; // Return the app's JWT token
-  } catch (error) {
-    console.error("Google token exchange error:", error);
-    throw error;
-  }
-};
-
 export const googleLogin = async () => {
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/auth/google`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google`);
+
+  // Parse the response
+  const result = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(
+      result?.message || "Failed to get Google authorization URL"
     );
-
-    const result = await response.json();
-
-    // Handle errors if the response is not successful
-    if (!response.ok) {
-      const error = new Error(
-        result?.message || "Failed to get Google Authorization URL"
-      );
-      error.response = { data: result };
-      throw error;
-    }
-
-    return result.data; // Return the Google authorization URL
-  } catch (error) {
-    console.error("Google login error:", error);
+    error.response = { data: result };
     throw error;
   }
+  console.log(result);
+  return result?.data; // Return the Google Auth URL
 };
 
 export const profile = async () => {
