@@ -14,6 +14,8 @@ import {
 import { z } from "zod";
 import { Seat } from "@/services/seat";
 
+const storeBooking = async (bookingData) => {};
+
 // Schema Validasi Zod
 const bookingSchema = z.object({
   fullname: z.string().nonempty("Nama lengkap harus diisi"),
@@ -41,10 +43,6 @@ export default function BookingForm({ onFormSubmit }) {
   const profileData = queryClient.getQueryData(["profile"]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [parsedData, setParsedData] = useState({});
-  const [currentFlights, setCurrentFlights] = useState([]);
-  const [currentFlightIndex, setCurrentFlightIndex] = useState(0);
-  const [currentFlightId, setCurrentFlightId] = useState(null);
 
   const [formState, setFormState] = useState({
     fullname: profileData?.fullName || "",
@@ -96,47 +94,60 @@ export default function BookingForm({ onFormSubmit }) {
     }
   };
   //from localstorage
+
   useEffect(() => {
-    // Ambil data penerbangan dari localStorage
-    const storedData = JSON.parse(localStorage.getItem("cartTicket"));
-    if (storedData) {
-      setParsedData(storedData.flights[0]);
-      loadFlightData(storedData.flights[0], 0);
-      setCurrentFlights(storedData.flights || []);
+    // Mengambil data dari localStorage
+    const cartTicket = localStorage.getItem("cartTicket");
+    if (cartTicket) {
+      try {
+        // Parse JSON ke objek JavaScript
+        const cartData = JSON.parse(cartTicket);
+
+        // Mengambil data flights pergi dan pulang
+        const pergiFlights = cartData?.flights[0]?.pergi?.flights || [];
+        const pulangFlights = cartData?.flights[0]?.pulang?.flights || [];
+
+        // Mengambil data passengerCount untuk pergi
+        const pergiPassengerCount =
+          cartData?.flights[0]?.pergi?.passengerCount || 0;
+
+        // Tentukan passengerCount pulang
+        let pulangPassengerCount = 0;
+
+        // Jika ada penerbangan pulang, bagi passengerCount menjadi dua
+        if (pulangFlights.length > 0) {
+          pulangPassengerCount = Math.floor(pergiPassengerCount / 2);
+        } else {
+          pulangPassengerCount = pergiPassengerCount; // Jika tidak ada pulang, gunakan yang sama
+        }
+
+        // Menghasilkan penumpang berdasarkan passengerCount
+        const pergiPassengers = generatePassengers(pergiPassengerCount);
+        const pulangPassengers = generatePassengers(pulangPassengerCount);
+
+        // Update formState untuk penumpang pergi dan pulang
+        setFormState((prev) => ({
+          ...prev,
+          passengers: [...pergiPassengers, ...pulangPassengers], // Gabungkan penumpang pergi dan pulang
+        }));
+
+        console.log("Data flights pergi:", pergiFlights);
+        console.log("Data flights pulang:", pulangFlights);
+        console.log("Passenger count pergi:", pergiPassengerCount);
+        console.log("Passenger count pulang:", pulangPassengerCount);
+      } catch (error) {
+        console.error("Gagal mem-parse cartTicket dari localStorage:", error);
+      }
+    } else {
+      console.log("Tidak ada data cartTicket di localStorage.");
     }
   }, []);
-
-  const loadFlightData = (flights, index) => {
-    const flightSegment =
-      flights.pergi?.flights[index] || flights.pulang?.flights[index];
-
-    const flightId = flightSegment?.flightId; // Assuming flightId is in the segment data
-    console.log("FlightID :", flightId);
-
-    if (flightId) {
-      setCurrentFlightId(flightId); // Simpan flightId di state
-      queryClient.prefetchQuery({
-        queryKey: ["seats", flightId],
-        queryFn: () => Seat(flightId),
-        staleTime: 1000 * 60 * 5,
-      });
-    }
-
-    // Generate passengers berdasarkan jumlah penumpang
-    const passengers = generatePassengers(
-      flights?.pergi?.passengerCount || flights?.pulang?.passengerCount
-    );
-
-    setFormState({
-      flightNum: flightSegment?.flightNum || "",
-      passengers: passengers,
-    });
-  };
 
   const generatePassengers = (passengerCount) => {
     const { adult = 0, child = 0, infant = 0 } = passengerCount;
     const passengers = [];
 
+    // Generate passengers based on type
     for (let i = 0; i < adult; i++) {
       passengers.push(createPassengerObject("Adult"));
     }
@@ -160,74 +171,46 @@ export default function BookingForm({ onFormSubmit }) {
     expiry: "",
     type,
   });
-  const handleSaveCurrentFlight = () => {
-    // Simpan data formState saat ini ke currentFlights
-    setCurrentFlights((prev) => [...prev, formState]);
-
-    // Cek apakah masih ada flightId berikutnya untuk dirender
-    const nextIndex = currentFlightIndex + 1;
-
-    if (parsedData.pergi?.flights[nextIndex]) {
-      setCurrentFlightIndex(nextIndex);
-      loadFlightData(parsedData, nextIndex);
-    } else if (
-      parsedData.pulang?.flights[nextIndex - parsedData.pergi?.flights.length]
-    ) {
-      setCurrentFlightIndex(nextIndex);
-      loadFlightData(parsedData, nextIndex - parsedData.pergi?.flights.length);
-    }
-  };
-
-  const allFlightsSaved = () => {
-    const totalFlights =
-      (parsedData.pergi?.flights?.length || 0) +
-      (parsedData.pulang?.flights?.length || 0);
-    return currentFlights.length === totalFlights;
-  };
 
   //Seat
 
   // Fetch seats using TanStack Query
-  useEffect(() => {
-    console.log("Before query:", currentFlightId); // Log sebelum query
-  }, [currentFlightId]);
 
   const {
     data: seatData,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["seats", currentFlightId], // Use the flightId for unique seat query
-    queryFn: () => {
-      console.log("Fetching seat data for flightId:", currentFlightId); // Log before fetching
-      return Seat(currentFlightId);
-    }, // Adjust Seat function to accept flightId
+    queryKey: ["seats", 2], // Use the flightId for unique seat query
+    queryFn: () => Seat(2), // Adjust Seat function to accept flightId
 
     staleTime: 1000 * 60 * 5,
   });
-  console.log("Seat Data:", seatData);
-  console.log("QueryKey:", ["seats", currentFlightId]); // Log queryKey
 
   if (isLoading) return <p>Loading seats...</p>;
   if (isError) return <p>Failed to load seats. Please try again.</p>;
 
   const seatRows = Math.max(
-    ...(seatData?.map((seat) => parseInt(seat.position[0])) || [1])
+    ...seatData.map((seat) => parseInt(seat.position.match(/\d+/)?.[0] || "1"))
   );
   const seatColumns = ["A", "B", "C", "", "D", "E", "F"];
   const reservedSeats = seatData
     .filter((seat) => !seat.isAvailable)
     .map((seat) => seat.position);
 
+  // Seat Selection Logic
   const toggleSeatSelection = (seat) => {
+    const totalPassengers = formState.passengers.length; // Jumlah total penumpang yang tersedia
+
+    // Pastikan jumlah kursi yang dipilih tidak melebihi jumlah penumpang
     if (selectedSeats.includes(seat)) {
       console.log(`Seat deselected: ${seat}`);
-
       setSelectedSeats(selectedSeats.filter((s) => s !== seat));
-    } else {
+    } else if (selectedSeats.length < totalPassengers) {
       console.log(`Seat selected: ${seat}`);
-
       setSelectedSeats([...selectedSeats, seat]);
+    } else {
+      console.log("Maximum number of seats selected");
     }
   };
 
@@ -574,25 +557,20 @@ export default function BookingForm({ onFormSubmit }) {
       </div>
       {/* Buttons */}
       <div className="mt-4 flex gap-4">
-        <button
-          onClick={handleSaveCurrentFlight}
-          className="bg-blue-500 text-white"
-        >
+        <button className="bg-blue-500 text-white">
           Simpan Penerbangan Saat Ini {formState.flightNum}
         </button>
-        {allFlightsSaved() && (
-          <button
-            onClick={handleSubmit}
-            className={`mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040] ${
-              isSubmitted
-                ? "bg-gray-500 cursor-not-allowed"
-                : "bg-blue-500 text-white"
-            }`}
-            disabled={isSubmitted}
-          >
-            Simpan dan lanjut
-          </button>
-        )}
+        <button
+          onClick={handleSubmit}
+          className={`mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040] ${
+            isSubmitted
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-blue-500 text-white"
+          }`}
+          disabled={isSubmitted}
+        >
+          Simpan dan lanjut
+        </button>
       </div>
     </div>
   );
