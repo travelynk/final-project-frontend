@@ -1,6 +1,7 @@
 import { useLocation } from "@tanstack/react-router";
 import { useSelector } from "react-redux";
 import { Link } from "@tanstack/react-router";
+import DarkMode from "../DarkMode";
 
 const NavigationBar = () => {
   const { token } = useSelector((state) => state.auth);
@@ -13,45 +14,34 @@ const NavigationBar = () => {
   }
 
   return (
-    <header className="bg-white shadow-md py-3 border-b-2">
-      <div className="container mx-auto flex flex-col md:flex-row md:justify-between md:px-4">
-        <div className="hidden md:flex items-center space-x-2 mb-3 md:mb-0">
-          <Link as={Link} to="/">
-            <img src="/binar.svg" alt="TraveLynk" className="w-24 h-8" />
+    <header className="shadow-md py-3 border-b-2  dark:border-white">
+      <div className="container mx-auto flex flex-wrap items-center justify-between">
+        {/* Logo Section */}
+        <div className="flex items-center space-x-2 ms-5">
+          <Link
+            to="/"
+            className="flex items-center dark:text-darkblue05 gap-3 font-semibold"
+          >
+            <img
+              src="/img/logo-travelynk.png"
+              alt="TraveLynk"
+              className="w-12 h-auto rounded-full"
+            />
+            <span className="hidden lg:flex">TraveLynk</span>
           </Link>
         </div>
-        <div className="flex flex-1 justify-between mx-6 mb-1 md:mb-0">
-          <div className="w-full max-w-xs flex">
-            <input
-              type="text"
-              placeholder="Cari di sini ..."
-              className="flex-grow px-2 py-2 rounded-l-lg bg-gray-100 border border-gray-300"
-            />
-            <button className="px-3 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-5 h-5 transform transition-transform duration-300 hover:scale-125"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                />
-              </svg>
-            </button>
-          </div>
+
+        {/* Navbar Items */}
+        <div className="flex items-center space-x-6">
+          <DarkMode />
 
           {token ? (
             // If logged in
-            <div className="flex justify-center md:justify-end w-full md:w-auto space-x-4">
+            <div className="flex justify-end items-center">
+              {/* Ticket History */}
               <Link
-                as={Link}
                 to="/ticket-history"
-                className="p-2 rounded-full hover:bg-gray-200"
+                className="p-2 rounded-full hover:bg-gray-200 mx-3"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -68,10 +58,11 @@ const NavigationBar = () => {
                   />
                 </svg>
               </Link>
+
+              {/* Notifications */}
               <Link
-                as={Link}
                 to="/notification"
-                className="p-2 rounded-full hover:bg-gray-200"
+                className="p-2 rounded-full hover:bg-gray-200 mx-3"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -88,10 +79,11 @@ const NavigationBar = () => {
                   />
                 </svg>
               </Link>
+
+              {/* Profile */}
               <Link
-                as={Link}
                 to="/profile"
-                className="p-2 rounded-full hover:bg-gray-200"
+                className="p-2 rounded-full hover:bg-gray-200 mx-3"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -112,9 +104,8 @@ const NavigationBar = () => {
           ) : (
             // If not logged in
             <Link
-              as={Link}
               to="/auth/login"
-              className="flex items-center space-x-2 bg-purple-600 text-white px-5 py-2 rounded-full ms-2 md:ms-0 hover:bg-purple-700"
+              className="flex items-center space-x-2 bg-darkblue05 text-white px-5 py-2 rounded-full hover:bg-darkblue04"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

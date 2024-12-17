@@ -13,7 +13,7 @@ import { Button } from "../../../components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "../../../hooks/use-toast";
-import { verifyOtp, sendOtp } from "../../../service/auth";
+import { verifyOtp, sendOtp } from "../../../services/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../../../redux/slices/auth";
 
@@ -143,7 +143,7 @@ function verifyOTP() {
 
           {/* Card Content */}
           <CardHeader className="mt-12">
-            <CardTitle className="text-2xl font-bold mb-8">
+            <CardTitle className="text-2xl font-bold mb-8 dark:text-darkblue05">
               Masukkan OTP
             </CardTitle>
             <CardDescription className="flex justify-center mt-2">
@@ -192,7 +192,7 @@ function verifyOTP() {
           <CardFooter>
             <Button
               onClick={handleSubmit}
-              className="w-full py-2 mt-16 bg-[#7126B5] text-white font-semibold rounded-[16px] hover:bg-purple-600"
+              className="w-full py-2 mt-16  text-white font-semibold rounded-[16px] "
             >
               Simpan
             </Button>

@@ -23,7 +23,7 @@ function Notification() {
           {/* Flex container to align Card and Filter/Search buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Beranda Card */}
-            <Card className="p-4 rounded-[12px] flex justify-between items-center bg-[#A06ECE] h-[50px] w-full sm:w-[777px]">
+            <Card className="p-4 rounded-[12px] flex justify-between items-center bg-darkblue05 h-[50px] w-full sm:w-[777px]">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center justify-center w-8 h-8 text-white rounded-full">
                   <Button variant="link" size="icon" className="p-0">
@@ -51,7 +51,7 @@ function Notification() {
               <div className="flex justify-between w-full sm:hidden">
                 <Button
                   variant="outline"
-                  className="w-[86px] h-[36px] flex items-center justify-center rounded-[18px] border border-[#7126B5]"
+                  className="w-[86px] h-[36px] flex items-center justify-center rounded-[18px] border border-darkblue05"
                 >
                   <Filter />
                   Filter
@@ -62,7 +62,7 @@ function Notification() {
                   className="h-[36px] w-[36px] flex items-center justify-center"
                 >
                   <Search
-                    style={{ width: "24px", height: "24px", color: "#7126B5" }}
+                    style={{ width: "24px", height: "24px", color: "#21a2da" }}
                   />
                 </Button>
               </div>
@@ -71,14 +71,14 @@ function Notification() {
               <div className="hidden sm:flex items-center space-x-2">
                 <Button
                   variant="outline"
-                  className="w-[86px] h-[36px] rounded-[18px] border border-[#7126B5]"
+                  className="w-[86px] h-[36px] rounded-[18px] border border-darkblue05"
                 >
                   <Filter />
                   Filter
                 </Button>
                 <Button variant="link" size="icon" className="p-0">
                   <Search
-                    style={{ width: "24px", height: "24px", color: "#7126B5" }}
+                    style={{ width: "24px", height: "24px", color: "#21a2da" }}
                   />
                 </Button>
               </div>
@@ -94,25 +94,29 @@ function Notification() {
             <div className="flex items-start space-x-4">
               {/* Icon */}
               <div
-                className="flex items-center justify-center w-6 h-6 rounded-full bg-[#A06ECE]"
+                className="flex items-center justify-center w-6 h-6 rounded-full bg-darkblue05"
                 style={{ minWidth: "30px", minHeight: "30px" }}
               >
                 <Bell className="w-4 h-4 text-white" />
               </div>
               {/* Content */}
-              <div className="flex flex-col">
-                <span className="text-sm text-gray-500">Promosi</span>
-                <span className="text-base text-black">
+              <div className="flex flex-col dark:text-white">
+                <span className="text-sm text-gray-500 dark:text-white">
+                  Promosi
+                </span>
+                <span className="text-base text-black dark:text-white">
                   Dapatkan Potongan 50% Tiket!
                 </span>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-500 dark:text-white">
                   Syarat dan Ketentuan berlaku!
                 </span>
               </div>
             </div>
             {/* Timestamp */}
             <div className="flex items-center space-x-2 mt-2 lg:-mt-8 sm:ml-0 ml-auto">
-              <span className="text-sm text-gray-400">20 Maret, 14:04</span>
+              <span className="text-sm text-gray-400 dark:text-white">
+                20 Maret, 14:04
+              </span>
               <div className="w-2 h-2 rounded-full bg-green-500"></div>
             </div>
           </Card>

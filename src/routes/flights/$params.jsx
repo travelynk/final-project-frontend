@@ -8,7 +8,7 @@ import {
 } from "../../components/ui/accordion";
 import { Checkbox } from "../../components/ui/checkbox";
 import { Slider } from "../../components/ui/slider";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -28,45 +28,232 @@ export const Route = createFileRoute("/flights/$params")({
 });
 
 function Flight() {
+  const [roundTrip, setRoundTrip] = useState(false);
+
+  const [airlines, setAirlines] = useState([]);
+  const [sliderValue, setSliderValue] = useState();
+  const [listFlights, setListFlights] = useState([]);
+  const [minPrize, setMinprize] = useState();
+  const [maxPrize, setMaxprize] = useState();
+  const [checkedAirlines, setCheckedAirlines] = useState([]);
   const [sort, setSort] = useState("1");
+  const [cartDepartureFlight, setCartDepartureFlight] = useState(null);
+  const [cartArrivalFlight, setCartArrivalFlight] = useState(null);
+  const [transitFilter, setTransitFilter] = useState({
+    isDirect: true,
+    isOneTransit: true,
+    isTwoPlusTransit: true,
+  });
 
-  const { rf, dt, ps, sc } = Route.useSearch();
+  const searchQuery = { ...Route.useSearch() };
 
-  const search = { rf, dt, ps, sc };
+  const { data, isSuccess, isLoading } = useQuery({
+    queryKey: ["flights", searchQuery],
+    queryFn: () => getFlights(searchQuery),
+    enabled: true,
+    refetchOnWindowFocus: false,
+  });
 
-  const [origin, destination] = rf.split(".");
+  useEffect(() => {
+    const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
+      pessanger: null,
+      flights: [{ departure: null, arrival: null }],
+    };
 
-  const totalPassengers = ps
-    .split(".")
-    .reduce((sum, current) => sum + +current, 0);
+    if (storedCart.flights.length > 0) {
+      const { departure, arrival } = storedCart.flights[0];
 
-  const flightDetails = {
-    origin,
-    destination,
-    totalPassengers,
-    sc,
+      if (departure) {
+        setCartDepartureFlight(departure);
+      }
+
+      if (arrival) {
+        setCartArrivalFlight(arrival);
+        if (cartArrivalFlight) {
+          // alert("Cart arrival ada isi");
+          setRoundTrip(true);
+        }
+      }
+    }
+
+    if (isSuccess) {
+      if (data === null) {
+        return <NotFound />;
+      }
+
+      const flights = !roundTrip
+        ? data.outboundFlights || []
+        : data.returnFlights || [];
+
+      if (flights) {
+        const airlines = flights
+          .flatMap((flight) =>
+            flight.flights.map((f) => ({
+              name: f.airline.name,
+              image: f.airline.image,
+            }))
+          )
+          .filter(
+            (value, index, self) =>
+              index === self.findIndex((t) => t.name === value.name)
+          );
+
+        const prices = flights.map((flight) =>
+          parseInt(flight.price.replace(/[^0-9]/g, ""), 10)
+        );
+
+        setAirlines(airlines);
+        setListFlights(flights);
+        setMinprize(Math.min(...prices));
+        setMaxprize(Math.max(...prices));
+        setSliderValue(Math.min(...prices));
+        setCheckedAirlines(airlines.map((airline) => airline.name));
+      }
+    }
+  }, [
+    isSuccess,
+    data,
+    roundTrip,
+    searchQuery.ps,
+    searchQuery.sc,
+    setRoundTrip,
+    cartArrivalFlight,
+  ]);
+
+  const flightFilter = {
+    airlines,
+    minPrize,
+    maxPrize,
+    sliderValue,
+    checkedAirlines,
+    setSliderValue,
+    setCheckedAirlines,
+    sort,
+    transitFilter,
+    setTransitFilter,
+  };
+  const cart = {
+    cartDepartureFlight,
+    cartArrivalFlight,
+    setCartArrivalFlight,
+    setCartDepartureFlight,
+  };
+
+  const handleCheckboxChange = (event, airlineName) => {
+    if (event) {
+      setCheckedAirlines([...checkedAirlines, airlineName]);
+    } else {
+      setCheckedAirlines(
+        checkedAirlines.filter((name) => name !== airlineName)
+      );
+    }
+  };
+
+  const handleTransitChange = (type) => {
+    setTransitFilter((prevState) => ({
+      ...prevState,
+      [type]: !prevState[type],
+    }));
   };
 
   return (
     <>
       <div className="container mx-auto lg:px-28 px-2">
         <HeaderComponent
-          flightDetails={flightDetails}
-          sort={sort}
+          flightDetails={searchQuery}
+          filters={flightFilter}
           setSort={setSort}
+          handleCheckboxChange={handleCheckboxChange}
+          handleTransitChange={handleTransitChange}
+          listFlights={listFlights}
+          roundTrip={roundTrip}
         />
-        <BodyComponent filters={search} sort={sort} />
+        <BodyComponent
+          listFlights={listFlights}
+          sort={sort}
+          filters={flightFilter}
+          isLoading={isLoading}
+          handleCheckboxChange={handleCheckboxChange}
+          handleTransitChange={handleTransitChange}
+          roundTrip={roundTrip}
+          setRoundTrip={setRoundTrip}
+          cart={cart}
+        />
       </div>
     </>
   );
 }
 
-const HeaderComponent = ({ flightDetails, sort, setSort }) => {
-  const [sliderValue, setSliderValue] = useState(3000000);
+const HeaderComponent = ({
+  flightDetails,
+  setSort,
+  filters,
+  handleCheckboxChange,
+  handleTransitChange,
+  listFlights,
+  roundTrip,
+}) => {
+  const [dates, setDates] = useState([]);
+  const [departureDate, setDepartureDate] = useState();
+  const [returnDate, setReturnDate] = useState();
   const navigate = useNavigate();
-  const handleSliderChange = (value) => {
-    setSliderValue(value[0]);
-  };
+  const prevRfRef = useRef();
+  const prevRoundTripRef = useRef();
+  const { rf, dt, ps, sc } = flightDetails;
+
+  if (dt.includes(".")) {
+    const [departure, returnDt] = dt.split(".");
+    if (departure !== departureDate) setDepartureDate(departure);
+    if (returnDt !== returnDate) setReturnDate(returnDt);
+  }
+
+  const [origin, destination] = rf.split(".");
+  const [countAdult, countChild, countBaby] = ps.split(".").map(Number);
+
+  const {
+    airlines,
+    minPrize,
+    maxPrize,
+    sliderValue,
+    checkedAirlines,
+    setCheckedAirlines,
+    sort,
+    transitFilter,
+    setTransitFilter,
+  } = filters;
+
+  useEffect(() => {
+    const listDates = (startDate) => {
+      const dates = [];
+      const length = !roundTrip && returnDate
+        ? Math.ceil(
+            (new Date(returnDate) - new Date(departureDate)) /
+              (1000 * 3600 * 24)
+          ) + 1
+        : 8;
+
+      for (let i = 0; i < length; i++) {
+        const newDate = new Date(
+          new Date(startDate).setDate(new Date(startDate).getDate() + i)
+        )
+          .toISOString()
+          .split("T")[0];
+        dates.push(newDate);
+      }
+
+      return dates;
+    };
+
+    if (rf !== prevRfRef.current || roundTrip !== prevRoundTripRef.current) {
+      if (dt.includes(".")) {
+        setDates(listDates(roundTrip ? returnDate : departureDate));
+      } else {
+        setDates(listDates(dt));
+      }
+      prevRoundTripRef.current = roundTrip;
+      prevRfRef.current = rf;
+    }
+  }, [rf, dt, roundTrip, returnDate, departureDate]);
 
   return (
     <>
@@ -76,47 +263,57 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
         </h1>
         <div className="navigation px-2 grid grid-cols-1 sm:grid-cols-7 gap-3 text-white">
           <div className="labels col-span-1 sm:col-span-6 flex gap-x-3 bg-darkblue03 p-3 rounded-lg">
-            <img src="/src/assets/arrow-left.svg" alt="" />
+            <img src="/svg/arrow-left.svg" alt="" />
             <p className="text-sm sm:text-base">
-              {flightDetails.origin} {">"} {flightDetails.destination} -{" "}
-              {flightDetails.totalPassengers} Penumpang - {flightDetails.sc}
+              {`${origin} > ${destination} - ${countAdult + countChild + countBaby} Penumpang - ${sc}`}
             </p>
           </div>
           <Button
             className="bg-[#73CA5C] hover:bg-[#73CA5C]/70 h-full px-4 py-2 rounded-lg"
-            onClick={() => navigate({ to: "/" })}
+            onClick={() => {
+              navigate({ to: "/" });
+              localStorage.removeItem("cartTicket");
+            }}
           >
             Ubah Penerbangan
           </Button>
         </div>
-        <div className="list-date flex px-3 overflow-x-auto gap-2">
-          <div className="border border-gray-300 p-3 flex flex-col justify-center items-center min-w-[150px] sm:max-w-[120px] rounded-lg hover:bg-darkblue03 transition text-xl  cursor-pointer">
-            <span className="text-sm sm:text-xl ">Senin</span>
-            <p className="bg-none text-xs sm:text-sm">23/12/2023</p>
-          </div>
-          <div className="border border-gray-300 p-3 flex flex-col justify-center items-center min-w-[150px] sm:max-w-[120px] rounded-lg hover:bg-darkblue03 transition text-xl  cursor-pointer">
-            <span className="text-sm sm:text-xl ">Selasa</span>
-            <p className="bg-none text-xs sm:text-sm">24/12/2023</p>
-          </div>
-          <div className="border border-gray-300 p-3 flex flex-col justify-center items-center min-w-[150px] sm:max-w-[120px] rounded-lg hover:bg-darkblue03 transition text-xl  cursor-pointer">
-            <span className="text-sm sm:text-xl ">Rabu</span>
-            <p className="bg-none text-xs sm:text-sm">25/12/2023</p>
-          </div>
-          <div className="border border-gray-300 p-3 flex flex-col justify-center items-center min-w-[150px] sm:max-w-[120px] rounded-lg hover:bg-darkblue03 transition text-xl  cursor-pointer">
-            <span className="text-sm sm:text-xl ">Kamis</span>
-            <p className="bg-none text-xs sm:text-sm">26/12/2023</p>
-          </div>
-          <div className="border border-gray-300 p-3 flex flex-col justify-center items-center min-w-[150px] sm:max-w-[120px] rounded-lg hover:bg-darkblue03 transition text-xl  cursor-pointer">
-            <span className="text-sm sm:text-base">Jumat</span>
-            <p className="bg-none text-xs sm:text-sm">27/12/2023</p>
-          </div>
+        <div className="list-date flex px-3 overflow-x-auto gap-2 ">
+          {dates.map((day, i) => {
+            return (
+              <Button
+                onClick={() =>
+                  navigate({
+                    to: "/flights/search",
+                    search: {
+                      rf: `${origin}.${destination}`,
+                      dt: dt.includes(".")
+                        ? `${format(new Date(!roundTrip ? day : departureDate), "yyyy-MM-dd")}.${format(new Date(!roundTrip ? returnDate : day), "yyyy-MM-dd")}`
+                        : `${format(new Date(day), "yyyy-MM-dd")}`,
+                      ps: `${countAdult}.${countChild}.${countBaby}`,
+                      sc,
+                    },
+                  })
+                }
+                key={i}
+                className="border border-gray-300 bg-white h-auto  text-black p-3 flex flex-col justify-center items-center min-w-[150px] sm:max-w-[120px] rounded-lg hover:bg-darkblue03 transition text-xl  cursor-pointer"
+              >
+                <span className="text-sm sm:text-xl ">
+                  {new Date(day).toLocaleDateString("id-ID", {
+                    weekday: "long",
+                  })}
+                </span>
+                <p className="bg-none text-xs sm:text-sm">{day}</p>
+              </Button>
+            );
+          })}
         </div>
         <div className="filter flex justify-between lg:justify-end ">
           <div className="md:hidden">
             <Popover>
               <PopoverTrigger asChild>
                 <Button className="bg-transparent border border-darkblue03 px-3 text-darkblue05 hover:text-white rounded-full  hover:fill-white text-lg transition">
-                  <img src="/src/assets/fitler.svg" alt="" />
+                  <img src="/svg/fitler.svg" alt="" />
                   Filter
                 </Button>
               </PopoverTrigger>
@@ -128,34 +325,54 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
                   >
                     <AccordionTrigger className="w-full bg-transparent ">
                       <div className="flex gap-3">
-                        <img src="/src/assets/box.svg" alt="" />
+                        <img src="/svg/box.svg" alt="" />
                         <span>Transit</span>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="flex flex-col gap-2">
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" defaultChecked disabled />
+                        <Checkbox
+                          id="direct"
+                          defaultChecked
+                          disabled
+                          checked={transitFilter.isDirect}
+                          onCheckedChange={() =>
+                            handleTransitChange("isDirect")
+                          }
+                        />
 
                         <label
-                          htmlFor="terms"
+                          htmlFor="direct"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                           Direct
                         </label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
+                        <Checkbox
+                          id="1"
+                          checked={transitFilter.isOneTransit}
+                          onCheckedChange={() =>
+                            handleTransitChange("isOneTransit")
+                          }
+                        />
                         <label
-                          htmlFor="terms"
+                          htmlFor="1"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                           1 Transit
                         </label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
+                        <Checkbox
+                          id="2+"
+                          checked={transitFilter.isTwoPlusTransit}
+                          onCheckedChange={() =>
+                            handleTransitChange("isTwoPlusTransit")
+                          }
+                        />
                         <label
-                          htmlFor="terms"
+                          htmlFor="2+"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                           2+ Transit
@@ -164,6 +381,7 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
+
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem
                     value="item-1"
@@ -171,41 +389,35 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
                   >
                     <AccordionTrigger className="w-full bg-transparent ">
                       <div className="flex gap-3">
-                        <img src="/src/assets/pesawat.svg" alt="" />
+                        <img src="/svg/pesawat.svg" alt="" />
                         <span>Maskapai</span>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="flex flex-col gap-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <img src="/src/assets/logo-plane.svg" alt="" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Garuda Indonesia
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <img src="/src/assets/logo-plane.svg" alt="" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Garuda Indonesia
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <img src="/src/assets/logo-plane.svg" alt="" />
-                        <label
-                          htmlFor="terms"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Garuda Indonesia
-                        </label>
-                      </div>
+                      {airlines?.map((data, i) => {
+                        return (
+                          <div className="flex items-center space-x-2" key={i}>
+                            <Checkbox
+                              id={`checkbox-${data.name}`}
+                              checked={checkedAirlines.includes(data.name)}
+                              onCheckedChange={(checked) => {
+                                handleCheckboxChange(checked, data.name);
+                              }}
+                            />
+                            <img
+                              src={data.image}
+                              alt="logo-airlines"
+                              className="h-auto w-5"
+                            />
+                            <label
+                              htmlFor={`checkbox-${data.name}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {data.name}
+                            </label>
+                          </div>
+                        );
+                      })}
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
@@ -217,25 +429,38 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
                   >
                     <AccordionTrigger className="w-full bg-transparent ">
                       <div className="flex gap-3">
-                        <img src="/src/assets/dollar.svg" alt="" />
+                        <img src="/svg/dollar.svg" alt="" />
                         <span>Harga</span>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="flex flex-col gap-2">
                       <div className="flex justify-end text-gray-500">
-                        <span>IDR {sliderValue}</span>
+                        <span>
+                          IDR{" "}
+                          {new Intl.NumberFormat("id-ID").format(sliderValue)}
+                        </span>
                       </div>
                       <Slider
                         value={[sliderValue]}
-                        onValueChange={handleSliderChange}
-                        max={5000000}
-                        min={2500000}
+                        onValueChange={(value) => setSliderValue(value[0])}
+                        max={maxPrize}
+                        min={minPrize}
                         step={1}
                         className="w-full"
                       />
                       <div className="flex justify-between text-gray-500">
-                        <span>IDR 2.500.000</span>
-                        <span>IDR 5.000/00</span>
+                        <span>
+                          IDR{" "}
+                          {minPrize
+                            ? new Intl.NumberFormat("id-ID").format(minPrize)
+                            : "0"}
+                        </span>
+                        <span>
+                          IDR{" "}
+                          {maxPrize
+                            ? new Intl.NumberFormat("id-ID").format(maxPrize)
+                            : "0"}
+                        </span>
                       </div>
                     </AccordionContent>
                   </AccordionItem>
@@ -246,7 +471,7 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
           <Popover>
             <PopoverTrigger asChild>
               <Button className="bg-transparent border border-darkblue03 px-3 text-darkblue05 hover:text-white rounded-full  hover:fill-white text-lg transition">
-                <img src="/src/assets/fitler.svg" alt="" />
+                <img src="/svg/fitler.svg" alt="" />
                 Termurah
               </Button>
             </PopoverTrigger>
@@ -262,8 +487,7 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
                       className=" group-hover:text-white  gap-4  border-b-2 border-gray-100 pb-2 w-full text-xl"
                     >
                       <h1>
-                        <span className="font-bold">Harga-murah</span> -
-                        Termurah
+                        <span className="font-bold">Harga</span> - Termurah
                       </h1>
                     </Label>
                     <RadioGroupItem value="1" id="harga-murah" />
@@ -338,94 +562,183 @@ const HeaderComponent = ({ flightDetails, sort, setSort }) => {
   );
 };
 
-const BodyComponent = ({ filters, sort }) => {
-  const [sliderValue, setSliderValue] = useState();
-  const [listFlights, setListFlights] = useState([]);
-  const [airlines, setAirlines] = useState([]);
-  const [checkedAirlines, setCheckedAirlines] = useState([]);
-  const [minPrize, setMinprize] = useState();
-  const [maxPrize, setMaxprize] = useState();
-  const [transitFilter, setTransitFilter] = useState({
-    isDirect: true,
-    isOneTransit: true,
-    isTwoPlusTransit: true,
-  });
+const BodyComponent = ({
+  cart,
+  listFlights,
+  filters,
+  isLoading,
+  handleCheckboxChange,
+  handleTransitChange,
+  roundTrip,
+  setRoundTrip,
+}) => {
+  // const [cart, setCart] = useState([]);
+  const [hovered, setHovered] = useState(false);
+  const {
+    airlines,
+    minPrize,
+    maxPrize,
+    sliderValue,
+    setSliderValue,
+    checkedAirlines,
+    setCheckedAirlines,
+    sort,
+    transitFilter,
+    setTransitFilter,
+  } = filters;
+  const {
+    cartDepartureFlight,
+    cartArrivalFlight,
+    setCartArrivalFlight,
+    setCartDepartureFlight,
+  } = cart;
+  const searchQuery = { ...Route.useSearch() };
+  const navigate = useNavigate();
 
-  const { data, isSuccess, isLoading } = useQuery({
-    queryKey: ["flights"],
-    queryFn: () => getFlights(filters),
-    enabled: true,
-  });
+  const handleCart = (event, data) => {
+    event.preventDefault();
 
-  useEffect(() => {
-    if (isSuccess) {
-      const airlines = data?.outboundFlights
-        .flatMap((flight) =>
-          flight.flights.map((f) => ({
-            name: f.airline.name,
-            image: f.airline.image,
-          }))
-        )
-        .filter(
-          (value, index, self) =>
-            index === self.findIndex((t) => t.name === value.name)
-        );
+    const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
+      pessanger: null,
+      flights: [{ departure: null, arrival: null }],
+    };
 
-      const prices = data?.outboundFlights.map((flight) => {
-        const priceString = flight.price.replace(/[^0-9]/g, "");
-        return parseInt(priceString, 10);
-      });
+    const updatedFlights = !roundTrip
+      ? [{ departure: data, arrival: storedCart.flights[0].arrival }]
+      : [{ departure: storedCart.flights[0].departure, arrival: data }];
 
-      setListFlights(data?.outboundFlights);
-      setAirlines(airlines);
-      setCheckedAirlines(airlines?.map((airline) => airline.name));
-      if (prices?.length > 0) {
-        setMinprize(Math.min(...prices));
-        setMaxprize(Math.max(...prices));
-        setSliderValue(minPrize);
+    const updatedCart = { ...storedCart, flights: updatedFlights };
+    localStorage.setItem("cartTicket", JSON.stringify(updatedCart));
+
+    if (!roundTrip) {
+      setCartDepartureFlight(data);
+      if (searchQuery.dt.includes(".") && !roundTrip) {
+        setRoundTrip(true);
       }
-    }
-  }, [data?.outboundFlights, isSuccess, minPrize]);
-
-  const handleCheckboxChange = (event, airlineName) => {
-    if (event) {
-      setCheckedAirlines([...checkedAirlines, airlineName]);
     } else {
-      setCheckedAirlines(
-        checkedAirlines.filter((name) => name !== airlineName)
-      );
+      setCartArrivalFlight(data);
     }
   };
 
-  const handleTransitChange = (type) => {
-    setTransitFilter((prevState) => ({
-      ...prevState,
-      [type]: !prevState[type],
-    }));
-  };
-  console.log(transitFilter);
+  const deleteHandle = (flightNumber) => {
+    const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
+      pessanger: null,
+      flights: [{ departure: null, arrival: null }],
+    };
 
+    if (flightNumber === 1) {
+      storedCart.flights[0].departure = null;
+      setCartDepartureFlight(null);
+      setRoundTrip(false);
+    } else if (flightNumber === 2) {
+      storedCart.flights[0].arrival = null;
+      setCartArrivalFlight(null);
+    }
+
+    localStorage.setItem("cartTicket", JSON.stringify(storedCart));
+  };
+
+  const handlePay = (pessanger) => {
+    const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
+      pessanger: null,
+      flights: [{ departure: null, arrival: null }],
+    };
+    const [countAdult, countChild, countBaby] = pessanger
+      .split(".")
+      .map(Number);
+
+    const updatedCart = {
+      ...storedCart,
+      pessanger: { adult: countAdult, child: countChild, babby: countBaby },
+    };
+
+    localStorage.setItem("cartTicket", JSON.stringify(updatedCart));
+
+    navigate({ to: "/seat" });
+  };
   return (
     <>
       <div className="flex   flex-col lg:flex-row gap-3 pb-5">
         <div className=" w-full lg:w-1/4 flex flex-col gap-5 ">
-          <div className="cart p-5 border border-darkblue02 rounded-xl shadow-sm text-lg h-fit hidden md:block ">
+          <div className="cart p-5 border border-darkblue02 rounded-xl shadow-sm text-lg h-fit flex flex-col gap-3 ">
             <h1 className="text-2xl font-semibold">Penerbangan Anda</h1>
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem
-                value="item-1"
-                className="border-b border-gray-400"
-              >
-                <AccordionTrigger className="w-full bg-transparent ">
-                  <div className="flex gap-3 items-center">
-                    <div className="px-4 py-1 text-white bg-darkblue05 rounded-xl shadow-md">
-                      1
-                    </div>
-                    <span>Transit</span>
+            <div className="flex flex-col gap-1">
+              <div className=" flex gap-3 items-center ">
+                <Button
+                  className="px-4 py-1 text-white bg-darkblue05 rounded-xl shadow-md"
+                  onClick={() => deleteHandle(1)}
+                  onMouseEnter={() => setHovered(true)}
+                  onMouseLeave={() => setHovered(false)}
+                >
+                  {hovered ? "x" : "1"}
+                </Button>
+                <div className="flex flex-col font-semibold">
+                  <h1>
+                    {cartDepartureFlight &&
+                      cartDepartureFlight.flightDate &&
+                      new Date(
+                        cartDepartureFlight.flightDate
+                      ).toLocaleDateString("id-ID", {
+                        weekday: "long",
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                  </h1>
+                  <p className="font-light">
+                    {cartDepartureFlight &&
+                    cartDepartureFlight.flights &&
+                    cartDepartureFlight.flights.length > 0
+                      ? `${cartDepartureFlight.flights[0]?.departure?.city?.name} - ${cartDepartureFlight?.flights?.[cartDepartureFlight.flights.length - 1]?.arrival?.city?.name}`
+                      : ""}
+                  </p>
+                </div>
+              </div>
+              {roundTrip && (
+                <div className="flex gap-3 items-center">
+                  <Button
+                    className="px-4 py-1 text-white bg-darkblue05 rounded-xl shadow-md"
+                    onClick={() => deleteHandle(2)}
+                    onMouseEnter={() => setHovered(true)}
+                    onMouseLeave={() => setHovered(false)}
+                  >
+                    {hovered ? "x" : "2"}
+                  </Button>
+                  <div className="flex flex-col font-semibold">
+                    <h1>
+                      {cartArrivalFlight &&
+                        cartArrivalFlight.flightDate &&
+                        new Date(
+                          cartArrivalFlight.flightDate
+                        ).toLocaleDateString("id-ID", {
+                          weekday: "long",
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                    </h1>
+                    <p className="font-light">
+                      {cartArrivalFlight &&
+                      cartArrivalFlight.flights &&
+                      cartArrivalFlight.flights.length > 0
+                        ? `${cartArrivalFlight.flights[0]?.departure?.city?.name} - ${cartArrivalFlight?.flights?.[cartArrivalFlight.flights.length - 1]?.arrival?.city?.name}`
+                        : ""}
+                    </p>
                   </div>
-                </AccordionTrigger>
-              </AccordionItem>
-            </Accordion>
+                </div>
+              )}
+            </div>
+            <Button
+              onClick={() => handlePay(searchQuery.ps)}
+              disabled={
+                (roundTrip && !!cartArrivalFlight && !!cartDepartureFlight) ||
+                (!roundTrip && !!cartDepartureFlight) //true
+                  ? false
+                  : true
+              }
+            >
+              Pembayaran
+            </Button>
           </div>
           <div className="filter p-5 border border-darkblue02 rounded-xl shadow-sm text-lg h-fit hidden md:block ">
             <h1 className="text-2xl font-semibold">Filter</h1>
@@ -437,7 +750,7 @@ const BodyComponent = ({ filters, sort }) => {
               >
                 <AccordionTrigger className="w-full bg-transparent ">
                   <div className="flex gap-3">
-                    <img src="/src/assets/box.svg" alt="" />
+                    <img src="/svg/box.svg" alt="" />
                     <span>Transit</span>
                   </div>
                 </AccordionTrigger>
@@ -499,7 +812,7 @@ const BodyComponent = ({ filters, sort }) => {
               >
                 <AccordionTrigger className="w-full bg-transparent ">
                   <div className="flex gap-3">
-                    <img src="/src/assets/pesawat.svg" alt="" />
+                    <img src="/svg/pesawat.svg" alt="" />
                     <span>Maskapai</span>
                   </div>
                 </AccordionTrigger>
@@ -539,7 +852,7 @@ const BodyComponent = ({ filters, sort }) => {
               >
                 <AccordionTrigger className="w-full bg-transparent ">
                   <div className="flex gap-3">
-                    <img src="/src/assets/dollar.svg" alt="" />
+                    <img src="/svg/dollar.svg" alt="" />
                     <span>Harga</span>
                   </div>
                 </AccordionTrigger>
@@ -616,19 +929,11 @@ const BodyComponent = ({ filters, sort }) => {
                     b.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
                   );
 
-                  const departureTimeA = new Date(
-                    `1970-01-01T${a.departureTime}:00`
-                  ).getTime();
-                  const departureTimeB = new Date(
-                    `1970-01-01T${b.departureTime}:00`
-                  ).getTime();
+                  const departureTimeA = new Date(a.departureTime).getTime();
+                  const departureTimeB = new Date(b.departureTime).getTime();
 
-                  const arrivalTimeA = new Date(
-                    `1970-01-01T${a.arrivalTime}:00`
-                  ).getTime();
-                  const arrivalTimeB = new Date(
-                    `1970-01-01T${b.arrivalTime}:00`
-                  ).getTime();
+                  const arrivalTimeA = new Date(a.arrivalTime).getTime();
+                  const arrivalTimeB = new Date(b.arrivalTime).getTime();
 
                   return sort == "1"
                     ? priceA - priceB
@@ -642,33 +947,35 @@ const BodyComponent = ({ filters, sort }) => {
                             ? arrivalTimeA - arrivalTimeB
                             : sort == "6" && arrivalTimeB - arrivalTimeA;
                 })
-                ?.map((data) => {
+                ?.map((data, i) => {
                   return (
-                    <li key={data.id}>
+                    <li key={i}>
                       <Accordion
                         type="single"
                         collapsible
-                        className="p-5 border border-darkblue02 rounded-xl shadow-sm "
+                        className="p-5 border border-darkblue02 rounded-xl shadow-sm w-full"
                       >
-                        <AccordionItem value="item-1 ">
-                          <AccordionTrigger className="w-full bg-transparent hover:bg-transparent">
-                            <div className="w-full">
-                              <div className="header flex justify-between items-center">
-                                <div className="flex gap-2 h-[2rem] w-auto">
-                                  <img
-                                    src={data.flights[0].airline.image}
-                                    alt=""
-                                  />
-                                  <span>
-                                    {data.flights[0].airline.name} -{" "}
-                                    {data.seatClass}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="content grid grid-cols-7">
-                                <div className="route flex col-span-5 lg:col-span-6 px-5 justify-start font-bold text-sm md:text-xl items-center lg:gap-3 gap-1">
+                        <AccordionItem
+                          value={`flight-${data.id}`}
+                          className="py-2"
+                        >
+                          <div className="w-full bg-transparent hover:bg-transparent grid grid-cols-12 ">
+                            <div className="header flex gap-2 h-[2rem] w-auto col-span-12">
+                              <img src={data.flights[0].airline.image} alt="" />
+                              <span>
+                                {data.flights[0].airline.name} -{" "}
+                                {data.seatClass}
+                              </span>
+                            </div>
+                            <div className="content   flex col-span-9 lg:col-span-10 px-5 justify-start font-bold text-sm md:text-xl items-center lg:gap-3 gap-1">
+                              <AccordionTrigger>
+                                <div className="flex  w-full px-5 justify-start font-bold text-sm md:text-xl items-center lg:gap-3 gap-1">
                                   <div>
-                                    <span>{data.departureTime}</span>
+                                    <span>
+                                      {new Date(data.departureTime)
+                                        .toISOString()
+                                        .slice(11, 16)}
+                                    </span>
                                     <p className="font-semibold text-lg">
                                       {data.flights[0].departure.city.code}
                                     </p>
@@ -676,7 +983,7 @@ const BodyComponent = ({ filters, sort }) => {
                                   <div className="flex flex-col justify-center items-center  text-sm md:text-xl  w-full font-semibold text-gray-400 text-center">
                                     <span>{data.estimatedDuration}</span>
                                     <img
-                                      src="/src/assets/route.svg"
+                                      src="/svg/route.svg"
                                       alt=""
                                       className="w-full"
                                     />
@@ -685,7 +992,11 @@ const BodyComponent = ({ filters, sort }) => {
                                     </span>
                                   </div>
                                   <div>
-                                    <span>{data.arrivalTime}</span>
+                                    <span>
+                                      {new Date(data.arrivalTime)
+                                        .toISOString()
+                                        .slice(11, 16)}
+                                    </span>
                                     <p className="font-semibold text-lg">
                                       {
                                         data.flights[data.flights.length - 1]
@@ -695,164 +1006,102 @@ const BodyComponent = ({ filters, sort }) => {
                                   </div>
 
                                   <img
-                                    src="/src/assets/bagasi.svg"
+                                    src="/svg/bagasi.svg"
                                     alt=""
                                     className="w-10"
                                   />
                                 </div>
-                                <div className="price text-md  lg:text-lg font-bold text-darkblue04 w-full col-span-2 lg:col-span-1 ">
-                                  <h1>{data.price}</h1>
-                                  <Button className="w-full rounded-2xl ">
-                                    Pilih
-                                  </Button>
-                                </div>
-                              </div>
+                              </AccordionTrigger>
                             </div>
-                          </AccordionTrigger>
+
+                            <div className="price text-sm  lg:text-lg font-bold text-darkblue04  col-span-3 lg:col-span-2 ">
+                              <h1>{data.price}</h1>
+                              <Button
+                                className="w-full rounded-2xl"
+                                onClick={(event) => handleCart(event, data)}
+                              >
+                                Pilih
+                              </Button>
+                            </div>
+                          </div>
                           <AccordionContent>
                             <h1 className="text-darkblue05 text-xl font-bold">
                               Detail Penerbangan
                             </h1>
-                            {data.flights.length === 1 ? (
-                              <>
-                                <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
-                                  <h1 className="text-darkblue05  font-bold col-end-10 px-5">
-                                    Keberangkatan
-                                  </h1>
-                                  <div className="col-span-9 ">
-                                    <h1 className="font-bold ">
-                                      {data.flights[0].departure.time}
+
+                            {data.flights.map((data) => {
+                              return (
+                                <div key={data.flightId}>
+                                  <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
+                                    <h1 className="text-darkblue05  font-bold lg:col-end-10 col-end-7 px-5">
+                                      Keberangkatan
                                     </h1>
-                                    <p>
-                                      {format(
-                                        data.flights[0].departure.date,
-                                        "d MMMM"
-                                      )}
-                                    </p>
-                                    <span className="font-semibold text-lg">
-                                      {data.flights[0].departure.airport} -
-                                      {data.flights[0].departure.terminal}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
-                                  <div className="col-span-9 ">
-                                    <div className="flex gap-2">
-                                      <img
-                                        src={data.flights[0].airline.image}
-                                        alt="logo airlines"
-                                        className="h-auto w-7"
-                                      />
+                                    <div className="col-span-9 ">
                                       <h1 className="font-bold ">
-                                        {data.flights[0].airline.name} -{" "}
-                                        {data.seatClass}
+                                        {data.departure.time}
                                       </h1>
+                                      <p>
+                                        {/* {new Date(data.departure.date)} */}
+                                        {/* {format(data.departure.date, "d MMMM")} */}
+                                        {new Date(
+                                          data.departure.date
+                                        ).toLocaleDateString("id-ID", {
+                                          day: "numeric",
+                                          month: "long",
+                                        })}
+                                        {/* {new Date(data.departure.date)} */}
+                                      </p>
+                                      <span className="font-semibold text-lg">
+                                        {data.departure.airport} -
+                                        {data.departure.terminal}
+                                      </span>
                                     </div>
-                                    <h1 className="font-bold ">
-                                      {data.flights[0].flightNum}
+                                  </div>
+                                  <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
+                                    <div className="col-span-9 ">
+                                      <div className="flex gap-2">
+                                        <img
+                                          src={data.airline.image}
+                                          alt="logo airlines"
+                                          className="h-auto w-7"
+                                        />
+                                        <h1 className="font-bold ">
+                                          {data.airline.name} - {data.seatClass}
+                                        </h1>
+                                      </div>
+                                      <h1 className="font-bold ">
+                                        {data.flightNum}
+                                      </h1>
+
+                                      <span className="font-bold text-lg">
+                                        Informasi
+                                      </span>
+
+                                      <ul className="px-10">
+                                        <li> {data.facility}</li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                  <div className="return text-lg grid grid-cols-10 justify-items-stretch">
+                                    <h1 className="text-darkblue05  font-bold lg:col-end-10 col-end-7 px-5">
+                                      Kedatangan
                                     </h1>
-
-                                    <span className="font-bold text-lg">
-                                      Informasi
-                                    </span>
-
-                                    <ul className="px-10">
-                                      <li> {data.flights[0].facility}</li>
-                                    </ul>
+                                    <div className="col-span-9 ">
+                                      <h1 className="font-bold ">
+                                        {data.arrival.time}
+                                      </h1>
+                                      <p>
+                                        {/* {format(data.arrival.date, "d MMMM")} */}
+                                      </p>
+                                      <span className="font-semibold text-lg">
+                                        {data.arrival.airport} -
+                                        {data.arrival.terminal}
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="return text-lg grid grid-cols-10 justify-items-stretch">
-                                  <h1 className="text-darkblue05  font-bold col-end-10 px-5">
-                                    Kedatangan
-                                  </h1>
-                                  <div className="col-span-9 ">
-                                    <h1 className="font-bold ">
-                                      {data.flights[0].arrival.time}
-                                    </h1>
-                                    <p>
-                                      {format(
-                                        data.flights[0].arrival.date,
-                                        "d MMMM"
-                                      )}
-                                    </p>
-                                    <span className="font-semibold text-lg">
-                                      {data.flights[0].arrival.airport} -
-                                      {data.flights[0].arrival.terminal}
-                                    </span>
-                                  </div>
-                                </div>
-                              </>
-                            ) : (
-                              data.flights.map((data) => {
-                                return (
-                                  <div key={data.id}>
-                                    <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
-                                      <h1 className="text-darkblue05  font-bold col-end-10 px-5">
-                                        Keberangkatan
-                                      </h1>
-                                      <div className="col-span-9 ">
-                                        <h1 className="font-bold ">
-                                          {data.departure.time}
-                                        </h1>
-                                        <p>
-                                          {format(
-                                            data.departure.date,
-                                            "d MMMM"
-                                          )}
-                                        </p>
-                                        <span className="font-semibold text-lg">
-                                          {data.departure.airport} -
-                                          {data.departure.terminal}
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
-                                      <div className="col-span-9 ">
-                                        <div className="flex gap-2">
-                                          <img
-                                            src={data.airline.image}
-                                            alt="logo airlines"
-                                            className="h-auto w-7"
-                                          />
-                                          <h1 className="font-bold ">
-                                            {data.airline.name} -{" "}
-                                            {data.seatClass}
-                                          </h1>
-                                        </div>
-                                        <h1 className="font-bold ">
-                                          {data.flightNum}
-                                        </h1>
-
-                                        <span className="font-bold text-lg">
-                                          Informasi
-                                        </span>
-
-                                        <ul className="px-10">
-                                          <li> {data.facility}</li>
-                                        </ul>
-                                      </div>
-                                    </div>
-                                    <div className="return text-lg grid grid-cols-10 justify-items-stretch">
-                                      <h1 className="text-darkblue05  font-bold col-end-10 px-5">
-                                        Kedatangan
-                                      </h1>
-                                      <div className="col-span-9 ">
-                                        <h1 className="font-bold ">
-                                          {data.arrival.time}
-                                        </h1>
-                                        <p>
-                                          {format(data.arrival.date, "d MMMM")}
-                                        </p>
-                                        <span className="font-semibold text-lg">
-                                          {data.arrival.airport} -
-                                          {data.arrival.terminal}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              })
-                            )}
+                              );
+                            })}
                           </AccordionContent>
                         </AccordionItem>
                       </Accordion>
@@ -860,7 +1109,7 @@ const BodyComponent = ({ filters, sort }) => {
                   );
                 })
             ) : (
-              <NotFound />
+              <SoldOut />
             )}
           </ul>
         </div>
@@ -887,7 +1136,7 @@ const SoldOut = () => {
   return (
     <>
       <div className="flex flex-col justify-center items-center w-full gap-2 text-gray-500 font-semibold ">
-        <img src="/src/assets/sold-out.svg" alt="" />
+        <img src="/svg/sold-out.svg" alt="" />
         <h1>Maaf, Tiket terjual habis!</h1>
         <span>Coba cari perjalanan lainnya!</span>
       </div>
@@ -902,28 +1151,28 @@ const NotFound = () => {
         <div className="flex  gap-2 w-full justify-center">
           <div className="skeleton flex flex-col gap-3 w-1/4">
             <Skeleton className=" p-2 grid grid-cols-12 w-full">
-              <img src="/src/assets/verification.svg" alt="" />
+              <img src="/svg/verification.svg" alt="" />
               <div className="flex flex-col gap-1 col-span-11">
                 <div className="animate-pulse rounded-md bg-muted w-full  h-3" />
                 <div className="animate-pulse rounded-md bg-muted w-8/12  h-3" />
               </div>
             </Skeleton>
             <Skeleton className=" p-2 grid grid-cols-12 w-full">
-              <img src="/src/assets/verification.svg" alt="" />
+              <img src="/svg/verification.svg" alt="" />
               <div className="flex flex-col gap-1 col-span-11">
                 <div className="animate-pulse rounded-md bg-muted w-full  h-3" />
                 <div className="animate-pulse rounded-md bg-muted w-8/12  h-3" />
               </div>
             </Skeleton>{" "}
             <Skeleton className=" p-2 grid grid-cols-12 w-full">
-              <img src="/src/assets/verification.svg" alt="" />
+              <img src="/svg/verification.svg" alt="" />
               <div className="flex flex-col gap-1 col-span-11">
                 <div className="animate-pulse rounded-md bg-muted w-full  h-3" />
                 <div className="animate-pulse rounded-md bg-muted w-8/12  h-3" />
               </div>
             </Skeleton>
           </div>
-          <img src="/src/assets/man2.svg" alt="" className="w-20 mt-10" />
+          <img src="/svg/man2.svg" alt="" className="w-20 mt-10" />
         </div>
         <h1>Maaf, pencarian Anda tidak ditemukan</h1>
         <span className="text-darkblue04"> Coba cari perjalanan lainnya!</span>

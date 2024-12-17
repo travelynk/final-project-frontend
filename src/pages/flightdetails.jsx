@@ -1,14 +1,24 @@
 import PropTypes from "prop-types";
 export default function FlightDetail({ isSubmitted }) {
   return (
+<<<<<<< HEAD
     <div className="bg-white rounded-lg p-4">
       <h2 className="text-lg font-bold">
         Booking Code: <span className="text-purple-600">6723y2GHK</span>
+=======
+    <div className="bg-white rounded-lg p-4 text-black">
+      <h2 className="text-lg font-bold text-black">
+        Booking Code: <span className="text-darkblue05">6723y2GHK</span>
+>>>>>>> development
       </h2>
       <div className="mt-4 text-sm">
         <p>
           <strong>07:00</strong>
+<<<<<<< HEAD
           <span className="float-right text-purple-500">Keberangkatan</span>
+=======
+          <span className="float-right text-darkblue05">Keberangkatan</span>
+>>>>>>> development
         </p>
         <p>3 Maret 2023</p>
         <p>Soekarno Hatta - Terminal 1A Domestik</p>
@@ -31,7 +41,11 @@ export default function FlightDetail({ isSubmitted }) {
         <hr className="my-4" />
         <p className="mt-4">
           <strong>11:00</strong>
+<<<<<<< HEAD
           <span className="float-right text-purple-500">Keberangkatan</span>
+=======
+          <span className="float-right text-darkblue05">Keberangkatan</span>
+>>>>>>> development
         </p>
         <p>3 Maret 2023</p>
         <p>Melbourne International Airport</p>
@@ -48,7 +62,11 @@ export default function FlightDetail({ isSubmitted }) {
         <hr className="my-4" />
         <p className="font-bold">
           Total
+<<<<<<< HEAD
           <span className="float-right text-purple-600">IDR 9.850.000</span>
+=======
+          <span className="float-right text-darkblue05">IDR 9.850.000</span>
+>>>>>>> development
         </p>
       </div>
       {isSubmitted && (
