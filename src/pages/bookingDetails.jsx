@@ -1,4 +1,3 @@
-// BookingDetails.js
 import { Button } from "../components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -7,7 +6,7 @@ const BookingDetails = ({ selectedBooking }) => {
 
   console.log(selectedBooking);
   return (
-    <div className="bg-white rounded-lg py-4 pr-4 ms-2">
+    <div className=" rounded-lg py-4 pr-4 ms-2">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Detail Pesanan</h2>
         <div
@@ -61,41 +60,18 @@ const BookingDetails = ({ selectedBooking }) => {
                   {segment?.flight?.airline?.name || "N/A"} -{" "}
                   {segment?.flight?.seatClass || "N/A"}
                 </strong>
-                <span className="float-right font-bold text-darkblue05">
-                  Keberangkatan
-                </span>
-              </p>
-              <p>
-                {segment?.flight?.departure?.schedule?.split(" ")[0] || "N/A"}
-              </p>
-              <p>
-                {segment?.flight?.departure?.airport || "N/A"} -{" "}
-                {segment?.flight?.departure?.terminal?.name || "N/A"}
-              </p>
 
-              <hr className="my-4" />
-
-              <p className="mt-4">
-                <strong>
-                  {segment?.flight?.arrival?.schedule?.split(" ")[1] || "N/A"}
-                </strong>
-                <span className="float-right font-bold text-darkblue05">
-                  Kedatangan
-                </span>
-              </p>
-              <p>
-                {segment?.flight?.arrival?.schedule?.split(" ")[0] || "N/A"}
-              </p>
-              <p>{segment?.flight?.arrival?.airport || "N/A"}</p>
-
-              <hr className="my-4 border-t-2 border-gray-500" />
+                <div>
+                  <strong>{segment?.flight?.flightNum || "N/A"}</strong>
+                </div>
+              </div>
             </div>
 
             <p>
               <strong>
                 {segment?.flight?.departure?.schedule?.split(" ")[1] || "N/A"}
               </strong>
-              <span className="float-right font-bold text-purple-500">
+              <span className="float-right font-bold text-darkblue05">
                 Keberangkatan
               </span>
             </p>
@@ -113,7 +89,7 @@ const BookingDetails = ({ selectedBooking }) => {
               <strong>
                 {segment?.flight?.arrival?.schedule?.split(" ")[1] || "N/A"}
               </strong>
-              <span className="float-right font-bold text-purple-500">
+              <span className="float-right font-bold text-darkblue05">
                 Kedatangan
               </span>
             </p>
@@ -188,7 +164,7 @@ const BookingDetails = ({ selectedBooking }) => {
             }}
             className={`w-full h-[42px] mt-4 py-3 text-white rounded-lg text-center ${
               selectedBooking.status === "Issued"
-                ? "bg-darkblue05 hover:bg-darkblue05 active:bg-darkblue06" // For Issued status
+                ? "bg-darkblue05 hover:bg-darkblue04 active:bg-darkblue05" // For Issued status
                 : selectedBooking.status === "Unpaid"
                   ? "bg-[#FF0000] hover:bg-[#cc0000] active:bg-[#b30000]" // Darker red for Unpaid status
                   : "bg-gray-500 hover:bg-gray-600 active:bg-gray-700"

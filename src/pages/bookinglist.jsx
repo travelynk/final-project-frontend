@@ -29,7 +29,7 @@ const BookingList = ({
   );
 
   return (
-    <div className="bg-white rounded-lg p-4">
+    <div className=" rounded-lg p-4">
       {/* Buttons for filtering by status */}
       <div className="flex flex-wrap justify-start space-x-2 mb-4">
         {["All", "Issued", "Unpaid", "Cancelled"].map((status) => (
@@ -37,7 +37,7 @@ const BookingList = ({
             key={status}
             className={`px-4 py-2 rounded-[18px] mb-2 md:mb-0 ${
               statusFilter === status
-                ? "bg-[#A06ECE] text-white"
+                ? "bg-darkblue05 text-white"
                 : "bg-gray-200 text-gray-800"
             }`}
             onClick={() => setStatusFilter(status)}
