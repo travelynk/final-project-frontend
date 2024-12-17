@@ -188,6 +188,9 @@ export default function BookingForm({ onFormSubmit }) {
   //Seat
 
   // Fetch seats using TanStack Query
+  useEffect(() => {
+    console.log("Before query:", currentFlightId); // Log sebelum query
+  }, [currentFlightId]);
 
   const {
     data: seatData,
@@ -195,9 +198,15 @@ export default function BookingForm({ onFormSubmit }) {
     isError,
   } = useQuery({
     queryKey: ["seats", currentFlightId], // Use the flightId for unique seat query
-    queryFn: () => Seat(currentFlightId), // Adjust Seat function to accept flightId
+    queryFn: () => {
+      console.log("Fetching seat data for flightId:", currentFlightId); // Log before fetching
+      return Seat(currentFlightId);
+    }, // Adjust Seat function to accept flightId
+
     staleTime: 1000 * 60 * 5,
   });
+  console.log("Seat Data:", seatData);
+  console.log("QueryKey:", ["seats", currentFlightId]); // Log queryKey
 
   if (isLoading) return <p>Loading seats...</p>;
   if (isError) return <p>Failed to load seats. Please try again.</p>;
