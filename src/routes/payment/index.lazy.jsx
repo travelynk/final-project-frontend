@@ -13,16 +13,20 @@ import {
 } from "../../services/payment";
 import NavigationBreadCr from "../../pages/navigationBreadCr";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 export const Route = createLazyFileRoute("/payment/")({
   component: Payment,
 });
 
 function Payment() {
+  const { token } = useSelector((state) => state.auth);
   const urlParams = new URLSearchParams(window.location.search);
   const bookingId = urlParams.get("bookingId");
-
-  console.log(bookingId);
+  if (!token) {
+    console.log("No token found, redirecting to /auth/login");
+    window.location.href = "/auth/login"; // Force navigation
+  }
 
   const [bookingInfo, setBookingInfo] = useState(null);
   useEffect(() => {
@@ -42,7 +46,7 @@ function Payment() {
     fetchBookingData();
   }, [bookingId]);
 
-  // console.log(bookingInfo);
+  console.log(bookingInfo);
 
   const [creditValue, setCredit] = useState({
     card_number: "",
@@ -136,10 +140,10 @@ function Payment() {
     <>
       {/*navigationbreadcr disini*/}
       <NavigationBreadCr
-        initialTime={1000}
+        initialTime={300}
         label="Selesaikan Pembayaran Dalam"
         expirationMessage="Maaf, Waktu pembayaran habis. Silahkan ulangi lagi!"
-        redirectPath="/"
+        redirectPath="/ticket-history"
       />{" "}
       {loading && (
         <div className="flex flex-col justify-center items-center h-screen">
@@ -396,7 +400,15 @@ function Payment() {
                       <span className="float-right">IDR 0</span>
                     </p>
                     <p>
-                      Tax<span className="float-right">IDR 300.000</span>
+                      {bookingInfo.data.passengerCount.infant} Baby
+                      <span className="float-right">IDR 0</span>
+                    </p>
+                    <p>
+                      Tax
+                      <span className="float-right">
+                        {bookingInfo.data.tax}
+                        {" %"}
+                      </span>
                     </p>
                     <hr className="my-4 border-2 border-gray-400" />
                     <p className="text-lg font-bold">
