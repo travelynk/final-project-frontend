@@ -1,7 +1,10 @@
 // BookingDetails.js
 import { Button } from "../components/ui/button";
+import { useNavigate } from "@tanstack/react-router";
 
 const BookingDetails = ({ selectedBooking }) => {
+  const navigate = useNavigate();
+
   console.log(selectedBooking);
   return (
     <div className="bg-white rounded-lg py-4 pr-4 ms-2">
@@ -39,68 +42,64 @@ const BookingDetails = ({ selectedBooking }) => {
       )}
 
       <div className="mt-4 text-sm">
-        {selectedBooking.segments &&
-          selectedBooking.segments.length > 0 &&
-          selectedBooking.segments.map((segment, index) => (
-            <div key={index} className="mb-4">
-              <div className="mt-4 flex items-center">
-                <div className="flex-shrink-0">
-                  <img
-                    className="h-[24px] w-[24px]"
-                    src={
-                      segment?.flight?.airline?.image ||
-                      "/path/to/default-image.png"
-                    }
-                    alt="airline logo"
-                  />
-                </div>
-
-                <div className="ml-2">
-                  <strong>
-                    {segment?.flight?.airline?.name || "N/A"} -{" "}
-                    {segment?.flight?.class || "N/A"}
-                  </strong>
-
-                  <div>
-                    <strong>{segment?.flight?.number || "N/A"}</strong>
-                  </div>
-                </div>
+        {selectedBooking.segments.map((segment, index) => (
+          <div key={index} className="mb-4">
+            <div className="mt-4 flex items-center">
+              <div className="flex-shrink-0">
+                <img
+                  className="h-[24px] w-[24px]"
+                  src={
+                    segment?.flight?.airline?.image ||
+                    "/path/to/default-image.png"
+                  }
+                  alt="airline logo"
+                />
               </div>
 
-              <p>
+              <div className="ml-2">
                 <strong>
-                  {segment?.flight?.departure?.schedule?.split(" ")[1] || "N/A"}
+                  {segment?.flight?.airline?.name || "N/A"} -{" "}
+                  {segment?.flight?.seatClass || "N/A"}
                 </strong>
-                <span className="float-right font-bold text-purple-500">
-                  Keberangkatan
-                </span>
-              </p>
-              <p>
-                {segment?.flight?.departure?.schedule?.split(" ")[0] || "N/A"}
-              </p>
-              <p>
-                {segment?.flight?.departure?.airport || "N/A"} -{" "}
-                {segment?.flight?.departure?.terminal?.name || "N/A"}
-              </p>
 
-              <hr className="my-4" />
-
-              <p className="mt-4">
-                <strong>
-                  {segment?.flight?.arrival?.schedule?.split(" ")[1] || "N/A"}
-                </strong>
-                <span className="float-right font-bold text-purple-500">
-                  Kedatangan
-                </span>
-              </p>
-              <p>
-                {segment?.flight?.arrival?.schedule?.split(" ")[0] || "N/A"}
-              </p>
-              <p>{segment?.flight?.arrival?.airport || "N/A"}</p>
-
-              <hr className="my-4 border-t-2 border-gray-500" />
+                <div>
+                  <strong>{segment?.flight?.flightNum || "N/A"}</strong>
+                </div>
+              </div>
             </div>
-          ))}
+
+            <p>
+              <strong>
+                {segment?.flight?.departure?.schedule?.split(" ")[1] || "N/A"}
+              </strong>
+              <span className="float-right font-bold text-purple-500">
+                Keberangkatan
+              </span>
+            </p>
+            <p>
+              {segment?.flight?.departure?.schedule?.split(" ")[0] || "N/A"}
+            </p>
+            <p>
+              {segment?.flight?.departure?.airport || "N/A"} -{" "}
+              {segment?.flight?.departure?.terminal?.name || "N/A"}
+            </p>
+
+            <hr className="my-4" />
+
+            <p className="mt-4">
+              <strong>
+                {segment?.flight?.arrival?.schedule?.split(" ")[1] || "N/A"}
+              </strong>
+              <span className="float-right font-bold text-purple-500">
+                Kedatangan
+              </span>
+            </p>
+            <p>{segment?.flight?.arrival?.schedule?.split(" ")[0] || "N/A"}</p>
+            <p>{segment?.flight?.arrival?.airport || "N/A"}</p>
+
+            <hr className="my-4 border-t-2 border-gray-500" />
+          </div>
+        ))}
 
         <p>
           <strong>Informasi:</strong>
@@ -159,6 +158,11 @@ const BookingDetails = ({ selectedBooking }) => {
       <div>
         {selectedBooking.status !== "Cancelled" && (
           <Button
+            onClick={() => {
+              if (selectedBooking.status === "Unpaid") {
+                navigate({ to: `/payment?bookingId=${selectedBooking.id}` });
+              }
+            }}
             className={`w-full h-[42px] mt-4 py-3 text-white rounded-lg text-center ${
               selectedBooking.status === "Issued"
                 ? "bg-[#A06ECE] hover:bg-[#8c5f99] active:bg-[#8c5f99]" // For Issued status
