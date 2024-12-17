@@ -76,11 +76,7 @@ function NavigationBreadCr({
 
   return (
     <ToastProvider>
-<<<<<<< HEAD
-      <div className="bg-white border-b h-[154px] p-3 shadow-md">
-=======
       <div className="dark:text-darkblue05 border-b h-[154px] p-3 shadow-md">
->>>>>>> development
         <div className="flex flex-col justify-end h-full max-w-[936px] mx-auto">
           <div className="mb-4">
             <Breadcrumb>
@@ -89,11 +85,7 @@ function NavigationBreadCr({
                   <Link
                     className={
                       matchSeat || matchPayment || matchCompleted
-<<<<<<< HEAD
-                        ? "text-black text-[20px] font-bold"
-=======
                         ? "dark:text-darkblue05 text-[20px] font-bold"
->>>>>>> development
                         : "text-gray-400 text-[20px] font-bold"
                     }
                     to="/seat"
@@ -106,11 +98,7 @@ function NavigationBreadCr({
                   <Link
                     className={
                       matchPayment || matchCompleted
-<<<<<<< HEAD
-                        ? "text-black text-[20px] font-bold"
-=======
                         ? "dark:text-darkblue05 text-[20px] font-bold"
->>>>>>> development
                         : "text-gray-400 text-[20px] font-bold"
                     }
                     to="/payment"
@@ -123,11 +111,7 @@ function NavigationBreadCr({
                   <Link
                     className={
                       matchPayment || matchCompleted
-<<<<<<< HEAD
-                        ? "text-black text-[20px] font-bold"
-=======
                         ? "dark:text-darkblue05 text-[20px] font-bold"
->>>>>>> development
                         : "text-gray-400 text-[20px] font-bold"
                     }
                     to="/success"

@@ -111,11 +111,7 @@ export default function BookingForm({ onFormSubmit }) {
       {/* Data Diri Pemesan */}
       <div className="border p-6 rounded-lg shadow-md bg-white">
         <p className="text-xl font-bold mb-4">Isi Data Pemesan</p>
-<<<<<<< HEAD
-        <div className="bg-[#3C3C3C] text-white rounded-t-lg px-4 py-2 max-h-[40px]">
-=======
         <div className="bg-darkblue05 text-white rounded-t-lg px-4 py-2 max-h-[40px]">
->>>>>>> development
           <p className="text-xl font-semibold">Data Diri Pemesan</p>
         </div>
 
@@ -198,11 +194,7 @@ export default function BookingForm({ onFormSubmit }) {
         <Accordion type="single" collapsible>
           {passengers.map((passenger, index) => (
             <AccordionItem key={index} value={`passenger-${index}`}>
-<<<<<<< HEAD
-              <AccordionTrigger className="bg-[#3C3C3C]  text-white rounded-lg px-4 py-2 mb-1 ">
-=======
               <AccordionTrigger className="bg-darkblue05 text-white rounded-lg px-4 py-2 mb-1 ">
->>>>>>> development
                 Data Diri Penumpang {index + 1} - Adult
               </AccordionTrigger>
               <AccordionContent>
@@ -411,11 +403,7 @@ export default function BookingForm({ onFormSubmit }) {
                         isReserved
                           ? "bg-green-500 cursor-not-allowed"
                           : isSelected
-<<<<<<< HEAD
-                            ? "bg-purple-500"
-=======
                             ? "bg-darkblue05"
->>>>>>> development
                             : "bg-gray-200"
                       }`}
                       onClick={() =>
@@ -441,11 +429,7 @@ export default function BookingForm({ onFormSubmit }) {
 
       <button
         onClick={handleSubmit}
-<<<<<<< HEAD
-        className={`mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040] ${
-=======
         className={`mt-6 bg-darkblue05 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040] ${
->>>>>>> development
           isSubmitted
             ? "bg-gray-500 cursor-not-allowed"
             : "bg-blue-500 text-white"

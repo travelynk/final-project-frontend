@@ -15,8 +15,6 @@ export const getFlights = async (filters) => {
   const result = await response.json();
   return result?.data;
 };
-<<<<<<< HEAD
-=======
 
 export const getFlightsById = async (flightId) => {
   const token = localStorage.getItem("token");
@@ -32,4 +30,3 @@ export const getFlightsById = async (flightId) => {
   const result = await response.json();
   return result?.data;
 };
->>>>>>> development
