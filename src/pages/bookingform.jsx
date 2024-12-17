@@ -14,6 +14,40 @@ import {
 import { z } from "zod";
 import { Seat } from "@/services/seat";
 
+// New function for booking API call
+const storeBooking = async (bookingData) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    console.log("Booking Request Body:", JSON.stringify(bookingData, null, 2));
+
+    const response = await fetch(
+      "https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app/api/v1/bookings",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookingData),
+      }
+    );
+
+    const responseBody = await response.json();
+
+    if (!response.ok) {
+      console.error("Booking API Error Response:", responseBody);
+      throw new Error(responseBody.message || "Booking failed");
+    }
+
+    console.log("Booking successful:", responseBody);
+    return responseBody;
+  } catch (error) {
+    console.error("Booking error:", error);
+    throw error;
+  }
+};
+
 // Schema Validasi Zod
 const bookingSchema = z.object({
   fullname: z.string().nonempty("Nama lengkap harus diisi"),
@@ -80,17 +114,13 @@ export default function BookingForm({ onFormSubmit }) {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
+      // Retrieve the stored ticket data from localStorage
+      const storedData = JSON.parse(localStorage.getItem("cartTicket"));
+
       // Combine all seat selections into a single array
       const allSelectedSeats = Object.values(flightSeatSelections).flat();
-
-      // Prepare final submission data
-      const finalSubmissionData = {
-        bookingDetails: formState,
-        seatSelections: flightSeatSelections,
-        allSelectedSeats: allSelectedSeats,
-      };
 
       // Validate using the existing schema, but with combined seats
       bookingSchema.parse({
@@ -98,15 +128,71 @@ export default function BookingForm({ onFormSubmit }) {
         selectedSeats: allSelectedSeats,
       });
 
+      // Create finalSubmissionData
+      const finalSubmissionData = {
+        bookingDetails: formState,
+        seatSelections: flightSeatSelections,
+        allSelectedSeats: allSelectedSeats,
+      };
+
+      // Prepare booking data according to the API specification
+      const bookingData = {
+        roundTrip:
+          storedData.flights[0].pergi && storedData.flights[0].pulang
+            ? true
+            : false,
+        passengerCount: {
+          adult: formState.passengers.filter((p) => p.type === "Adult").length,
+          child: formState.passengers.filter((p) => p.type === "Child").length,
+          infant: formState.passengers.filter((p) => p.type === "Infant")
+            .length,
+        },
+        flightSegments: formState.passengers.map((passenger, index) => {
+          // Determine the correct flight from stored data
+          const departureFlights = storedData.flights[0].pergi?.flights || [];
+          const returnFlights = storedData.flights[0].pulang?.flights || [];
+
+          // Combine flights and get the correct flight
+          const allFlights = [...departureFlights, ...returnFlights];
+          const currentFlight = allFlights[index];
+
+          console.log("Current Flight Data:", currentFlight);
+
+          return {
+            flightId: currentFlight?.flightId
+              ? Number(currentFlight.flightId)
+              : null,
+            isReturn: index >= departureFlights.length,
+            seatId: flightSeatSelections[index]?.[0]
+              ? Number(flightSeatSelections[index][0].replace(/\D/g, ""))
+              : null,
+            passenger: {
+              title: passenger.title,
+              identityNumber: passenger.passport,
+              fullName: passenger.fullname,
+              familyName: passenger.namakeluarga || passenger.fullname,
+              dob: passenger.birthdate,
+              nationality: passenger.citizenship,
+              issuingCountry: passenger.negarapenerbit,
+              identityExp: passenger.expiry,
+            },
+          };
+        }),
+      };
+
+      // Call booking API
+      const bookingResult = await storeBooking(bookingData);
+
       if (onFormSubmit) {
-        onFormSubmit(finalSubmissionData);
+        onFormSubmit({
+          ...finalSubmissionData,
+          bookingResult,
+        });
         setIsSubmitted(true);
 
-        // Console log the final submission data
         console.log("Booking Submission Successful:", {
           bookingDetails: {
             ...formState,
-            // Optionally mask sensitive information
             passengers: formState.passengers.map((p) => ({
               ...p,
               passport: p.passport ? "*".repeat(p.passport.length) : "",
@@ -115,6 +201,7 @@ export default function BookingForm({ onFormSubmit }) {
           },
           seatSelections: flightSeatSelections,
           allSelectedSeats: allSelectedSeats,
+          bookingResult,
         });
       }
     } catch (error) {
@@ -124,7 +211,10 @@ export default function BookingForm({ onFormSubmit }) {
             .map((err) => `${err.path.join(" -> ")}: ${err.message}`)
             .join("\n")
         );
+      } else {
+        alert(`Booking failed: ${error.message}`);
       }
+      console.error("Booking submission error:", error);
     }
   };
   //from localstorage
