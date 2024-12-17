@@ -127,7 +127,8 @@ const MenuSection = () => {
                 htmlFor="from"
                 className="flex align-middle items-center gap-1"
               >
-                <img src="/svg/pesawat.svg" alt="pesawat.icon" /> From
+                <img src="/svg/pesawat.svg" alt="pesawat.icon" />
+                Kota Keberangkatan
               </Label>
               <Combobox
                 className="w-full"
@@ -155,7 +156,7 @@ const MenuSection = () => {
                 htmlFor="to"
                 className="flex align-middle items-center gap-1"
               >
-                <img src="/svg/pesawat.svg" alt="pesawat.icon" /> To
+                <img src="/svg/pesawat.svg" alt="pesawat.icon" /> Kota Tujuan
               </Label>
               <Combobox
                 className="w-full"
@@ -173,7 +174,8 @@ const MenuSection = () => {
                 htmlFor="date"
                 className="flex align-middle items-center gap-1"
               >
-                <img src="/svg/calendar.svg" alt="calendar.icon" /> Date
+                <img src="/svg/calendar.svg" alt="calendar.icon" /> Tanggal
+                Kepergian
               </Label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-3">
@@ -188,7 +190,7 @@ const MenuSection = () => {
                 <div
                   className={`flex-col gap-3 ${returnCity ? "flex" : "hidden"}`}
                 >
-                  <Label htmlFor="return">Return</Label>
+                  <Label htmlFor="return">Tanggal Kepulangan</Label>
                   <MyCalendar
                     mode="single"
                     date={arrivalDate}
@@ -214,7 +216,7 @@ const MenuSection = () => {
                     alt="passengers.icon"
                     className="inline-block"
                   />
-                  Passengers
+                  Penumpang
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -349,11 +351,11 @@ const MenuSection = () => {
                 </Popover>
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="seat-class">Seat Class</Label>
+                <Label htmlFor="seat-class">Jenis Penerbangan</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline">
-                      {classSeat ? classSeat : "Class"}
+                      {classSeat ? classSeat : "Kelas"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-96">
