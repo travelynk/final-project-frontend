@@ -22,7 +22,11 @@ import {
 } from "../components/ui/accordion"; // ShadCN Accordion
 import { IoIosInformationCircle } from "react-icons/io";
 
-export default function FlightDetail({ isSubmitted }) {
+export default function FlightDetail({
+  isSubmitted,
+  bookingCode,
+  onPaymentRedirect,
+}) {
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0); // Base total price
   const [showToast, setShowToast] = useState(false);
@@ -169,7 +173,7 @@ export default function FlightDetail({ isSubmitted }) {
     <ToastProvider>
       <div className="bg-white rounded-lg p-4">
         <h2 className="text-lg font-bold">
-          Booking Code: <span className="text-purple-600">6723y2GHK</span>
+          Booking Code: <span className="text-purple-600">{bookingCode}</span>
         </h2>
         {/*data penerbangan */}
 
@@ -593,7 +597,10 @@ export default function FlightDetail({ isSubmitted }) {
         </div>
 
         {isSubmitted && (
-          <button className="mt-6 bg-[#FF0000] text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040]">
+          <button
+            className="mt-6 bg-[#FF0000] text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040]"
+            onClick={onPaymentRedirect}
+          >
             Lanjut Bayar
           </button>
         )}
