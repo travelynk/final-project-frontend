@@ -37,8 +37,8 @@ const bookingSchema = z.object({
     .min(1, "Setidaknya satu kursi harus dipilih"),
 });
 export default function BookingForm({ onFormSubmit }) {
-  const queryClient = useQueryClient(); // Inisialisasi query client
-  const profileData = queryClient.getQueryData(["profile"]); // Ambil data cache profil
+  const queryClient = useQueryClient();
+  const profileData = queryClient.getQueryData(["profile"]);
   const [passengers, setPassengers] = useState([1]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -80,7 +80,7 @@ export default function BookingForm({ onFormSubmit }) {
       bookingSchema.parse({ ...formState, selectedSeats });
       if (onFormSubmit) {
         onFormSubmit();
-        setIsSubmitted(true); // Data berhasil disimpan
+        setIsSubmitted(true);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -104,7 +104,7 @@ export default function BookingForm({ onFormSubmit }) {
   } = useQuery({
     queryKey: ["seats"],
     queryFn: () => Seat(2),
-    staleTime: 1000 * 60 * 5, // Cache data 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 
   if (isLoading) return <p>Loading seats...</p>;
@@ -215,261 +215,263 @@ export default function BookingForm({ onFormSubmit }) {
           </div>
         </div>
       </div>
-
-      {/* Data Diri Penumpang */}
-      <div className="border p-6 rounded-lg shadow-md bg-white">
-        <h3 className="text-xl font-bold mb-4">Isi Data Penumpang</h3>
-        <Accordion type="single" collapsible>
-          {passengers.map((passenger, index) => (
-            <AccordionItem key={index} value={`passenger-${index}`}>
-              <AccordionTrigger className="bg-[#3C3C3C]  text-white rounded-lg px-4 py-2 mb-1 ">
-                Data Diri Penumpang {index + 1} - Adult
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-4 p-4">
-                  <div>
-                    <Label
-                      className="text-darkblue05 font-bold text-[14px]"
-                      htmlFor={`title-${index}`}
-                    >
-                      Title
-                    </Label>
-                    <Input
-                      id={`title-${index}`}
-                      placeholder="Mr./Mrs./Miss"
-                      className="mb-2"
-                      value={formState.passengers[index]?.title}
-                      onChange={(e) =>
-                        handleChange("title", e.target.value, index)
-                      }
-                      disabled={isSubmitted}
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      className="text-darkblue05 font-bold text-[14px]"
-                      htmlFor={`fullname-${index}`}
-                    >
-                      Nama Lengkap
-                    </Label>
-                    <Input
-                      required
-                      id={`fullname-${index}`}
-                      placeholder="Masukkan nama lengkap"
-                      className="mb-2"
-                      value={formState.passengers[index]?.fullname}
-                      onChange={(e) =>
-                        handleChange("fullname", e.target.value, index)
-                      }
-                      disabled={isSubmitted}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between mb-4">
-                    <Label>Punya Nama Keluarga?</Label>
-                    <Switch required />
-                  </div>
-                  <div>
-                    <Label
-                      className="text-darkblue05 font-bold text-[14px]"
-                      htmlFor={`namakeluarga-${index}`}
-                    >
-                      Nama Keluarga
-                    </Label>
-                    <Input
-                      required
-                      id={`namakeluarga-${index}`}
-                      placeholder="Masukan Nama Keluarga"
-                      className="mb-2"
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      className="text-darkblue05 font-bold text-[14px]"
-                      htmlFor={`birthdate-${index}`}
-                    >
-                      Tanggal Lahir
-                    </Label>
-                    <Input
-                      required
-                      id={`birthdate-${index}`}
-                      placeholder="dd/mm/yyyy"
-                      type="date"
-                      className="mb-2"
-                      value={formState.passengers[index]?.birthdate}
-                      onChange={(e) =>
-                        handleChange("birthdate", e.target.value, index)
-                      }
-                      disabled={isSubmitted}
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      className="text-darkblue05 font-bold text-[14px]"
-                      htmlFor={`citizenship-${index}`}
-                    >
-                      Kewarganegaraan
-                    </Label>
-                    <Input
-                      required
-                      id={`citizenship-${index}`}
-                      placeholder="Indonesia"
-                      className="mb-2"
-                      value={formState.passengers[index]?.citizenship}
-                      onChange={(e) =>
-                        handleChange("citizenship", e.target.value, index)
-                      }
-                      disabled={isSubmitted}
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      className="text-darkblue05 font-bold text-[14px]"
-                      htmlFor={`passport-${index}`}
-                    >
-                      KTP/Paspor
-                    </Label>
-                    <Input
-                      required
-                      id={`passport-${index}`}
-                      placeholder="Masukkan nomor KTP atau paspor"
-                      className="mb-2"
-                      value={formState.passengers[index]?.passport}
-                      onChange={(e) =>
-                        handleChange("passport", e.target.value, index)
-                      }
-                      disabled={isSubmitted}
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      className="text-darkblue05 font-bold text-[14px]"
-                      htmlFor={`negarapenerbit-${index}`}
-                    >
-                      Negara Penerbit
-                    </Label>
-                    <Input
-                      required
-                      id={`negarapenerbit-${index}`}
-                      placeholder="Masukan Negara Penerbit"
-                      className="mb-2"
-                      value={formState.passengers[index]?.negarapenerbit}
-                      onChange={(e) =>
-                        handleChange("negarapenerbit", e.target.value, index)
-                      }
-                      disabled={isSubmitted}
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      className="text-darkblue05 font-bold text-[14px]"
-                      htmlFor={`expiry-${index}`}
-                    >
-                      Berlaku Sampai
-                    </Label>
-                    <Input
-                      required
-                      id={`expiry-${index}`}
-                      placeholder="dd/mm/yyyy"
-                      type="date"
-                      className="mb-2"
-                      value={formState.passengers[index]?.expiry}
-                      onChange={(e) =>
-                        handleChange("expiry", e.target.value, index)
-                      }
-                      disabled={isSubmitted}
-                    />
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-        <button
-          onClick={addPassenger}
-          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
-          disabled={isSubmitted}
-        >
-          Tambah Penumpang
-        </button>
-      </div>
-
-      {/* Seat Selection */}
-      <div className="border p-6 rounded-lg shadow-md bg-white">
-        <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
-        <div className="flex items-center justify-center text-center p-2 text-lg font-sm mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10">
-          Economy - {seatData.length - reservedSeats.length} Seats Available
-        </div>
-        <div className="flex justify-center">
-          <div className="grid grid-cols-7 gap-2 justify-center items-center">
-            {/* Render columns */}
-            {seatColumns.map((col, colIndex) => (
-              <div key={colIndex} className="text-center font-bold">
-                {col}
-              </div>
-            ))}
-
-            {/* Render rows */}
-            {Array.from({ length: seatRows }).map((_, rowIndex) => (
-              <React.Fragment key={rowIndex}>
-                {seatColumns.map((col, colIndex) => {
-                  // Handle the empty column separately
-                  if (col === "") {
-                    return (
-                      <div
-                        key={colIndex}
-                        className="w-10 h-10 flex items-center justify-center font-semibold"
+      {/*komponen data diri penumpang harus dirender ulang berdasarkan jumlah penerbangan saat pergi dan pulang*/}
+      <div>
+        {/* Data Diri Penumpang */}
+        <div className="border p-6 rounded-lg shadow-md bg-white">
+          <h3 className="text-xl font-bold mb-4">Isi Data Penumpang</h3>
+          <Accordion type="single" collapsible>
+            {passengers.map((passenger, index) => (
+              <AccordionItem key={index} value={`passenger-${index}`}>
+                <AccordionTrigger className="bg-[#3C3C3C]  text-white rounded-lg px-4 py-2 mb-1 ">
+                  Data Diri Penumpang {index + 1} - Adult
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 p-4">
+                    <div>
+                      <Label
+                        className="text-darkblue05 font-bold text-[14px]"
+                        htmlFor={`title-${index}`}
                       >
-                        {rowIndex + 1}
-                      </div>
-                    );
-                  }
-
-                  const seatId = `${rowIndex + 1}${col}`;
-                  const isReserved = reservedSeats.includes(seatId);
-                  const isSelected = selectedSeats.includes(seatId);
-
-                  // Only render seats that exist in the data
-                  if (!seatData.some((seat) => seat.position === seatId)) {
-                    return (
-                      <div
-                        key={seatId}
-                        className="w-10 h-10 bg-gray-100 border flex items-center justify-center"
+                        Title
+                      </Label>
+                      <Input
+                        id={`title-${index}`}
+                        placeholder="Mr./Mrs./Miss"
+                        className="mb-2"
+                        value={formState.passengers[index]?.title}
+                        onChange={(e) =>
+                          handleChange("title", e.target.value, index)
+                        }
+                        disabled={isSubmitted}
                       />
-                    );
-                  }
-
-                  // Skip rendering seats that are not in seatData
-                  // if (!seatData.some((seat) => seat.position === seatId)) {
-                  //   return null;
-                  // }
-
-                  return (
-                    <button
-                      key={seatId}
-                      className={`w-10 h-10 rounded-md text-white font-semibold flex items-center justify-center ${
-                        isReserved
-                          ? "bg-green-500 cursor-not-allowed"
-                          : isSelected
-                            ? "bg-purple-500"
-                            : "bg-gray-200"
-                      }`}
-                      onClick={() =>
-                        !isReserved &&
-                        !isSubmitted &&
-                        toggleSeatSelection(seatId)
-                      }
-                      disabled={isReserved || isSubmitted}
-                    >
-                      {isSelected
-                        ? `P${selectedSeats.indexOf(seatId) + 1}`
-                        : !isReserved
-                          ? "X"
-                          : ""}
-                    </button>
-                  );
-                })}
-              </React.Fragment>
+                    </div>
+                    <div>
+                      <Label
+                        className="text-darkblue05 font-bold text-[14px]"
+                        htmlFor={`fullname-${index}`}
+                      >
+                        Nama Lengkap
+                      </Label>
+                      <Input
+                        required
+                        id={`fullname-${index}`}
+                        placeholder="Masukkan nama lengkap"
+                        className="mb-2"
+                        value={formState.passengers[index]?.fullname}
+                        onChange={(e) =>
+                          handleChange("fullname", e.target.value, index)
+                        }
+                        disabled={isSubmitted}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between mb-4">
+                      <Label>Punya Nama Keluarga?</Label>
+                      <Switch required />
+                    </div>
+                    <div>
+                      <Label
+                        className="text-darkblue05 font-bold text-[14px]"
+                        htmlFor={`namakeluarga-${index}`}
+                      >
+                        Nama Keluarga
+                      </Label>
+                      <Input
+                        required
+                        id={`namakeluarga-${index}`}
+                        placeholder="Masukan Nama Keluarga"
+                        className="mb-2"
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        className="text-darkblue05 font-bold text-[14px]"
+                        htmlFor={`birthdate-${index}`}
+                      >
+                        Tanggal Lahir
+                      </Label>
+                      <Input
+                        required
+                        id={`birthdate-${index}`}
+                        placeholder="dd/mm/yyyy"
+                        type="date"
+                        className="mb-2"
+                        value={formState.passengers[index]?.birthdate}
+                        onChange={(e) =>
+                          handleChange("birthdate", e.target.value, index)
+                        }
+                        disabled={isSubmitted}
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        className="text-darkblue05 font-bold text-[14px]"
+                        htmlFor={`citizenship-${index}`}
+                      >
+                        Kewarganegaraan
+                      </Label>
+                      <Input
+                        required
+                        id={`citizenship-${index}`}
+                        placeholder="Indonesia"
+                        className="mb-2"
+                        value={formState.passengers[index]?.citizenship}
+                        onChange={(e) =>
+                          handleChange("citizenship", e.target.value, index)
+                        }
+                        disabled={isSubmitted}
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        className="text-darkblue05 font-bold text-[14px]"
+                        htmlFor={`passport-${index}`}
+                      >
+                        KTP/Paspor
+                      </Label>
+                      <Input
+                        required
+                        id={`passport-${index}`}
+                        placeholder="Masukkan nomor KTP atau paspor"
+                        className="mb-2"
+                        value={formState.passengers[index]?.passport}
+                        onChange={(e) =>
+                          handleChange("passport", e.target.value, index)
+                        }
+                        disabled={isSubmitted}
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        className="text-darkblue05 font-bold text-[14px]"
+                        htmlFor={`negarapenerbit-${index}`}
+                      >
+                        Negara Penerbit
+                      </Label>
+                      <Input
+                        required
+                        id={`negarapenerbit-${index}`}
+                        placeholder="Masukan Negara Penerbit"
+                        className="mb-2"
+                        value={formState.passengers[index]?.negarapenerbit}
+                        onChange={(e) =>
+                          handleChange("negarapenerbit", e.target.value, index)
+                        }
+                        disabled={isSubmitted}
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        className="text-darkblue05 font-bold text-[14px]"
+                        htmlFor={`expiry-${index}`}
+                      >
+                        Berlaku Sampai
+                      </Label>
+                      <Input
+                        required
+                        id={`expiry-${index}`}
+                        placeholder="dd/mm/yyyy"
+                        type="date"
+                        className="mb-2"
+                        value={formState.passengers[index]?.expiry}
+                        onChange={(e) =>
+                          handleChange("expiry", e.target.value, index)
+                        }
+                        disabled={isSubmitted}
+                      />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
             ))}
+          </Accordion>
+          <button
+            onClick={addPassenger}
+            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
+            disabled={isSubmitted}
+          >
+            Tambah Penumpang
+          </button>
+        </div>
+
+        {/* Seat Selection */}
+        <div className="border p-6 rounded-lg shadow-md bg-white mt-5">
+          <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
+          <div className="flex items-center justify-center text-center p-2 text-lg font-sm mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10">
+            Economy - {seatData.length - reservedSeats.length} Seats Available
+          </div>
+          <div className="flex justify-center">
+            <div className="grid grid-cols-7 gap-2 justify-center items-center">
+              {/* Render columns */}
+              {seatColumns.map((col, colIndex) => (
+                <div key={colIndex} className="text-center font-bold">
+                  {col}
+                </div>
+              ))}
+
+              {/* Render rows */}
+              {Array.from({ length: seatRows }).map((_, rowIndex) => (
+                <React.Fragment key={rowIndex}>
+                  {seatColumns.map((col, colIndex) => {
+                    // Handle the empty column separately
+                    if (col === "") {
+                      return (
+                        <div
+                          key={colIndex}
+                          className="w-10 h-10 flex items-center justify-center font-semibold"
+                        >
+                          {rowIndex + 1}
+                        </div>
+                      );
+                    }
+
+                    const seatId = `${rowIndex + 1}${col}`;
+                    const isReserved = reservedSeats.includes(seatId);
+                    const isSelected = selectedSeats.includes(seatId);
+
+                    // Only render seats that exist in the data
+                    if (!seatData.some((seat) => seat.position === seatId)) {
+                      return (
+                        <div
+                          key={seatId}
+                          className="w-10 h-10 bg-gray-100 border flex items-center justify-center"
+                        />
+                      );
+                    }
+
+                    // Skip rendering seats that are not in seatData
+                    // if (!seatData.some((seat) => seat.position === seatId)) {
+                    //   return null;
+                    // }
+
+                    return (
+                      <button
+                        key={seatId}
+                        className={`w-10 h-10 rounded-md text-white font-semibold flex items-center justify-center ${
+                          isReserved
+                            ? "bg-green-500 cursor-not-allowed"
+                            : isSelected
+                              ? "bg-purple-500"
+                              : "bg-gray-200"
+                        }`}
+                        onClick={() =>
+                          !isReserved &&
+                          !isSubmitted &&
+                          toggleSeatSelection(seatId)
+                        }
+                        disabled={isReserved || isSubmitted}
+                      >
+                        {isSelected
+                          ? `P${selectedSeats.indexOf(seatId) + 1}`
+                          : !isReserved
+                            ? "X"
+                            : ""}
+                      </button>
+                    );
+                  })}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -489,5 +491,5 @@ export default function BookingForm({ onFormSubmit }) {
 }
 
 BookingForm.propTypes = {
-  onFormSubmit: PropTypes.func.isRequired, // onFormSubmit is a required function
+  onFormSubmit: PropTypes.func.isRequired,
 };

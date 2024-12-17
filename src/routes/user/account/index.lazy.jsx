@@ -17,7 +17,7 @@ import { FaPen, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
-import { ProfileUpdate } from "../../../service/auth"; // Assuming profile function is in src/service/auth
+import { ProfileUpdate } from "../../../services/auth"; // Assuming profile function is in src/service/auth
 import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createLazyFileRoute("/user/account/")({

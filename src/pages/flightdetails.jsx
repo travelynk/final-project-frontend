@@ -14,6 +14,13 @@ import {
   ToastTitle,
   ToastDescription,
 } from "../components/ui/toast";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "../components/ui/accordion"; // ShadCN Accordion
+import { IoIosInformationCircle } from "react-icons/io";
 
 export default function FlightDetail({ isSubmitted }) {
   const [selectedVoucher, setSelectedVoucher] = useState(null);
@@ -31,18 +38,18 @@ export default function FlightDetail({ isSubmitted }) {
 
   useEffect(() => {
     try {
-      const storedData = localStorage.getItem("selectedFlights");
+      const storedData = localStorage.getItem("cartTicket");
       if (storedData) {
         const parsedData = JSON.parse(storedData);
-        console.log("Data berhasil diambil:", parsedData);
+        console.log("Parsed Data:", parsedData);
 
-        if (Array.isArray(parsedData) && parsedData.length > 0) {
-          const flight = parsedData[0]?.flights?.[0];
-          const passengerCount = parsedData[0]?.passengerCount;
-          const seatClass = parsedData[0]?.seatClass;
+        if (parsedData && parsedData.flights && parsedData.flights.length > 0) {
+          const flight = parsedData.flights[0]?.pergi?.flights;
+          const passengerCount = parsedData.flights[0]?.pergi?.passengerCount;
+          const seatClass = flight?.seatClass || "Economy";
 
           if (flight) {
-            // Jika facility berupa string yang dipisahkan oleh koma, ubah menjadi array
+            // Validasi fasilitas
             if (flight.facility && typeof flight.facility === "string") {
               flight.facility = flight.facility.split(",").map((f) => f.trim());
             }
@@ -51,10 +58,7 @@ export default function FlightDetail({ isSubmitted }) {
           if (passengerCount) {
             setPassengerCount(passengerCount);
           }
-          if (seatClass) {
-            setSeatClass(seatClass);
-          }
-
+          setSeatClass(seatClass);
           setLocalData(parsedData);
         } else {
           console.warn("Data flights tidak valid atau kosong.");
@@ -68,9 +72,14 @@ export default function FlightDetail({ isSubmitted }) {
   }, []);
 
   //price calculation
-  const calculatePassengerPrice = (price, count, discount = 1) => {
-    const parsedPrice = parsePrice(price); // Pastikan price diproses dengan aman
-    return parsedPrice * count * discount;
+  const calculatePassengerPrice = (pergiData, pulangData, count) => {
+    if (count === 0) return 0; // Return 0 if no passengers in this category
+
+    const pergiPrice = parsePrice(pergiData?.price || "0");
+    const pulangPrice = parsePrice(pulangData?.price || "0");
+    const totalPrice = pergiPrice + pulangPrice;
+
+    return totalPrice * count; // Multiply by the number of passengers
   };
   function parsePrice(price) {
     if (typeof price === "string") {
@@ -81,23 +90,43 @@ export default function FlightDetail({ isSubmitted }) {
     return 0; // Jika tidak valid, kembalikan 0 sebagai fallback
   }
   useEffect(() => {
-    if (localData && passengerCount && flightData?.price) {
-      const basePrice = parsePrice(flightData.price); // Konversi price ke angka
-      const adultCount = parseInt(passengerCount.adult || "0", 10);
-      const childCount = parseInt(passengerCount.child || "0", 10);
-      const infantCount = parseInt(passengerCount.infant || "0", 10);
+    if (localData) {
+      const calculateTotalPrice = (flightData, passengerCount) => {
+        if (!flightData || !passengerCount) return 0;
 
-      // Harga per kategori penumpang
-      const adultPrice = basePrice * adultCount;
-      const childPrice = basePrice * childCount; // Diskon anak-anak (contoh 75%)
-      const infantPrice = basePrice * infantCount; // Diskon bayi (contoh 50%)
+        const basePrice = parsePrice(flightData.price); // Convert price to number
+        const adultCount = parseInt(passengerCount.adult || "0", 10);
+        const childCount = parseInt(passengerCount.child || "0", 10);
+        const infantCount = parseInt(passengerCount.infant || "0", 10);
 
-      const tax = 300000; // Pajak tetap
-      const total = adultPrice + childPrice + infantPrice + tax;
+        // Calculate individual passenger categories
+        const adultPrice = basePrice * adultCount;
+        const childPrice = basePrice * childCount;
+        const infantPrice = basePrice * infantCount;
 
-      setTotalPrice(total); // Update state totalPrice
+        return adultPrice + childPrice + infantPrice;
+      };
+
+      // Calculate prices for pergi and pulang
+      const pergiData = localData.flights[0]?.pergi;
+      const pulangData = localData.flights[0]?.pulang;
+
+      const pergiPrice = calculateTotalPrice(
+        pergiData,
+        pergiData?.passengerCount
+      );
+      const pulangPrice = calculateTotalPrice(
+        pulangData,
+        pulangData?.passengerCount
+      );
+
+      // Calculate total including tax
+      const totalBeforeTax = pergiPrice + pulangPrice;
+      const totalWithTax = totalBeforeTax * 1.11; // Add 11% tax
+
+      setTotalPrice(Math.round(totalWithTax)); // Update state
     }
-  }, [localData, passengerCount, flightData?.price]);
+  }, [localData]);
 
   // Fetch vouchers
   const { data: vouchers = [], isLoading: isFetchingVouchers } = useQuery({
@@ -143,50 +172,346 @@ export default function FlightDetail({ isSubmitted }) {
           Booking Code: <span className="text-purple-600">6723y2GHK</span>
         </h2>
         {/*data penerbangan */}
-        <div className="mt-4 text-sm">
-          <p>
-            <strong>{flightData?.departure?.time}</strong>
-            <span className="float-right text-purple-500">Keberangkatan</span>
-          </p>
-          <p>{flightData?.departure?.date}</p>
-          <p>
-            {flightData?.departure?.airport || "Bandara tidak tersedia"} -
-            {flightData?.departure?.terminal || "Terminal tidak tersedia"}
-          </p>
-          <hr className="my-4" />
-          <p>
-            <strong>
-              {flightData?.airline?.name || "Air line tidak tersedia"} -{" "}
-              {seatClass || "Kelas penumpang tidak tersedia"}
-            </strong>
-          </p>
-          <p className="mb-4">
-            <strong>{flightData?.flightNum}</strong>
-          </p>
-          <div>
-            <strong>Informasi:</strong>
-            <br />
-            {Array.isArray(flightData?.facility) ? (
-              <ul>
-                {flightData.facility.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            ) : (
-              flightData?.facility || "Fasilitas tidak tersedia"
-            )}
-          </div>
-          <hr className="my-4" />
-          <p>
-            <strong>{flightData?.arrival?.time}</strong>
-            <span className="float-right text-purple-500">Kedatangan</span>
-          </p>
-          <p>{flightData?.arrival?.date}</p>
-          <p>
-            {flightData?.arrival?.airport} - {flightData?.arrival?.terminal}
-          </p>
-          <hr className="my-4" />
 
+        <Accordion type="single" collapsible className="mt-4">
+          {/* Accordion untuk Pergi */}
+          <AccordionItem value="pergi">
+            <AccordionTrigger>Penerbangan Pergi</AccordionTrigger>
+            <AccordionContent>
+              {localData?.flights?.[0]?.pergi ? (
+                localData.flights[0].pergi.isTransit ? (
+                  localData.flights[0].pergi.flights.map((flight, index) => (
+                    <div
+                      key={index}
+                      className="mt-4 text-sm border-b pb-4 mb-4"
+                    >
+                      <p>
+                        <strong>
+                          {flight.departure.time || "Waktu tidak tersedia"}
+                        </strong>
+                        <span className="float-right text-purple-500">
+                          Keberangkatan
+                        </span>
+                      </p>
+                      <p>
+                        {flight.departure.date || "Tanggal tidak tersedia"}
+                        <span className="float-right">
+                          {flight.departure.city.name}
+                        </span>
+                      </p>
+                      <p>
+                        {flight.departure.airport || "Bandara tidak tersedia"} -{" "}
+                        {flight.departure.terminal || "Terminal tidak tersedia"}
+                      </p>
+                      <hr className="my-4" />
+                      <div className="flex items-center">
+                        <img
+                          src={flight.airline.image}
+                          alt=""
+                          className="w-8 h-8 mr-2"
+                        />
+                        <div>
+                          <p>
+                            <strong>
+                              {flight.airline.name || "Airline tidak tersedia"}{" "}
+                              - {seatClass || "Kelas tidak tersedia"}
+                            </strong>
+                          </p>
+                          <p className="mb-4">
+                            <strong>
+                              {flight.flightNum ||
+                                "Nomor penerbangan tidak tersedia"}
+                            </strong>
+                          </p>
+                          <div>
+                            <strong>Fasilitas:</strong>
+                            <br />
+                            {Array.isArray(flight.facility) ? (
+                              <ul>
+                                {flight.facility.map((item, idx) => (
+                                  <li key={idx}>{item}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              flight.facility || "Fasilitas tidak tersedia"
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <hr className="my-4" />
+                      <p>
+                        <strong>
+                          {flight.arrival.time || "Waktu tidak tersedia"}
+                        </strong>
+                        <span className="float-right text-purple-500">
+                          Kedatangan
+                        </span>
+                      </p>
+                      <p>
+                        {flight.arrival.date || "Tanggal tidak tersedia"}
+                        <span className="float-right">
+                          {flight.arrival.city.name}
+                        </span>
+                      </p>
+                      <p>
+                        {flight.arrival.airport || "Bandara tidak tersedia"} -{" "}
+                        {flight.arrival.terminal || "Terminal tidak tersedia"}
+                      </p>
+
+                      {/* Transit Information */}
+                      {index !==
+                        localData.flights[0].pergi.flights.length - 1 && (
+                        <div className="flex items-center justify-center mt-4 border-y-2">
+                          <hr />
+                          <div className="flex items-center ">
+                            <IoIosInformationCircle className="mr-2" />
+                            <span className="text-sm text-gray-600">
+                              Berhenti untuk ganti pesawat di{" "}
+                              {flight.arrival.city.name}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="mt-4 text-sm border-b pb-4 mb-4">
+                    {/* Data Penerbangan Langsung */}
+                    <p>
+                      <strong>
+                        {localData.flights[0].pergi.flights[0]?.departure
+                          .time || "Waktu tidak tersedia"}
+                      </strong>
+                      <span className="float-right text-purple-500">
+                        Keberangkatan
+                      </span>
+                    </p>
+                    <p>
+                      {localData.flights[0].pergi.flights[0]?.departure.date ||
+                        "Tanggal tidak tersedia"}
+                    </p>
+                    <p>
+                      {localData.flights[0].pergi.flights[0]?.departure
+                        .airport || "Bandara tidak tersedia"}{" "}
+                      -{" "}
+                      {localData.flights[0].pergi.flights[0]?.departure
+                        .terminal || "Terminal tidak tersedia"}
+                    </p>
+                    <hr className="my-4" />
+                    <p>
+                      <strong>
+                        {localData.flights[0].pergi.flights[0]?.airline.name ||
+                          "Airline tidak tersedia"}{" "}
+                        - {seatClass || "Kelas tidak tersedia"}
+                      </strong>
+                    </p>
+                    <p className="mb-4">
+                      <strong>
+                        {localData.flights[0].pergi.flights[0]?.flightNum ||
+                          "Nomor penerbangan tidak tersedia"}
+                      </strong>
+                    </p>
+                    <div>
+                      <strong>Fasilitas:</strong>
+                      <br />
+                      {Array.isArray(
+                        localData.flights[0].pergi.flights[0]?.facility
+                      ) ? (
+                        <ul>
+                          {localData.flights[0].pergi.flights[0].facility.map(
+                            (item, idx) => (
+                              <li key={idx}>{item}</li>
+                            )
+                          )}
+                        </ul>
+                      ) : (
+                        localData.flights[0].pergi.flights[0]?.facility ||
+                        "Fasilitas tidak tersedia"
+                      )}
+                    </div>
+                    <hr className="my-4" />
+                    <p>
+                      <strong>
+                        {localData.flights[0].pergi.flights[0]?.arrival.time ||
+                          "Waktu tidak tersedia"}
+                      </strong>
+                      <span className="float-right text-purple-500">
+                        Kedatangan
+                      </span>
+                    </p>
+                    <p>
+                      {localData.flights[0].pergi.flights[0]?.arrival.date ||
+                        "Tanggal tidak tersedia"}
+                    </p>
+                    <p>
+                      {localData.flights[0].pergi.flights[0]?.arrival.airport ||
+                        "Bandara tidak tersedia"}{" "}
+                      -{" "}
+                      {localData.flights[0].pergi.flights[0]?.arrival
+                        .terminal || "Terminal tidak tersedia"}
+                    </p>
+                  </div>
+                )
+              ) : (
+                <p>Data penerbangan tidak tersedia.</p>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Accordion untuk Pulang */}
+          <AccordionItem value="pulang">
+            <AccordionTrigger>Penerbangan Pulang</AccordionTrigger>
+            <AccordionContent>
+              {localData?.flights?.[0]?.pulang ? (
+                localData.flights[0].pulang.isTransit ? (
+                  localData.flights[0].pulang.flights.map((flight, index) => (
+                    <div
+                      key={index}
+                      className="mt-4 text-sm border-b pb-4 mb-4"
+                    >
+                      <p>
+                        <strong>
+                          {flight.departure.time || "Waktu tidak tersedia"}
+                        </strong>
+                        <span className="float-right text-purple-500">
+                          Keberangkatan
+                        </span>
+                      </p>
+                      <p>{flight.departure.date || "Tanggal tidak tersedia"}</p>
+                      <p>
+                        {flight.departure.airport || "Bandara tidak tersedia"} -{" "}
+                        {flight.departure.terminal || "Terminal tidak tersedia"}
+                      </p>
+                      <hr className="my-4" />
+                      <p>
+                        <strong>
+                          {flight.airline.name || "Airline tidak tersedia"} -{" "}
+                          {seatClass || "Kelas tidak tersedia"}
+                        </strong>
+                      </p>
+                      <p className="mb-4">
+                        <strong>
+                          {flight.flightNum ||
+                            "Nomor penerbangan tidak tersedia"}
+                        </strong>
+                      </p>
+                      <div>
+                        <strong>Fasilitas:</strong>
+                        <br />
+                        {Array.isArray(flight.facility) ? (
+                          <ul>
+                            {flight.facility.map((item, idx) => (
+                              <li key={idx}>{item}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          flight.facility || "Fasilitas tidak tersedia"
+                        )}
+                      </div>
+                      <hr className="my-4" />
+                      <p>
+                        <strong>
+                          {flight.arrival.time || "Waktu tidak tersedia"}
+                        </strong>
+                        <span className="float-right text-purple-500">
+                          Kedatangan
+                        </span>
+                      </p>
+                      <p>{flight.arrival.date || "Tanggal tidak tersedia"}</p>
+                      <p>
+                        {flight.arrival.airport || "Bandara tidak tersedia"} -{" "}
+                        {flight.arrival.terminal || "Terminal tidak tersedia"}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="mt-4 text-sm border-b pb-4 mb-4">
+                    {/* Data Penerbangan Langsung */}
+                    <p>
+                      <strong>
+                        {localData.flights[0].pulang.flights[0]?.departure
+                          .time || "Waktu tidak tersedia"}
+                      </strong>
+                      <span className="float-right text-purple-500">
+                        Keberangkatan
+                      </span>
+                    </p>
+                    <p>
+                      {localData.flights[0].pulang.flights[0]?.departure.date ||
+                        "Tanggal tidak tersedia"}
+                    </p>
+                    <p>
+                      {localData.flights[0].pulang.flights[0]?.departure
+                        .airport || "Bandara tidak tersedia"}{" "}
+                      -{" "}
+                      {localData.flights[0].pulang.flights[0]?.departure
+                        .terminal || "Terminal tidak tersedia"}
+                    </p>
+                    <hr className="my-4" />
+                    <p>
+                      <strong>
+                        {localData.flights[0].pulang.flights[0]?.airline.name ||
+                          "Airline tidak tersedia"}{" "}
+                        - {seatClass || "Kelas tidak tersedia"}
+                      </strong>
+                    </p>
+                    <p className="mb-4">
+                      <strong>
+                        {localData.flights[0].pulang.flights[0]?.flightNum ||
+                          "Nomor penerbangan tidak tersedia"}
+                      </strong>
+                    </p>
+                    <div>
+                      <strong>Fasilitas:</strong>
+                      <br />
+                      {Array.isArray(
+                        localData.flights[0].pulang.flights[0]?.facility
+                      ) ? (
+                        <ul>
+                          {localData.flights[0].pulang.flights[0].facility.map(
+                            (item, idx) => (
+                              <li key={idx}>{item}</li>
+                            )
+                          )}
+                        </ul>
+                      ) : (
+                        localData.flights[0].pulang.flights[0]?.facility ||
+                        "Fasilitas tidak tersedia"
+                      )}
+                    </div>
+                    <hr className="my-4" />
+                    <p>
+                      <strong>
+                        {localData.flights[0].pulang.flights[0]?.arrival.time ||
+                          "Waktu tidak tersedia"}
+                      </strong>
+                      <span className="float-right text-purple-500">
+                        Kedatangan
+                      </span>
+                    </p>
+                    <p>
+                      {localData.flights[0].pulang.flights[0]?.arrival.date ||
+                        "Tanggal tidak tersedia"}
+                    </p>
+                    <p>
+                      {localData.flights[0].pulang.flights[0]?.arrival
+                        .airport || "Bandara tidak tersedia"}{" "}
+                      -{" "}
+                      {localData.flights[0].pulang.flights[0]?.arrival
+                        .terminal || "Terminal tidak tersedia"}
+                    </p>
+                  </div>
+                )
+              ) : (
+                <p>Data penerbangan tidak tersedia.</p>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        {/*total pulang pergi*/}
+
+        <div className="mt-4 text-sm">
           {/* Voucher Section */}
           <div className="flex justify-between items-center mt-4">
             <div className="flex items-center gap-2">
@@ -227,17 +552,19 @@ export default function FlightDetail({ isSubmitted }) {
             <span className="float-right">
               IDR{" "}
               {calculatePassengerPrice(
-                flightData?.price,
+                localData?.flights[0]?.pergi,
+                localData?.flights[0]?.pulang,
                 passengerCount?.adult || 0
               ).toLocaleString()}
             </span>
           </p>
           <p>
-            {passengerCount?.child || "Penumpang anak tidak ada"} Children
+            {passengerCount?.child || "Penumpang anak tidak ada"} Child
             <span className="float-right">
               IDR{" "}
               {calculatePassengerPrice(
-                flightData?.price,
+                localData?.flights[0]?.pergi,
+                localData?.flights[0]?.pulang,
                 passengerCount?.child || 0
               ).toLocaleString()}
             </span>
@@ -247,13 +574,14 @@ export default function FlightDetail({ isSubmitted }) {
             <span className="float-right">
               IDR{" "}
               {calculatePassengerPrice(
-                flightData?.price,
+                localData?.flights[0]?.pergi,
+                localData?.flights[0]?.pulang,
                 passengerCount?.infant || 0
               ).toLocaleString()}
             </span>
           </p>
           <p>
-            Tax<span className="float-right">IDR 300.000</span>
+            Tax<span className="float-right">11%</span>
           </p>
           <hr className="my-4" />
           <p className="font-bold">
