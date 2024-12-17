@@ -42,7 +42,7 @@ function Payment() {
     fetchBookingData();
   }, [bookingId]);
 
-  console.log(bookingInfo);
+  // console.log(bookingInfo);
 
   const [creditValue, setCredit] = useState({
     card_number: "",
@@ -123,7 +123,7 @@ function Payment() {
         console.error("Booking ID tidak ditemukan");
       }
     } catch (error) {
-      console.error(error.message); // Jika error atau timeout
+      console.error(error.message);
     } finally {
       setLoading(false);
     }
