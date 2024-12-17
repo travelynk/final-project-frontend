@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -39,7 +39,6 @@ const bookingSchema = z.object({
 export default function BookingForm({ onFormSubmit }) {
   const queryClient = useQueryClient();
   const profileData = queryClient.getQueryData(["profile"]);
-  const [passengers, setPassengers] = useState([1]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -92,6 +91,49 @@ export default function BookingForm({ onFormSubmit }) {
       }
     }
   };
+  //from localstorage
+  useEffect(() => {
+    const storedData = localStorage.getItem("cartTicket");
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      const passengerCount =
+        parsedData?.flights[0]?.pergi?.passengerCount || {};
+      const passengers = generatePassengers(passengerCount);
+
+      setFormState((prev) => ({
+        ...prev,
+        passengers,
+      }));
+    }
+  }, []);
+
+  const generatePassengers = (passengerCount) => {
+    const { adult = 0, child = 0, infant = 0 } = passengerCount;
+    const passengers = [];
+
+    for (let i = 0; i < adult; i++) {
+      passengers.push(createPassengerObject("Adult"));
+    }
+    for (let i = 0; i < child; i++) {
+      passengers.push(createPassengerObject("Child"));
+    }
+    for (let i = 0; i < infant; i++) {
+      passengers.push(createPassengerObject("Infant"));
+    }
+
+    return passengers;
+  };
+
+  const createPassengerObject = (type) => ({
+    title: "",
+    fullname: "",
+    birthdate: "",
+    citizenship: "",
+    passport: "",
+    negarapenerbit: "",
+    expiry: "",
+    type,
+  });
 
   //Seat
 
@@ -128,10 +170,6 @@ export default function BookingForm({ onFormSubmit }) {
 
       setSelectedSeats([...selectedSeats, seat]);
     }
-  };
-
-  const addPassenger = () => {
-    setPassengers([...passengers, passengers.length + 1]);
   };
 
   return (
@@ -215,16 +253,16 @@ export default function BookingForm({ onFormSubmit }) {
           </div>
         </div>
       </div>
-      {/*komponen data diri penumpang harus dirender ulang berdasarkan jumlah penerbangan saat pergi dan pulang*/}
+      {/*komponen data diri penumpang dan seat selection harus dirender ulang berdasarkan jumlah penerbangan saat pergi dan pulang berdasarkan flightId baik itu isTransit = true atau langsung*/}
       <div>
         {/* Data Diri Penumpang */}
         <div className="border p-6 rounded-lg shadow-md bg-white">
           <h3 className="text-xl font-bold mb-4">Isi Data Penumpang</h3>
           <Accordion type="single" collapsible>
-            {passengers.map((passenger, index) => (
+            {formState.passengers.map((passenger, index) => (
               <AccordionItem key={index} value={`passenger-${index}`}>
-                <AccordionTrigger className="bg-[#3C3C3C]  text-white rounded-lg px-4 py-2 mb-1 ">
-                  Data Diri Penumpang {index + 1} - Adult
+                <AccordionTrigger className="bg-[#3C3C3C] text-white rounded-lg px-4 py-2 mb-1">
+                  Data Diri Penumpang {index + 1} - {passenger.type}
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 p-4">
@@ -385,13 +423,6 @@ export default function BookingForm({ onFormSubmit }) {
               </AccordionItem>
             ))}
           </Accordion>
-          <button
-            onClick={addPassenger}
-            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
-            disabled={isSubmitted}
-          >
-            Tambah Penumpang
-          </button>
         </div>
 
         {/* Seat Selection */}
@@ -484,7 +515,7 @@ export default function BookingForm({ onFormSubmit }) {
         }`}
         disabled={isSubmitted}
       >
-        Simpan
+        Simpan dan lanjut
       </button>
     </div>
   );
