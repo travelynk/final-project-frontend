@@ -27,7 +27,7 @@ const BookingDetails = ({ selectedBooking }) => {
 
       <h2 className="text-lg">
         Booking Code:{" "}
-        <span className="text-purple-600 font-bold">
+        <span className="text-darkblue05 font-bold">
           {selectedBooking.bookingCode || "N/A"}
         </span>
       </h2>
@@ -61,11 +61,34 @@ const BookingDetails = ({ selectedBooking }) => {
                   {segment?.flight?.airline?.name || "N/A"} -{" "}
                   {segment?.flight?.seatClass || "N/A"}
                 </strong>
+                <span className="float-right font-bold text-darkblue05">
+                  Keberangkatan
+                </span>
+              </p>
+              <p>
+                {segment?.flight?.departure?.schedule?.split(" ")[0] || "N/A"}
+              </p>
+              <p>
+                {segment?.flight?.departure?.airport || "N/A"} -{" "}
+                {segment?.flight?.departure?.terminal?.name || "N/A"}
+              </p>
 
-                <div>
-                  <strong>{segment?.flight?.flightNum || "N/A"}</strong>
-                </div>
-              </div>
+              <hr className="my-4" />
+
+              <p className="mt-4">
+                <strong>
+                  {segment?.flight?.arrival?.schedule?.split(" ")[1] || "N/A"}
+                </strong>
+                <span className="float-right font-bold text-darkblue05">
+                  Kedatangan
+                </span>
+              </p>
+              <p>
+                {segment?.flight?.arrival?.schedule?.split(" ")[0] || "N/A"}
+              </p>
+              <p>{segment?.flight?.arrival?.airport || "N/A"}</p>
+
+              <hr className="my-4 border-t-2 border-gray-500" />
             </div>
 
             <p>
@@ -149,7 +172,7 @@ const BookingDetails = ({ selectedBooking }) => {
 
         <p className="font-bold">
           Total
-          <span className="float-right text-purple-600">
+          <span className="float-right text-darkblue05">
             IDR {selectedBooking.totalPrice.toLocaleString() || "N/A"}
           </span>
         </p>
@@ -165,7 +188,7 @@ const BookingDetails = ({ selectedBooking }) => {
             }}
             className={`w-full h-[42px] mt-4 py-3 text-white rounded-lg text-center ${
               selectedBooking.status === "Issued"
-                ? "bg-[#A06ECE] hover:bg-[#8c5f99] active:bg-[#8c5f99]" // For Issued status
+                ? "bg-darkblue05 hover:bg-darkblue05 active:bg-darkblue06" // For Issued status
                 : selectedBooking.status === "Unpaid"
                   ? "bg-[#FF0000] hover:bg-[#cc0000] active:bg-[#b30000]" // Darker red for Unpaid status
                   : "bg-gray-500 hover:bg-gray-600 active:bg-gray-700"

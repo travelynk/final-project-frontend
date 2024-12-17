@@ -1,5 +1,4 @@
 import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Card } from "../../../components/ui/card";
@@ -10,6 +9,7 @@ import { login, googleLogin } from "../../../services/auth";
 import { useSelector } from "react-redux";
 import { useToast } from "../../../hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
+import { Button } from "../../../components/ui/button";
 
 export const Route = createLazyFileRoute("/auth/login/")({
   component: Login,
@@ -116,23 +116,30 @@ function Login() {
     <div className="flex min-h-screen">
       {/* Image Cover */}
       <div className="hidden lg:flex lg:w-[719px] h-screen relative">
-        <div className="w-full h-full bg-gradient-to-b from-[#DEC9FF] to-[#ffff]">
-          <img
-            src="/img/logo.png"
-            alt="Cover Image"
-            style={{ marginLeft: "100px", marginTop: "200px" }}
-          />
-          <img
+        <div className="w-full h-full bg-gradient-to-b from-darkblue05 to-[#ffff] relative">
+          <div
+            className="absolute left-1/2 -translate-x-1/2 top-1/4 flex flex-col justify-center items-center font-semibold text-darkblue05 text-3xl
+          "
+          >
+            <img
+              src="/img/rm-logo-travelynk-crop.png"
+              alt="Cover Image"
+              // style={{ marginLeft: "100px", marginTop: "200px" }}
+              className="h-auto w-96 rounded-full  "
+            />
+            <span>Travelynk</span>
+          </div>
+          {/* <img
             src="/img/leaves.png"
             alt="Cover Image"
             style={{ marginTop: "-80px" }}
-          />
+          /> */}
         </div>
       </div>
 
       <div className="flex flex-col items-center justify-center w-full lg:w-[50%] px-6 py-12">
-        <Card className="w-full max-w-lg p-8 space-y-6 bg-white rounded-lg lg:ms-24 lg:mb- 12 border-none">
-          <h2 className="text-2xl font-bold">Masuk</h2>
+        <Card className="w-full max-w-lg p-8 space-y-6 bg-white rounded-lg lg:ms-24 lg:mb-12 border-none">
+          <h2 className="text-2xl font-bold dark:text-darkblue05">Masuk</h2>
           <form className="space-y-4" onSubmit={onSubmit}>
             {/* Email Input */}
             <div>
@@ -146,7 +153,7 @@ function Login() {
                 id="email"
                 type="email"
                 placeholder="Contoh: johndoe@gmail.com"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-darkblue05"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -162,7 +169,7 @@ function Login() {
                 Password
                 <Link
                   to="/auth/send-reset-password"
-                  className="text-purple-600"
+                  className="text-darkblue05"
                   style={{ fontWeight: "semibold" }}
                 >
                   Lupa Kata Sandi
@@ -173,14 +180,14 @@ function Login() {
                   id="password"
                   type={isPasswordVisible ? "text" : "password"}
                   placeholder="Masukkan password"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-darkblue05"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 rounded-e-md focus:outline-none focus:text-purple-600"
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 rounded-e-md focus:outline-none focus:text-darkblue05"
                   onClick={togglePasswordVisibility}
                 >
                   {isPasswordVisible ? (
@@ -214,8 +221,9 @@ function Login() {
 
             {/* Submit Button */}
             <Button
+              variant="default"
               type="submit"
-              className="w-full py-2 mt-4 bg-purple-500 text-white font-semibold rounded-[16px] hover:bg-purple-600"
+              className="w-full py-2 mt-4   font-semibold rounded-[16px] "
             >
               Masuk
             </Button>
@@ -258,7 +266,7 @@ function Login() {
             Belum punya akun?{" "}
             <Link
               to="/auth/register"
-              className="text-purple-600"
+              className="text-darkblue05"
               style={{ fontWeight: "bold" }}
             >
               Daftar di sini

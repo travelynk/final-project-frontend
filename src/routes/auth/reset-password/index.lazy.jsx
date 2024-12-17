@@ -110,13 +110,13 @@ function ResetPassword() {
                   id="newPassword"
                   type={isPasswordVisible ? "text" : "password"}
                   placeholder="Password Baru"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-darkblue05"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 rounded-e-md focus:outline-none focus:text-purple-600"
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 rounded-e-md focus:outline-none focus:text-darkblue05"
                   onClick={togglePasswordVisibility}
                 >
                   {isPasswordVisible ? (
@@ -163,13 +163,13 @@ function ResetPassword() {
                   id="confirmPassword"
                   type={isPasswordVisible ? "text" : "password"}
                   placeholder="Ulangi Password Baru"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-[16px] shadow-sm focus:outline-none focus:ring-2 focus:ring-darkblue05"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 rounded-e-md focus:outline-none focus:text-purple-600"
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 rounded-e-md focus:outline-none focus:text-darkblue05"
                   onClick={togglePasswordVisibility}
                 >
                   {isPasswordVisible ? (
@@ -204,7 +204,7 @@ function ResetPassword() {
             </div>
 
             {/* Submit Button */}
-            <Button className="w-full py-2 mt-4 bg-purple-500 text-white font-semibold rounded-[16px] hover:bg-purple-600">
+            <Button className="w-full py-2 mt-4 bg-darkblue05 text-white font-semibold rounded-[16px] hover:bg-darkblue05">
               Simpan
             </Button>
           </form>

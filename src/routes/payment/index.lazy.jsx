@@ -143,7 +143,7 @@ function Payment() {
       />{" "}
       {loading && (
         <div className="flex flex-col justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-600"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-darkblue05"></div>
           <p className="mt-4 text-lg font-semibold">Mohon tunggu...</p>
         </div>
       )}
@@ -160,15 +160,15 @@ function Payment() {
                 <AccordionItem value="virtual-account">
                   <AccordionTrigger
                     className="flex justify-between items-center w-full px-4 py-2 rounded-lg bg-gray-800 text-white 
-              hover:bg-purple-500 data-[state=open]:bg-purple-600 transition-colors"
+              hover:bg-darkblue05 data-[state=open]:bg-darkblue05 transition-colors"
                   >
                     Virtual Account
                   </AccordionTrigger>
                   <AccordionContent>
-                    <form className="bg-white rounded-lg p-4">
+                    <form className="bg-white rounded-lg p-4 ">
                       <label
-                        for="banks"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                        htmlFor="banks"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
                       >
                         Pilih Bank
                       </label>
@@ -184,19 +184,19 @@ function Payment() {
                         <option value="bri">BRI</option>
                         {/* <option value="permata">Permata</option> */}
                       </select>
-                      <p class="block mb-2 text-sm font-medium text-gray-900 dark:text-white mt-2.5">
+                      <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-black mt-2.5">
                         Nomor VA
                       </p>
                       <input
                         type="text"
                         value={vaNumber}
                         readOnly
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                        className="w-full border border-gray-300 text-black rounded-lg px-4 py-2"
                       />
                       <button
                         type="submit"
                         onClick={handleVa}
-                        className="w-full mt-4 py-3 bg-purple-600 text-white rounded-lg text-center hover:bg-purple-700 transition-colors"
+                        className="w-full mt-4 py-3 bg-darkblue05 dark:text-white rounded-lg text-center hover:bg-darkblue06 transition-colors"
                       >
                         Bayar
                       </button>
@@ -207,8 +207,8 @@ function Payment() {
                 {/* Credit/debit Card */}
                 <AccordionItem value="credit-card">
                   <AccordionTrigger
-                    className="flex justify-between items-center w-full px-4 py-2 rounded-lg bg-gray-800 text-white 
-                                hover:bg-purple-500 data-[state=open]:bg-purple-600 transition-colors"
+                    className="flex justify-between items-center w-full px-4 py-2 rounded-lg bg-gray-800 text-white  
+                                hover:bg-darkblue05 data-[state=open]:bg-darkblue05 transition-colors"
                   >
                     Credit/debit Card
                   </AccordionTrigger>
@@ -231,8 +231,8 @@ function Payment() {
                           className="h-8"
                         />
                       </div>
-                      <div className="space-y-4">
-                        <p className="font-medium">Card Number</p>
+                      <div className="space-y-4 dark:text-black">
+                        <p className="font-medium ">Card Number</p>
                         <input
                           type="text"
                           placeholder="1234 1234 1234 1234"
@@ -240,7 +240,7 @@ function Payment() {
                           onChange={handleCardNumberChange}
                           className="w-full border border-gray-300 rounded-lg px-4 py-2"
                         />
-                        <p className="font-medium">Card Holder Name</p>
+                        <p className="font-medium ">Card Holder Name</p>
                         <input
                           type="text"
                           placeholder="Budi Galon Bunglon"
@@ -297,7 +297,7 @@ function Payment() {
                           </div>
                         </div>
                         <button
-                          className="w-full mt-4 py-3 bg-purple-600 text-white rounded-lg text-center hover:bg-purple-700"
+                          className="w-full mt-4 py-3 bg-darkblue05 text-white rounded-lg text-center hover:bg-darkblue06"
                           onClick={handleCredit}
                         >
                           Bayar
@@ -315,7 +315,7 @@ function Payment() {
                 <>
                   <h2 className="text-lg font-bold">
                     Booking Code:{" "}
-                    <span className="text-purple-600">
+                    <span className="text-darkblue05">
                       {bookingInfo.data.bookingCode}
                     </span>
                   </h2>
@@ -334,7 +334,7 @@ function Payment() {
                                 month: "long",
                                 year: "numeric",
                               })}{" "}
-                              <span className="float-right text-purple-500">
+                              <span className="float-right text-darkblue05">
                                 Keberangkatan
                               </span>
                             </p>
@@ -374,7 +374,7 @@ function Payment() {
                                 month: "long",
                                 year: "numeric",
                               })}{" "}
-                              <span className="float-right text-purple-500">
+                              <span className="float-right text-darkblue05">
                                 Kedatangan
                               </span>
                             </p>
@@ -401,7 +401,7 @@ function Payment() {
                     <hr className="my-4 border-2 border-gray-400" />
                     <p className="text-lg font-bold">
                       Total
-                      <span className="float-right text-purple-600">
+                      <span className="float-right text-darkblue05">
                         IDR{" "}
                         {bookingInfo.data.totalPrice.toLocaleString("id-ID")}
                       </span>

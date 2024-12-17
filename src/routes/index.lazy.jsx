@@ -61,7 +61,7 @@ const HeroSection = () => {
         <div className="hero absolute container mx-auto rounded-2xl overflow-hidden z-10 bg-[#ffe9ca] ">
           <div className="flex  md:flex-row justify-between h-auto md:h-72 bg-gradient-to-r from-[#ffe9ca] md:from-25% to-transparent ">
             <div className="w-full md:w-1/4 h-full p-6 md:p-10 z-10 text-center md:text-left flex flex-col justify-center ">
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold italic">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold italic text-white dark:text-black">
                 Diskon Hari Ini
               </h1>
               <span className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-darkblue03">
@@ -80,16 +80,16 @@ const MenuSection = () => {
   const [departureDate, setDepartureDate] = useState(new Date());
   const [arrivalDate, setArivalDate] = useState(new Date());
   const [openFrom, setOpenFrom] = useState(false);
-  const [originCity, setOriginCity] = useState("");
-  const [destinationCity, setDestinationCity] = useState("");
+  const [originCity, setOriginCity] = useState(null);
+  const [destinationCity, setDestinationCity] = useState(null);
   const [openTo, setOpenTo] = useState(false);
   const [countAdult, setCountAdult] = useState(0);
   const [countChild, setCountChild] = useState(0);
   const [countBaby, setCountBaby] = useState(0);
-  const [returnCity, setReturnCity] = useState("true");
+  const [returnCity, setReturnCity] = useState(true);
   const [listCities, setListCities] = useState([]);
   const [isToggled, setIsToggled] = useState(false);
-  const [classSeat, setClassSeat] = useState("");
+  const [classSeat, setClassSeat] = useState(null);
 
   const navigate = useNavigate();
 
@@ -114,9 +114,9 @@ const MenuSection = () => {
   return (
     <Card className="max-w-full  md:max-w-[55rem] lg:min-w-[80rem] ">
       <CardHeader>
-        <CardTitle className="text-start text-lg sm:text-xl lg:text-2xl">
+        <CardTitle className="text-start text-lg sm:text-md lg:text-2xl">
           Pilih Jadwal Penerbangan spesial di
-          <i className="text-darkblue04">Tiketku!</i>
+          <i className="text-darkblue04">TraveLynk!</i>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -127,7 +127,8 @@ const MenuSection = () => {
                 htmlFor="from"
                 className="flex align-middle items-center gap-1"
               >
-                <img src="/svg/pesawat.svg" alt="pesawat.icon" /> From
+                <img src="/svg/pesawat.svg" alt="pesawat.icon" />
+                Kota Keberangkatan
               </Label>
               <Combobox
                 className="w-full"
@@ -141,7 +142,11 @@ const MenuSection = () => {
             </div>
 
             <div className="flex justify-center col-span-1 md:col-span-1 items-center">
-              <Toggle onClick={handleToggle} checked={isToggled}>
+              <Toggle
+                onClick={handleToggle}
+                checked={isToggled}
+                className="hover:animate-spin rounded-full p-0"
+              >
                 <img src="/svg/change.svg" alt="toggle.icon" />
               </Toggle>
             </div>
@@ -151,7 +156,7 @@ const MenuSection = () => {
                 htmlFor="to"
                 className="flex align-middle items-center gap-1"
               >
-                <img src="/svg/pesawat.svg" alt="pesawat.icon" /> To
+                <img src="/svg/pesawat.svg" alt="pesawat.icon" /> Kota Tujuan
               </Label>
               <Combobox
                 className="w-full"
@@ -169,7 +174,8 @@ const MenuSection = () => {
                 htmlFor="date"
                 className="flex align-middle items-center gap-1"
               >
-                <img src="/svg/calendar.svg" alt="calendar.icon" /> Date
+                <img src="/svg/calendar.svg" alt="calendar.icon" /> Tanggal
+                Kepergian
               </Label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-3">
@@ -184,7 +190,7 @@ const MenuSection = () => {
                 <div
                   className={`flex-col gap-3 ${returnCity ? "flex" : "hidden"}`}
                 >
-                  <Label htmlFor="return">Return</Label>
+                  <Label htmlFor="return">Tanggal Kepulangan</Label>
                   <MyCalendar
                     mode="single"
                     date={arrivalDate}
@@ -210,7 +216,7 @@ const MenuSection = () => {
                     alt="passengers.icon"
                     className="inline-block"
                   />
-                  Passengers
+                  Penumpang
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -339,21 +345,17 @@ const MenuSection = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex justify-end">
-                        {/* <PopoverTrigger asChild>
-                            <Button>simpan</Button>
-                          </PopoverTrigger> */}
-                      </div>
+                      <div className="flex justify-end"></div>
                     </div>
                   </PopoverContent>
                 </Popover>
               </div>
               <div className="flex flex-col gap-3">
-                <Label htmlFor="seat-class">Seat Class</Label>
+                <Label htmlFor="seat-class">Jenis Penerbangan</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline">
-                      {classSeat ? classSeat : "Class"}
+                      {classSeat ? classSeat : "Kelas"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-96">
@@ -412,6 +414,21 @@ const MenuSection = () => {
       </CardContent>
       <CardFooter className="w-full">
         <Button
+          disabled={
+            (returnCity &&
+              originCity &&
+              arrivalDate &&
+              departureDate &&
+              countAdult > 0 &&
+              classSeat) ||
+            (!returnCity &&
+              originCity &&
+              departureDate &&
+              countAdult > 0 &&
+              classSeat)
+              ? false
+              : true
+          }
           onClick={() =>
             navigate({
               to: "/flights/search",

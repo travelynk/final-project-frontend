@@ -171,7 +171,7 @@ function TicketHistory() {
 
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
-            <Card className="p-4 rounded-[12px] flex justify-between items-center bg-[#A06ECE] h-[50px] w-full sm:w-[777px]">
+            <Card className="p-4 rounded-[12px] flex justify-between items-center bg-darkblue05 h-[50px]  w-full sm:w-[777px]">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center justify-center w-8 h-8 text-white rounded-full">
                   <Button variant="link" size="icon" className="p-0">
@@ -203,7 +203,7 @@ function TicketHistory() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-auto justify-start text-left font-normal rounded-[18px] border border-[#7126B5]",
+                        "w-auto justify-start text-left font-normal rounded-[18px] border border-darkblue05",
                         !dateRange.from && "text-muted-foreground"
                       )}
                     >
@@ -264,7 +264,7 @@ function TicketHistory() {
               <div>
                 <Button
                   variant="outline"
-                  className="mb-4  bg-[#A06ECE] text-white rounded-[12px]"
+                  className="mb-4  bg-darkblue05 text-white rounded-[12px]"
                   onClick={() => setSelectedBooking(null)}
                 >
                   Back to List
