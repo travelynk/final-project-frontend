@@ -310,7 +310,7 @@ function Payment() {
             </div>
 
             {/* Booking Details */}
-            <div className="md:col-span-3 bg-white rounded-lg p-4">
+            <div className="md:col-span-3 bg-white dark:text-darkblue05 rounded-lg p-4">
               {bookingInfo ? (
                 <>
                   <h2 className="text-lg font-bold">

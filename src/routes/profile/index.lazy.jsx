@@ -98,7 +98,7 @@ function Profile() {
       <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start mt-10 space-y-6 lg:space-y-0 lg:space-x-6 max-w-[936px] mx-auto mb-10">
         <div className="flex flex-col w-[370px] lg:w-1/3 rounded-lg bg-white">
           {/* Left Menu */}
-          <div className="border-gray-200 p-4 w-full">
+          <div className="border-gray-200 p-4 w-full dark:text-darkblue05">
             <ul className="space-y-4">
               <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2">
                 <FaPen />
@@ -120,8 +120,8 @@ function Profile() {
         </div>
 
         {/* Profile Form */}
-        <div className=" w-full sm:w-[550px] lg:w-2/3 px-6 pt-6 pb-4 border rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        <div className=" w-full sm:w-[550px] lg:w-2/3 px-6 pt-6 pb-4 border rounded-lg shadow-lg ">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 dark:text-darkblue05 ">
             Ubah Data Profil
           </h2>
 

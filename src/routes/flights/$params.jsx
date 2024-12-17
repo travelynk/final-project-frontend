@@ -225,7 +225,7 @@ const HeaderComponent = ({
   useEffect(() => {
     const listDates = (startDate) => {
       const dates = [];
-      const length = !roundTrip
+      const length = !roundTrip && returnDate
         ? Math.ceil(
             (new Date(returnDate) - new Date(departureDate)) /
               (1000 * 3600 * 24)
