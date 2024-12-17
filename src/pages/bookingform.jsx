@@ -45,6 +45,8 @@ export default function BookingForm({ onFormSubmit }) {
   const [currentFlights, setCurrentFlights] = useState([]);
   const [currentFlightIndex, setCurrentFlightIndex] = useState(0);
   const [currentFlightId, setCurrentFlightId] = useState(null);
+  const [flightSeatSelections, setFlightSeatSelections] = useState({});
+  const [currentFlightSeatPhase, setCurrentFlightSeatPhase] = useState(0);
 
   const [formState, setFormState] = useState({
     fullname: profileData?.fullName || "",
@@ -80,10 +82,40 @@ export default function BookingForm({ onFormSubmit }) {
 
   const handleSubmit = () => {
     try {
-      bookingSchema.parse({ ...formState, selectedSeats });
+      // Combine all seat selections into a single array
+      const allSelectedSeats = Object.values(flightSeatSelections).flat();
+
+      // Prepare final submission data
+      const finalSubmissionData = {
+        bookingDetails: formState,
+        seatSelections: flightSeatSelections,
+        allSelectedSeats: allSelectedSeats,
+      };
+
+      // Validate using the existing schema, but with combined seats
+      bookingSchema.parse({
+        ...formState,
+        selectedSeats: allSelectedSeats,
+      });
+
       if (onFormSubmit) {
-        onFormSubmit();
+        onFormSubmit(finalSubmissionData);
         setIsSubmitted(true);
+
+        // Console log the final submission data
+        console.log("Booking Submission Successful:", {
+          bookingDetails: {
+            ...formState,
+            // Optionally mask sensitive information
+            passengers: formState.passengers.map((p) => ({
+              ...p,
+              passport: p.passport ? "*".repeat(p.passport.length) : "",
+              fullname: p.fullname,
+            })),
+          },
+          seatSelections: flightSeatSelections,
+          allSelectedSeats: allSelectedSeats,
+        });
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -96,25 +128,57 @@ export default function BookingForm({ onFormSubmit }) {
     }
   };
   //from localstorage
+  // In the initial useEffect
   useEffect(() => {
-    // Ambil data penerbangan dari localStorage
     const storedData = JSON.parse(localStorage.getItem("cartTicket"));
     if (storedData) {
-      setParsedData(storedData.flights[0]);
-      loadFlightData(storedData.flights[0], 0);
+      const flightData = storedData.flights[0];
+      setParsedData(flightData);
+
+      // Combine flights from both going and return trips
+      const totalFlights = [
+        ...(flightData.pergi?.flights || []),
+        ...(flightData.pulang?.flights || []),
+      ];
+
+      console.log("Total Flights Detected:", totalFlights.length);
+
+      // Initialize seat selections for all flights
+      const initialSeatSelections = totalFlights.reduce(
+        (acc, flight, index) => {
+          acc[index] = [];
+          return acc;
+        },
+        {}
+      );
+
+      setFlightSeatSelections(initialSeatSelections);
+
+      // Load first flight data
+      loadFlightData(flightData, 0);
       setCurrentFlights(storedData.flights || []);
     }
   }, []);
 
+  // Modify loadFlightData to handle multiple flight types
   const loadFlightData = (flights, index) => {
-    const flightSegment =
-      flights.pergi?.flights[index] || flights.pulang?.flights[index];
+    // Combine flights from both going and return trips
+    const allFlights = [
+      ...(flights.pergi?.flights || []),
+      ...(flights.pulang?.flights || []),
+    ];
 
-    const flightId = flightSegment?.flightId; // Assuming flightId is in the segment data
-    console.log("FlightID :", flightId);
+    const flightSegment = allFlights[index];
+
+    console.log("Loading Flight Data:", {
+      index,
+      flightSegment,
+    });
+
+    const flightId = flightSegment?.flightId;
 
     if (flightId) {
-      setCurrentFlightId(flightId); // Simpan flightId di state
+      setCurrentFlightId(flightId);
       queryClient.prefetchQuery({
         queryKey: ["seats", flightId],
         queryFn: () => Seat(flightId),
@@ -122,15 +186,16 @@ export default function BookingForm({ onFormSubmit }) {
       });
     }
 
-    // Generate passengers berdasarkan jumlah penumpang
+    // Generate passengers based on the current flight
     const passengers = generatePassengers(
       flights?.pergi?.passengerCount || flights?.pulang?.passengerCount
     );
 
-    setFormState({
+    setFormState((prev) => ({
+      ...prev,
       flightNum: flightSegment?.flightNum || "",
       passengers: passengers,
-    });
+    }));
   };
 
   const generatePassengers = (passengerCount) => {
@@ -211,14 +276,64 @@ export default function BookingForm({ onFormSubmit }) {
     .map((seat) => seat.position);
 
   const toggleSeatSelection = (seat) => {
-    if (selectedSeats.includes(seat)) {
-      console.log(`Seat deselected: ${seat}`);
+    // Use currentFlightSeatPhase as the key for current flight
+    setFlightSeatSelections((prev) => {
+      const currentFlightKey = currentFlightSeatPhase;
+      const currentSeats = prev[currentFlightKey] || [];
 
-      setSelectedSeats(selectedSeats.filter((s) => s !== seat));
+      // Log seat selection details
+      console.log(
+        `Seat Selection - Flight: ${currentFlightKey + 1}, Seat: ${seat}, Flight Number: ${formState.flightNum}`
+      );
+
+      // If seat is already selected, remove it
+      if (currentSeats.includes(seat)) {
+        console.log(
+          `Deselected Seat: ${seat} on Flight ${currentFlightKey + 1}`
+        );
+        return {
+          ...prev,
+          [currentFlightKey]: currentSeats.filter((s) => s !== seat),
+        };
+      }
+
+      // Add seat to selections
+      console.log(`Selected Seat: ${seat} on Flight ${currentFlightKey + 1}`);
+      return {
+        ...prev,
+        [currentFlightKey]: [...currentSeats, seat],
+      };
+    });
+  };
+  // New method to handle moving to next flight's seat selection
+  const handleNextFlightSeatSelection = () => {
+    // Validate seat selection for current flight
+    const currentSeats = flightSeatSelections[currentFlightSeatPhase];
+    if (!currentSeats || currentSeats.length === 0) {
+      alert("Please select at least one seat for this flight.");
+      return;
+    }
+
+    // Determine total flights from both going and return trips
+    const totalFlights = [
+      ...(parsedData.pergi?.flights || []),
+      ...(parsedData.pulang?.flights || []),
+    ];
+
+    console.log("Current Flight Phase:", currentFlightSeatPhase);
+    console.log("Total Flights:", totalFlights.length);
+
+    // Move to next flight's seat selection
+    const nextPhase = currentFlightSeatPhase + 1;
+
+    if (nextPhase < totalFlights.length) {
+      setCurrentFlightSeatPhase(nextPhase);
+
+      // Load next flight's data
+      loadFlightData(parsedData, nextPhase);
     } else {
-      console.log(`Seat selected: ${seat}`);
-
-      setSelectedSeats([...selectedSeats, seat]);
+      // All flights' seats selected, proceed to final submission
+      handleSubmit();
     }
   };
 
@@ -515,7 +630,11 @@ export default function BookingForm({ onFormSubmit }) {
 
                     const seatId = `${rowIndex + 1}${col}`;
                     const isReserved = reservedSeats.includes(seatId);
-                    const isSelected = selectedSeats.includes(seatId);
+
+                    // Get current flight's selected seats
+                    const currentSeats =
+                      flightSeatSelections[currentFlightSeatPhase] || [];
+                    const isSelected = currentSeats.includes(seatId);
 
                     // Only render seats that exist in the data
                     if (!seatData.some((seat) => seat.position === seatId)) {
@@ -526,11 +645,6 @@ export default function BookingForm({ onFormSubmit }) {
                         />
                       );
                     }
-
-                    // Skip rendering seats that are not in seatData
-                    // if (!seatData.some((seat) => seat.position === seatId)) {
-                    //   return null;
-                    // }
 
                     return (
                       <button
@@ -550,7 +664,7 @@ export default function BookingForm({ onFormSubmit }) {
                         disabled={isReserved || isSubmitted}
                       >
                         {isSelected
-                          ? `P${selectedSeats.indexOf(seatId) + 1}`
+                          ? `P${currentSeats.indexOf(seatId) + 1}`
                           : !isReserved
                             ? "X"
                             : ""}
@@ -565,12 +679,46 @@ export default function BookingForm({ onFormSubmit }) {
       </div>
       {/* Buttons */}
       <div className="mt-4 flex gap-4">
-        <button
-          onClick={handleSaveCurrentFlight}
-          className="bg-blue-500 text-white"
-        >
-          Simpan Penerbangan Saat Ini {formState.flightNum}
-        </button>
+        {/* Buttons */}
+        <div className="mt-4 flex gap-4">
+          <button
+            onClick={handleSaveCurrentFlight}
+            className="bg-blue-500 text-white"
+          >
+            Simpan Penerbangan Saat Ini {formState.flightNum}
+          </button>
+
+          {/* New button for multi-flight seat selection */}
+          <button
+            onClick={handleNextFlightSeatSelection}
+            className="bg-blue-500 text-white"
+          >
+            {(() => {
+              const totalFlights = [
+                ...(parsedData.pergi?.flights || []),
+                ...(parsedData.pulang?.flights || []),
+              ];
+              return currentFlightSeatPhase < totalFlights.length - 1
+                ? `Pilih Kursi Penerbangan ${currentFlightSeatPhase + 2}`
+                : "Simpan dan Lanjut";
+            })()}
+          </button>
+
+          {/* Keep the existing conditional rendering for all flights saved */}
+          {allFlightsSaved() && (
+            <button
+              onClick={handleSubmit}
+              className={`mt-6 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040] ${
+                isSubmitted
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-blue-500 text-white"
+              }`}
+              disabled={isSubmitted}
+            >
+              Simpan dan lanjut
+            </button>
+          )}
+        </div>
         {allFlightsSaved() && (
           <button
             onClick={handleSubmit}
