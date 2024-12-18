@@ -14,7 +14,6 @@ import {
 import NavigationBreadCr from "../../pages/navigationBreadCr";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
 export const Route = createLazyFileRoute("/payment/")({
   component: Payment,
@@ -33,8 +32,6 @@ function Payment() {
   }, [navigate, token]);
 
   const [bookingInfo, setBookingInfo] = useState(null);
-  const [socket, setSocket] = useState(null);
-  const [notification, setNotification] = useState("");
 
   useEffect(() => {
     const fetchBookingData = async () => {
@@ -57,75 +54,7 @@ function Payment() {
     fetchBookingData();
   }, [bookingId, navigate]);
 
-  useEffect(() => {
-    // Initialize socket connection
-    const socketInstance = io(
-      "https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app"
-    );
-
-    // Event when connected
-    socketInstance.on("connect", () => {
-      console.log("Connected to server");
-    });
-
-    // Event for payment status
-    socketInstance.on("Payment", (data) => {
-      setNotification(data.message); // Set notification message
-      console.log(data.message);
-      console.log(data.createdAt);
-    });
-
-    // Handle connection error
-    socketInstance.on("connect_error", (err) => {
-      console.log("Connection error:", err.message);
-    });
-
-    setSocket(socketInstance); // Save socket instance to state
-
-    // Cleanup on component unmount
-    return () => {
-      socketInstance.disconnect();
-    };
-  }, []);
-  console.log(notification);
-
-  const Notification = ({ message, onDismiss }) => {
-    return (
-      <div className="absolute right-28 top-18 max-w-sm border bg-white text-black py-4 rounded-lg shadow-lg">
-        <div className="px-4">
-          <p>Segera Selesaikan Pembayaran!</p>
-        </div>
-        <div className="flex items-start border-y border-gray-400">
-          <div className="flex items-start px-4 py-2">
-            <p>{message}</p>
-            <button onClick={onDismiss} className="text-black">
-              {/* SVG icon for the "X" mark */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const handleDismissNotification = () => {
-    setNotification(""); // Clear the notification
-  };
-
-  // console.log(bookingInfo);
+  console.log(bookingInfo);
 
   const [creditValue, setCredit] = useState({
     card_number: "",
@@ -217,15 +146,9 @@ function Payment() {
   };
   return (
     <>
-      {notification && (
-        <Notification
-          message={notification}
-          onDismiss={handleDismissNotification}
-        />
-      )}
       {/*navigationbreadcr disini*/}
       <NavigationBreadCr
-        initialTime={1000}
+        initialTime={300}
         label="Selesaikan Pembayaran Dalam"
         expirationMessage="Maaf, Waktu pembayaran habis. Silahkan ulangi lagi!"
         redirectPath="/ticket-history"
