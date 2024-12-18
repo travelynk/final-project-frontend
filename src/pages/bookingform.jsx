@@ -126,6 +126,8 @@ export default function BookingForm({ onFormSubmit }) {
 
   useEffect(() => {
     if (flightId && flightId[currentFlightIndex]) {
+      console.log(`Active Flight ID: ${flightId[currentFlightIndex].flightId}`);
+
       console.log(
         `Fetching seats for flightId: ${flightId[currentFlightIndex]}`
       );
@@ -141,6 +143,15 @@ export default function BookingForm({ onFormSubmit }) {
 
         // Debugging: Inspect the parsed data
         console.log("Parsed cart data:", cartData);
+
+        const currentFlightData = {
+          pergi:
+            cartData?.flights?.[0]?.pergi?.flights[currentFlightIndex] || {},
+          pulang:
+            cartData?.flights?.[0]?.pulang?.flights[currentFlightIndex] || {},
+        };
+        console.log("Current Outbound Flight:", currentFlightData.pergi);
+        console.log("Current Return Flight:", currentFlightData.pulang);
 
         const pergiFlights = cartData?.flights?.[0]?.pergi?.flights || [];
         const pulangFlights = cartData?.flights?.[0]?.pulang?.flights || [];
@@ -413,7 +424,7 @@ export default function BookingForm({ onFormSubmit }) {
 
       // Notify parent component or reset state
       if (onFormSubmit) {
-        onFormSubmit(); // Notify the parent component
+        onFormSubmit({ bookingResult: response }); // Notify the parent component
       }
 
       // Reset formState or navigate to confirmation page

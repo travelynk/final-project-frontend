@@ -10,9 +10,15 @@ export const Route = createLazyFileRoute("/flights/booking/")({
 
 export default function Booking() {
   const [successMessageVisible, setSuccessMessageVisible] = useState(false);
+  const [bookingCode, setBookingCode] = useState(null);
 
-  const handleFormSubmit = () => {
-    setSuccessMessageVisible(true);
+  const handleFormSubmit = ({ bookingResult }) => {
+    if (bookingResult?.data?.bookingCode) {
+      setSuccessMessageVisible(true);
+      setBookingCode(bookingResult.data.bookingCode);
+    } else {
+      console.error("Booking code tidak ditemukan");
+    }
   };
 
   return (
@@ -27,7 +33,10 @@ export default function Booking() {
       />
       <div className="flex flex-col md:flex-row gap-4 p-4 max-w-[936px] mx-auto ">
         <BookingForm onFormSubmit={handleFormSubmit} />
-        <FlightDetail isSubmitted={successMessageVisible} />
+        <FlightDetail
+          isSubmitted={successMessageVisible}
+          bookingCode={bookingCode}
+        />
       </div>
     </>
   );

@@ -22,7 +22,7 @@ import {
 } from "../components/ui/accordion"; // ShadCN Accordion
 import { IoIosInformationCircle } from "react-icons/io";
 
-export default function FlightDetail({ isSubmitted }) {
+export default function FlightDetail({ isSubmitted, bookingCode }) {
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0); // Base total price
   const [showToast, setShowToast] = useState(false);
@@ -169,7 +169,7 @@ export default function FlightDetail({ isSubmitted }) {
     <ToastProvider>
       <div className="bg-white rounded-lg p-4">
         <h2 className="text-lg font-bold">
-          Booking Code: <span className="text-purple-600">6723y2GHK</span>
+          Booking Code: <span className="text-purple-600">{bookingCode}</span>
         </h2>
         {/*data penerbangan */}
 
