@@ -165,6 +165,7 @@ export default function BookingForm({ onFormSubmit }) {
     }
   }, []);
 
+  //generatePassengers untuk Isi Data Penumpang
   const generatePassengers = (passengerCount) => {
     const { adult = 0, child = 0, infant = 0 } = passengerCount;
     const passengers = [];
@@ -325,22 +326,51 @@ export default function BookingForm({ onFormSubmit }) {
   const handleSaveAndContinue = () => {
     const activeFlightId = flightId[currentFlightIndex];
 
-    console.log(`Data saved for flightId: ${activeFlightId}`);
-    console.log("Selected seats:", selectedSeats);
+    // Retrieve the existing seat selection data from localStorage
+    let seatSelectionData =
+      JSON.parse(localStorage.getItem("seatSelection")) || [];
 
-    // Reset kursi terpilih
+    // Save the selected seats for the current flight along with passenger details
+    const selectedSeatData = selectedSeats.map((seat, index) => {
+      return {
+        flightId: activeFlightId,
+        seatId: seat.id,
+        passenger: formState.passengers[index], // Assuming passenger order matches seat order
+      };
+    });
+
+    // Check if the seat data for this flightId already exists
+    const existingFlightData = seatSelectionData.find(
+      (data) => data.flightId === activeFlightId
+    );
+
+    if (existingFlightData) {
+      // If it exists, append the new seats to the existing data
+      existingFlightData.seats =
+        existingFlightData.seats.concat(selectedSeatData);
+    } else {
+      // If it doesn't exist, add new data for this flightId
+      seatSelectionData.push({
+        flightId: activeFlightId,
+        seats: selectedSeatData,
+      });
+    }
+
+    console.log("Saving seat selection data:", seatSelectionData);
+
+    // Save the updated seat selection data to localStorage
+    localStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
+
+    // Reset seat selection and move to the next flight
     setSelectedSeats([]);
 
-    // Pindah ke flight berikutnya jika ada
+    // Move to the next flight or finish if all are processed
     if (currentFlightIndex < flightId.length - 1) {
       setCurrentFlightIndex((prev) => prev + 1);
     } else {
       console.log("All flights have been processed!");
     }
   };
-  if (currentFlightIndex >= flightId.length) {
-    return <p>All flights have been successfully processed!</p>;
-  }
 
   return (
     <div className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4">
@@ -699,8 +729,11 @@ export default function BookingForm({ onFormSubmit }) {
       </div>
       {/* Buttons */}
       <div className="mt-4 flex gap-4">
-        <button className="bg-blue-500 text-white">
-          Simpan Penerbangan Saat Ini {formState.flightNum}
+        <button
+          className="bg-blue-500 text-white"
+          onClick={handleSaveAndContinue} // Handle the click to save and move to next flight
+        >
+          Simpan Penerbangan Saat Ini
         </button>
         <button
           onClick={handleSubmit}
