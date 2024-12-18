@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import BookingForm from "../../../pages/bookingform";
 import FlightDetail from "../../../pages/flightdetails";
 import NavigationBreadCr from "../../../pages/navigationBreadCr";
@@ -11,16 +11,33 @@ export const Route = createLazyFileRoute("/flights/booking/")({
 export default function Booking() {
   const [successMessageVisible, setSuccessMessageVisible] = useState(false);
   const [bookingCode, setBookingCode] = useState(null);
+  const [bookingId, setBookingId] = useState(null); // Tambahkan state untuk bookingId
+  const [status, setStatus] = useState(null); // Tambahkan state untuk status
+  const navigate = useNavigate();
 
   const handleFormSubmit = ({ bookingResult }) => {
     if (bookingResult?.data?.bookingCode) {
       setSuccessMessageVisible(true);
       setBookingCode(bookingResult.data.bookingCode);
+      setBookingId(bookingResult.data.id); // Simpan bookingId
+      setStatus(bookingResult.data.status); // Simpan status
     } else {
       console.error("Booking code tidak ditemukan");
     }
   };
 
+  const handlePaymentRedirect = () => {
+    console.log("Status:", status);
+    console.log("Booking ID:", bookingId);
+
+    if (status?.toLowerCase() === "unpaid" && bookingId) {
+      navigate({ to: `/payment?bookingId=${bookingId}` });
+    } else {
+      console.error(
+        "Tidak bisa redirect, status bukan unpaid atau bookingId tidak tersedia."
+      );
+    }
+  };
   return (
     <>
       <NavigationBreadCr
@@ -36,6 +53,7 @@ export default function Booking() {
         <FlightDetail
           isSubmitted={successMessageVisible}
           bookingCode={bookingCode}
+          onPaymentRedirect={handlePaymentRedirect}
         />
       </div>
     </>
