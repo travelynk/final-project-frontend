@@ -41,7 +41,6 @@ const bookingSchema = z.object({
 export default function BookingForm({ onFormSubmit }) {
   const queryClient = useQueryClient();
   const profileData = queryClient.getQueryData(["profile"]);
-  const [selectedSeats, setSelectedSeats] = useState([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [formState, setFormState] = useState({
@@ -94,19 +93,47 @@ export default function BookingForm({ onFormSubmit }) {
     }
   };
   //from localstorage
+  const [flightId, setFlightId] = useState(null); // State to store the dynamic flightId
+  const [currentFlightIndex, setCurrentFlightIndex] = useState(0); // Flight aktif
+  const [selectedSeats, setSelectedSeats] = useState([]); // Kursi yang dipilih
 
   useEffect(() => {
-    // Mengambil data dari localStorage
+    if (flightId && flightId[currentFlightIndex]) {
+      console.log(
+        `Fetching seats for flightId: ${flightId[currentFlightIndex]}`
+      );
+      refetch(); // Fetch data untuk flight aktif
+    }
+  }, [currentFlightIndex, flightId]);
+
+  useEffect(() => {
     const cartTicket = localStorage.getItem("cartTicket");
     if (cartTicket) {
       try {
-        // Parse JSON ke objek JavaScript
         const cartData = JSON.parse(cartTicket);
 
-        // Mengambil data flights pergi dan pulang
-        const pergiFlights = cartData?.flights[0]?.pergi?.flights || [];
-        const pulangFlights = cartData?.flights[0]?.pulang?.flights || [];
+        // Debugging: Inspect the parsed data
+        console.log("Parsed cart data:", cartData);
 
+        const pergiFlights = cartData?.flights?.[0]?.pergi?.flights || [];
+        const pulangFlights = cartData?.flights?.[0]?.pulang?.flights || [];
+
+        // Ambil semua flightId untuk pergi
+        const pergiFlightIds =
+          cartData?.flights[0]?.pergi?.flights?.map((f) => f.flightId) || [];
+
+        // Ambil semua flightId untuk pulang
+        const pulangFlightIds =
+          cartData?.flights[0]?.pulang?.flights?.map((f) => f.flightId) || [];
+
+        // Gabungkan semua flightId (pergi + pulang)
+        const allFlightIds = [...pergiFlightIds, ...pulangFlightIds];
+
+        if (allFlightIds.length > 0) {
+          setFlightId(allFlightIds); // Simpan semua flightId
+        } else {
+          console.warn("No valid flight IDs found in localStorage");
+        }
         // Mengambil data passengerCount untuk pergi
         const pergiPassengerCount =
           cartData?.flights[0]?.pergi?.passengerCount || 0;
@@ -130,16 +157,11 @@ export default function BookingForm({ onFormSubmit }) {
           ...prev,
           passengers: [...pergiPassengers, ...pulangPassengers], // Gabungkan penumpang pergi dan pulang
         }));
-
-        console.log("Data flights pergi:", pergiFlights);
-        console.log("Data flights pulang:", pulangFlights);
-        console.log("Passenger count pergi:", pergiPassengerCount);
-        console.log("Passenger count pulang:", pulangPassengerCount);
       } catch (error) {
-        console.error("Gagal mem-parse cartTicket dari localStorage:", error);
+        console.error("Failed to parse cartTicket:", error);
       }
     } else {
-      console.log("Tidak ada data cartTicket di localStorage.");
+      console.warn("No cartTicket found in localStorage");
     }
   }, []);
 
@@ -176,43 +198,149 @@ export default function BookingForm({ onFormSubmit }) {
 
   // Fetch seats using TanStack Query
 
+  const fetchSeatsByFlightIds = async (flightIds) => {
+    if (!flightIds || flightIds.length === 0) {
+      throw new Error("No valid flight IDs provided.");
+    }
+
+    const token = localStorage.getItem("token"); // Pastikan token ada
+    if (!token) {
+      throw new Error("Authorization token is missing");
+    }
+
+    const allSeatData = []; // Array untuk menampung semua data seat
+
+    // Iterasi untuk setiap flightId secara berurutan
+    for (const flightId of flightIds) {
+      console.log(`Fetching seats for flightId: ${flightId}`);
+      const response = await fetch(
+        `https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app/api/v1/seats/${flightId}`, // Menggunakan path parameter
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Sertakan token di header
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.error(
+          `Failed to fetch seats for flightId ${flightId}: ${response.statusText}`
+        );
+        continue; // Lanjutkan ke flightId berikutnya jika ada error
+      }
+
+      const data = await response.json();
+      allSeatData.push(data); // Tambahkan data seat ke array
+    }
+
+    return allSeatData; // Kembalikan semua data seat
+  };
+
+  // Menggunakan TanStack Query
   const {
     data: seatData,
     isLoading,
     isError,
+    refetch,
   } = useQuery({
-    queryKey: ["seats", 2], // Use the flightId for unique seat query
-    queryFn: () => Seat(2), // Adjust Seat function to accept flightId
-
+    queryKey: flightId?.[currentFlightIndex]
+      ? ["seats", flightId[currentFlightIndex]]
+      : [], // Gunakan array kosong jika tidak valid
+    queryFn: async () => {
+      return await fetchSeatsByFlightIds([flightId[currentFlightIndex]]);
+    },
     staleTime: 1000 * 60 * 5,
+    enabled: !!flightId && currentFlightIndex < flightId.length, // Pastikan query hanya berjalan jika kondisi valid
   });
 
   if (isLoading) return <p>Loading seats...</p>;
   if (isError) return <p>Failed to load seats. Please try again.</p>;
 
-  const seatRows = Math.max(
-    ...seatData.map((seat) => parseInt(seat.position.match(/\d+/)?.[0] || "1"))
-  );
+  // Ensure seatData is available before using map
+  if (!seatData || seatData.length === 0) {
+    return <p>No seats available for this flight.</p>;
+  }
+
+  // Process seat data
+  console.log("Seat Data:", seatData);
+
+  if (!seatData || !Array.isArray(seatData)) {
+    console.error("seatData is not valid:", seatData);
+    return <p>Invalid seat data.</p>;
+  }
+
+  const allSeats = seatData.flatMap((item) => {
+    if (!item.data || !Array.isArray(item.data)) {
+      console.warn("Invalid seat data item:", item);
+      return [];
+    }
+    return item.data;
+  });
+
+  const seatRows =
+    allSeats.length > 0
+      ? Math.max(
+          ...allSeats
+            .filter((seat) => {
+              if (!seat.position) {
+                console.warn("Missing position in seat data:", seat);
+                return false;
+              }
+              return true;
+            })
+            .map((seat) => parseInt(seat.position.match(/\d+/)?.[0] || "1"))
+        )
+      : 1; // Default jika tidak ada data
+
+  // console.log("Calculated seat rows:", seatRows);
+
   const seatColumns = ["A", "B", "C", "", "D", "E", "F"];
-  const reservedSeats = seatData
+  const reservedSeats = allSeats
     .filter((seat) => !seat.isAvailable)
     .map((seat) => seat.position);
 
-  // Seat Selection Logic
+  // Ensure seat selection respects passenger limits
   const toggleSeatSelection = (seat) => {
-    const totalPassengers = formState.passengers.length; // Jumlah total penumpang yang tersedia
+    const totalPassengers = formState.passengers.length;
 
-    // Pastikan jumlah kursi yang dipilih tidak melebihi jumlah penumpang
-    if (selectedSeats.includes(seat)) {
-      console.log(`Seat deselected: ${seat}`);
-      setSelectedSeats(selectedSeats.filter((s) => s !== seat));
+    // Check if the seat is already selected
+    if (selectedSeats.some((s) => s.id === seat.id)) {
+      // If seat is selected, deselect it
+      setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.id));
+      console.log(`Deselected Seat ID: ${seat.id}, Position: ${seat.position}`);
     } else if (selectedSeats.length < totalPassengers) {
-      console.log(`Seat selected: ${seat}`);
-      setSelectedSeats([...selectedSeats, seat]);
+      // If seat is not selected, select it
+      setSelectedSeats([
+        ...selectedSeats,
+        { id: seat.id, position: seat.position },
+      ]);
+      console.log(`Selected Seat ID: ${seat.id}, Position: ${seat.position}`);
     } else {
       console.log("Maximum number of seats selected");
     }
   };
+
+  const handleSaveAndContinue = () => {
+    const activeFlightId = flightId[currentFlightIndex];
+
+    console.log(`Data saved for flightId: ${activeFlightId}`);
+    console.log("Selected seats:", selectedSeats);
+
+    // Reset kursi terpilih
+    setSelectedSeats([]);
+
+    // Pindah ke flight berikutnya jika ada
+    if (currentFlightIndex < flightId.length - 1) {
+      setCurrentFlightIndex((prev) => prev + 1);
+    } else {
+      console.log("All flights have been processed!");
+    }
+  };
+  if (currentFlightIndex >= flightId.length) {
+    return <p>All flights have been successfully processed!</p>;
+  }
 
   return (
     <div className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4">
@@ -478,7 +606,7 @@ export default function BookingForm({ onFormSubmit }) {
           <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
           <div className="flex items-center justify-center text-center p-2 text-lg font-sm mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10">
             Penerbangan {formState.flightNum} -{" "}
-            {seatData.length - reservedSeats.length} Seats Available
+            {allSeats.length - reservedSeats.length} Seats Available
           </div>
           <div className="flex justify-center">
             <div className="grid grid-cols-7 gap-2 justify-center items-center">
@@ -493,7 +621,6 @@ export default function BookingForm({ onFormSubmit }) {
               {Array.from({ length: seatRows }).map((_, rowIndex) => (
                 <React.Fragment key={rowIndex}>
                   {seatColumns.map((col, colIndex) => {
-                    // Handle the empty column separately
                     if (col === "") {
                       return (
                         <div
@@ -506,11 +633,25 @@ export default function BookingForm({ onFormSubmit }) {
                     }
 
                     const seatId = `${rowIndex + 1}${col}`;
+                    const seat = allSeats.find(
+                      (seat) => seat.position === seatId
+                    ); // Dapatkan objek seat berdasarkan position
+                    // Handle case when seat is not found
+                    if (!seat) {
+                      return (
+                        <div
+                          key={seatId}
+                          className="w-10 h-10 bg-gray-100 border flex items-center justify-center"
+                        />
+                      );
+                    }
                     const isReserved = reservedSeats.includes(seatId);
-                    const isSelected = selectedSeats.includes(seatId);
+                    const isSelected = selectedSeats.some(
+                      (s) => s.id === seat.id
+                    );
 
                     // Only render seats that exist in the data
-                    if (!seatData.some((seat) => seat.position === seatId)) {
+                    if (!allSeats.some((seat) => seat.position === seatId)) {
                       return (
                         <div
                           key={seatId}
@@ -520,13 +661,14 @@ export default function BookingForm({ onFormSubmit }) {
                     }
 
                     // Skip rendering seats that are not in seatData
-                    // if (!seatData.some((seat) => seat.position === seatId)) {
+                    // if (!allSeats.some((seat) => seat.position === seatId)) {
+
                     //   return null;
                     // }
 
                     return (
                       <button
-                        key={seatId}
+                        key={seat.id} // Gunakan id kursi sebagai key
                         className={`w-10 h-10 rounded-md text-white font-semibold flex items-center justify-center ${
                           isReserved
                             ? "bg-green-500 cursor-not-allowed"
@@ -537,12 +679,12 @@ export default function BookingForm({ onFormSubmit }) {
                         onClick={() =>
                           !isReserved &&
                           !isSubmitted &&
-                          toggleSeatSelection(seatId)
+                          toggleSeatSelection(seat)
                         }
                         disabled={isReserved || isSubmitted}
                       >
                         {isSelected
-                          ? `P${selectedSeats.indexOf(seatId) + 1}`
+                          ? `P${selectedSeats.findIndex((s) => s.id === seat.id) + 1}`
                           : !isReserved
                             ? "X"
                             : ""}

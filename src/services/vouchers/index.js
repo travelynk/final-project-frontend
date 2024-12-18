@@ -13,7 +13,7 @@ export const getVouchers = async () => {
   }
 
   const data = await response.json();
-  console.log("Vouchers data:", data); // Debug log untuk melihat data
+  // console.log("Vouchers data:", data); // Debug log untuk melihat data
   return data?.data;
   // return response.json().then((data) => data?.data);
 };
