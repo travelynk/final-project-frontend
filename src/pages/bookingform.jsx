@@ -14,7 +14,39 @@ import {
 import { z } from "zod";
 import { Seat } from "@/services/seat";
 
-const storeBooking = async (bookingData) => {};
+// New function for booking API call
+const storeBooking = async (bookingData) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    console.log("Booking Request Body:", JSON.stringify(bookingData, null, 2));
+
+    const response = await fetch(
+      "https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app/api/v1/bookings",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookingData),
+      }
+    );
+
+    const responseBody = await response.json();
+
+    if (!response.ok) {
+      console.error("Booking API Error Response:", responseBody);
+      throw new Error(responseBody.message || "Booking failed");
+    }
+
+    console.log("Booking successful:", responseBody);
+    return responseBody;
+  } catch (error) {
+    console.error("Booking error:", error);
+    throw error;
+  }
+};
 
 // Schema Validasi Zod
 const bookingSchema = z.object({
@@ -35,7 +67,12 @@ const bookingSchema = z.object({
     })
   ),
   selectedSeats: z
-    .array(z.string())
+    .array(
+      z.object({
+        id: z.number(), // id should be a number
+        position: z.string(), // position should be a string
+      })
+    )
     .min(1, "Setidaknya satu kursi harus dipilih"),
 });
 export default function BookingForm({ onFormSubmit }) {
@@ -75,27 +112,17 @@ export default function BookingForm({ onFormSubmit }) {
     }
   };
 
-  const handleSubmit = () => {
-    try {
-      bookingSchema.parse({ ...formState, selectedSeats });
-      if (onFormSubmit) {
-        onFormSubmit();
-        setIsSubmitted(true);
-      }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        alert(
-          error.errors
-            .map((err) => `${err.path.join(" -> ")}: ${err.message}`)
-            .join("\n")
-        );
-      }
-    }
-  };
   //from localstorage
   const [flightId, setFlightId] = useState(null); // State to store the dynamic flightId
   const [currentFlightIndex, setCurrentFlightIndex] = useState(0); // Flight aktif
   const [selectedSeats, setSelectedSeats] = useState([]); // Kursi yang dipilih
+  const [seatSelectionComplete, setSeatSelectionComplete] = useState([]); // Track seat completion per flight
+
+  // Clear seat selection data on refresh
+  useEffect(() => {
+    // Reset seat selection data on page refresh
+    localStorage.removeItem("seatSelection");
+  }, []);
 
   useEffect(() => {
     if (flightId && flightId[currentFlightIndex]) {
@@ -118,13 +145,16 @@ export default function BookingForm({ onFormSubmit }) {
         const pergiFlights = cartData?.flights?.[0]?.pergi?.flights || [];
         const pulangFlights = cartData?.flights?.[0]?.pulang?.flights || [];
 
-        // Ambil semua flightId untuk pergi
-        const pergiFlightIds =
-          cartData?.flights[0]?.pergi?.flights?.map((f) => f.flightId) || [];
+        // Gabungkan flightId dengan status pergi/pulang
+        const pergiFlightIds = pergiFlights.map((f) => ({
+          flightId: f.flightId,
+          isReturn: false,
+        }));
 
-        // Ambil semua flightId untuk pulang
-        const pulangFlightIds =
-          cartData?.flights[0]?.pulang?.flights?.map((f) => f.flightId) || [];
+        const pulangFlightIds = pulangFlights.map((f) => ({
+          flightId: f.flightId,
+          isReturn: true,
+        }));
 
         // Gabungkan semua flightId (pergi + pulang)
         const allFlightIds = [...pergiFlightIds, ...pulangFlightIds];
@@ -211,8 +241,8 @@ export default function BookingForm({ onFormSubmit }) {
 
     const allSeatData = []; // Array untuk menampung semua data seat
 
-    // Iterasi untuk setiap flightId secara berurutan
-    for (const flightId of flightIds) {
+    // Iterasi untuk setiap flightId
+    for (const { flightId } of flightIds) {
       console.log(`Fetching seats for flightId: ${flightId}`);
       const response = await fetch(
         `https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app/api/v1/seats/${flightId}`, // Menggunakan path parameter
@@ -323,54 +353,176 @@ export default function BookingForm({ onFormSubmit }) {
     }
   };
 
-  const handleSaveAndContinue = () => {
-    const activeFlightId = flightId[currentFlightIndex];
+  const handleSubmit = async () => {
+    try {
+      // Retrieve seat selection data from localStorage
+      const seatSelectionData =
+        JSON.parse(localStorage.getItem("seatSelection")) || [];
 
-    // Retrieve the existing seat selection data from localStorage
-    let seatSelectionData =
-      JSON.parse(localStorage.getItem("seatSelection")) || [];
+      console.log("seatSelectionData:", seatSelectionData);
 
-    // Save the selected seats for the current flight along with passenger details
-    const selectedSeatData = selectedSeats.map((seat, index) => {
-      return {
-        flightId: activeFlightId,
-        seatId: seat.id,
-        passenger: formState.passengers[index], // Assuming passenger order matches seat order
+      // Validate if seatSelectionData matches the flights
+      if (seatSelectionData.length !== flightId.length) {
+        throw new Error(
+          "Seat selection data does not match the number of flights."
+        );
+      }
+
+      // Construct flightSegments from seatSelectionData
+      const flightSegments = seatSelectionData.flatMap((flightData) =>
+        flightData.seats.map((seat) => ({
+          flightId: flightData.flightId.flightId, // Get the flightId from seatSelectionData
+          isReturn: flightData.flightId.isReturn, // Use isReturn from seatSelectionData
+          seatId: seat.seatId,
+          passenger: {
+            title: seat.passenger.title,
+            identityNumber: seat.passenger.passport,
+            fullName: seat.passenger.fullname,
+            familyName: seat.passenger.namakeluarga, // Assuming you have this field
+            dob: seat.passenger.birthdate,
+            nationality: seat.passenger.citizenship,
+            issuingCountry: seat.passenger.negarapenerbit,
+            identityExp: seat.passenger.expiry,
+          },
+        }))
+      );
+
+      // Construct the booking payload
+      const bookingData = {
+        roundTrip: flightId.some((f) => f.isReturn), // Determine if it's a round trip
+        passengerCount: {
+          adult: formState.passengers.filter((p) => p.type === "Adult").length,
+          child: formState.passengers.filter((p) => p.type === "Child").length,
+          infant: formState.passengers.filter((p) => p.type === "Infant")
+            .length,
+        },
+        flightSegments,
       };
-    });
 
-    // Check if the seat data for this flightId already exists
-    const existingFlightData = seatSelectionData.find(
-      (data) => data.flightId === activeFlightId
-    );
+      console.log(
+        "Booking Request Body:",
+        JSON.stringify(bookingData, null, 2)
+      );
 
-    if (existingFlightData) {
-      // If it exists, append the new seats to the existing data
-      existingFlightData.seats =
-        existingFlightData.seats.concat(selectedSeatData);
-    } else {
-      // If it doesn't exist, add new data for this flightId
-      seatSelectionData.push({
-        flightId: activeFlightId,
-        seats: selectedSeatData,
+      // Call the storeBooking API function
+      const response = await storeBooking(bookingData);
+
+      // Handle successful booking
+      console.log("Booking successful:", response);
+      alert("Booking completed successfully!");
+
+      // Notify parent component or reset state
+      if (onFormSubmit) {
+        onFormSubmit(); // Notify the parent component
+      }
+
+      // Reset formState or navigate to confirmation page
+      setFormState({
+        fullname: "",
+        namakeluarga: "",
+        phone: "",
+        email: "",
+        passengers: [],
+        selectedSeats: [],
       });
-    }
-
-    console.log("Saving seat selection data:", seatSelectionData);
-
-    // Save the updated seat selection data to localStorage
-    localStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
-
-    // Reset seat selection and move to the next flight
-    setSelectedSeats([]);
-
-    // Move to the next flight or finish if all are processed
-    if (currentFlightIndex < flightId.length - 1) {
-      setCurrentFlightIndex((prev) => prev + 1);
-    } else {
-      console.log("All flights have been processed!");
+      setIsSubmitted(true);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Handle validation errors
+        alert(
+          error.errors
+            .map((err) => `${err.path.join(" -> ")}: ${err.message}`)
+            .join("\n")
+        );
+      } else {
+        // Handle other errors
+        console.error("Error during booking submission:", error);
+        alert(error.message || "An unexpected error occurred.");
+      }
     }
   };
+
+  const handleSaveAndContinue = () => {
+    // Add selectedSeats to formState for validation
+    const updatedFormState = {
+      ...formState,
+      selectedSeats: selectedSeats, // Ensure it's included
+    };
+
+    console.log("Selected Seats before validation:", selectedSeats);
+    console.log("Selected Seats before validation:", selectedSeats); // Debugging
+
+    // Validate formState using bookingSchema
+    try {
+      bookingSchema.parse(updatedFormState); // Will throw if validation fails
+
+      const activeFlightId = flightId[currentFlightIndex];
+
+      // Retrieve the existing seat selection data from localStorage
+      let seatSelectionData =
+        JSON.parse(localStorage.getItem("seatSelection")) || [];
+
+      // Save the selected seats for the current flight along with passenger details
+      const selectedSeatData = selectedSeats.map((seat, index) => {
+        return {
+          flightId: activeFlightId,
+          isReturn: flightId[currentFlightIndex].isReturn, // Menentukan status pergi/pulang
+          seatId: seat.id,
+          passenger: formState.passengers[index], // Assuming passenger order matches seat order
+        };
+      });
+
+      // Check if the seat data for this flightId already exists
+      const existingFlightData = seatSelectionData.find(
+        (data) => data.flightId === activeFlightId
+      );
+
+      if (existingFlightData) {
+        // If it exists, append the new seats to the existing data
+        existingFlightData.seats =
+          existingFlightData.seats.concat(selectedSeatData);
+      } else {
+        // If it doesn't exist, add new data for this flightId
+        seatSelectionData.push({
+          flightId: activeFlightId,
+          seats: selectedSeatData,
+        });
+      }
+      // Check if seatSelectionData exceeds total flights
+      if (seatSelectionData.length > flightId.length) {
+        console.warn("Too many seat selections, trimming excess data...");
+        seatSelectionData = seatSelectionData.slice(0, flightId.length);
+      }
+
+      console.log("Saving seat selection data:", seatSelectionData);
+
+      // Save the updated seat selection data to localStorage
+      localStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
+
+      // Mark current flight as completed
+      const updatedSeatCompletion = [...seatSelectionComplete];
+      updatedSeatCompletion[currentFlightIndex] = true;
+      setSeatSelectionComplete(updatedSeatCompletion);
+
+      // Move to the next flight or finish if all are processed
+      if (currentFlightIndex < flightId.length - 1) {
+        // Reset seat selection and move to the next flight
+        setSelectedSeats([]); // Hanya reset jika masih ada penerbangan berikutnya
+        setCurrentFlightIndex((prev) => prev + 1);
+      } else {
+        console.log("All flights have been processed!");
+        // Logika tambahan jika perlu
+      }
+    } catch (error) {
+      // Handle validation error
+      console.error("Form validation failed:", error.errors);
+      // Display validation error messages or other actions
+    }
+  };
+
+  const isButtonDisabled =
+    seatSelectionComplete.length !== flightId.length ||
+    seatSelectionComplete.includes(false);
 
   return (
     <div className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4">
@@ -732,6 +884,7 @@ export default function BookingForm({ onFormSubmit }) {
         <button
           className="bg-blue-500 text-white"
           onClick={handleSaveAndContinue} // Handle the click to save and move to next flight
+          disabled={isSubmitted}
         >
           Simpan Penerbangan Saat Ini
         </button>
@@ -742,7 +895,7 @@ export default function BookingForm({ onFormSubmit }) {
               ? "bg-gray-500 cursor-not-allowed"
               : "bg-blue-500 text-white"
           }`}
-          disabled={isSubmitted}
+          disabled={isSubmitted || isButtonDisabled}
         >
           Simpan dan lanjut
         </button>
