@@ -7,6 +7,7 @@ import {
   ToastDescription,
 } from "@/components/ui/toast";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
@@ -16,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { FaPen, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { setToken } from "../../../redux/slices/auth";
 
 import { ProfileUpdate } from "../../../services/auth"; // Assuming profile function is in src/service/auth
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,6 +31,7 @@ function Profile() {
   const [successMessage, setSuccessMessage] = useState("");
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Cek token saat komponen pertama kali di-render
   useEffect(() => {
@@ -41,9 +44,11 @@ function Profile() {
   const profileData = queryClient.getQueryData(["profile"]); // Retrieve cached profile data
   const handleLogout = () => {
     // Hapus token dari Redux store atau localStorage
-    localStorage.removeItem("token"); // Jika token disimpan di localStorage
+    dispatch(setToken(null));
+
+    // localStorage.removeItem("token"); // Jika token disimpan di localStorage
     // Navigasi ke halaman login
-    navigate({ to: "/auth/login" });
+    navigate({ to: "/" });
   };
 
   const handleSubmit = async (e) => {
@@ -107,10 +112,7 @@ function Profile() {
                   <FaCog />
                   <span>Pengaturan Akun</span>
                 </li>
-                <li
-                  className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2"
-                  onClick={() => navigate({ to: "/auth/login" })}
-                >
+                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
                   <FaSignOutAlt />
                   <button
                     onClick={handleLogout}

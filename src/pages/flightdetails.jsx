@@ -89,6 +89,9 @@ export default function FlightDetail({
   }, []);
 
   //price calculation
+
+  const [initialTotalPrice, setInitialTotalPrice] = useState(0);
+
   const calculatePassengerPrice = (pergiData, pulangData, count) => {
     if (count === 0) return 0; // Return 0 if no passengers in this category
 
@@ -141,7 +144,10 @@ export default function FlightDetail({
       const totalBeforeTax = pergiPrice + pulangPrice;
       const totalWithTax = totalBeforeTax * 1.11; // Add 11% tax
 
-      setTotalPrice(Math.round(totalWithTax)); // Update state
+      const roundedTotal = Math.round(totalWithTax);
+
+      setInitialTotalPrice(roundedTotal); // Simpan total awal
+      setTotalPrice(roundedTotal); // Update total harga
     }
   }, [localData]);
 
@@ -154,12 +160,12 @@ export default function FlightDetail({
 
   // Apply voucher mutation
   const applyVoucherMutation = useMutation({
-    mutationFn: ({ code }) => getVoucherByCode(code, totalPrice),
+    mutationFn: ({ code }) => getVoucherByCode(code, initialTotalPrice),
     onSuccess: (data) => {
       console.log("Voucher applied successfully:", data); // Log data yang berhasil diterima
 
       setSelectedVoucher(data);
-      setTotalPrice(data.updatedTotalPrice);
+      setTotalPrice(data.updatedTotalPrice); // Update total harga berdasarkan diskon dari initialTotalPrice
 
       setToastVariant("success");
       setToastTitle("Voucher Applied");

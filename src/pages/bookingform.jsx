@@ -435,7 +435,10 @@ export default function BookingForm({ onFormSubmit }) {
       ]);
       console.log(`Selected Seat ID: ${seat.id}, Position: ${seat.position}`);
     } else {
-      console.log("Maximum number of seats selected");
+      setShowToast(true);
+      setToastVariant("info");
+      setToastTitle("Pemilihan Tempat Duduk");
+      setToastDescription("Pemilihan sudah mencapai batas !");
     }
   };
 
