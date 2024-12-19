@@ -54,7 +54,7 @@ function Payment() {
     fetchBookingData();
   }, [bookingId, navigate]);
 
-  console.log(bookingInfo);
+  // console.log(bookingInfo);
 
   const [creditValue, setCredit] = useState({
     card_number: "",
@@ -62,11 +62,23 @@ function Payment() {
     card_exp_year: "",
     card_cvv: "",
   });
+  const [cardHolderName, setCardHolderName] = useState("");
+  const isFormValid = () => {
+    return (
+      creditValue.card_number &&
+      cardHolderName &&
+      creditValue.card_cvv &&
+      creditValue.card_exp_month &&
+      creditValue.card_exp_year
+    );
+  };
+
   const [bankValue, setBank] = useState({
     bank: "",
   });
   const [vaNumber, setVaNumber] = useState("");
   const [loading, setLoading] = useState("");
+  const [selectedBank, setSelectedBank] = useState("");
 
   const handleCardNumberChange = (e) => {
     let value = e.target.value.replace(/\s+/g, ""); // Hilangkan spasi
@@ -98,6 +110,11 @@ function Payment() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const changeBank = (e) => {
+    setBank(e.target.value);
+    setSelectedBank(e.target.value);
   };
 
   const handleVa = async (e) => {
@@ -141,9 +158,6 @@ function Payment() {
     }
   };
 
-  const changeBank = (e) => {
-    setBank(e.target.value);
-  };
   return (
     <>
       {/*navigationbreadcr disini*/}
@@ -191,7 +205,6 @@ function Payment() {
                       <option value="bni">BNI</option>
                       <option value="bca">BCA</option>
                       <option value="bri">BRI</option>
-                      {/* <option value="permata">Permata</option> */}
                     </select>
                     <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-black mt-2.5">
                       Nomor VA
@@ -205,9 +218,14 @@ function Payment() {
                     <button
                       type="submit"
                       onClick={handleVa}
-                      className="w-full mt-4 py-3 bg-darkblue05 dark:text-white rounded-lg text-center hover:bg-darkblue06 transition-colors"
+                      disabled={!selectedBank} // Disable the button if no bank is selected
+                      className={`w-full mt-4 py-3 rounded-lg text-center transition-colors ${
+                        selectedBank
+                          ? "bg-darkblue05 text-white hover:bg-darkblue06"
+                          : "bg-black text-white"
+                      }`}
                     >
-                      Bayar
+                      Pilih
                     </button>
                   </form>
                 </AccordionContent>
@@ -253,6 +271,8 @@ function Payment() {
                       <input
                         type="text"
                         placeholder="Budi Galon Bunglon"
+                        value={cardHolderName}
+                        onChange={(e) => setCardHolderName(e.target.value)}
                         className="w-full border border-gray-300 rounded-lg px-4 py-2"
                       />
                       <div className="grid grid-cols-3 gap-4">
@@ -306,8 +326,13 @@ function Payment() {
                         </div>
                       </div>
                       <button
-                        className="w-full mt-4 py-3 bg-darkblue05 text-white rounded-lg text-center hover:bg-darkblue06"
+                        className={`w-full mt-4 py-3 rounded-lg text-center transition-colors ${
+                          isFormValid()
+                            ? "bg-darkblue05 text-white hover:bg-darkblue06"
+                            : "bg-black text-white"
+                        }`}
                         onClick={handleCredit}
+                        disabled={!isFormValid()} // Disable the button if any field is empty
                       >
                         Bayar
                       </button>
@@ -416,11 +441,17 @@ function Payment() {
                   <strong className="text-lg">Rincian Harga</strong>
                   <p>
                     {bookingInfo.data.passengerCount.adult} Adults
-                    <span className="float-right">IDR 9.550.000</span>
+                    <span className="float-right">
+                      IDR{" "}
+                      {bookingInfo.data.adultTotalPrice.toLocaleString("id-ID")}
+                    </span>
                   </p>
                   <p>
                     {bookingInfo.data.passengerCount.child} Childs
-                    <span className="float-right">IDR 0</span>
+                    <span className="float-right">
+                      IDR{" "}
+                      {bookingInfo.data.childTotalPrice.toLocaleString("id-ID")}
+                    </span>
                   </p>
                   <p>
                     {bookingInfo.data.passengerCount.infant} Baby
