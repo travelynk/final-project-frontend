@@ -68,7 +68,7 @@ const HeroSection = () => {
                 85%!
               </span>
             </div>
-            <div className="flex justify-center md:justify-end bg-[url('img/bangkok.png')] h-48 md:h-auto w-full md:w-9/12 bg-no-repeat bg-cover bg-left -z-10"></div>
+            <div className="flex justify-center md:justify-end bg-[url('/img/bangkok.png')] h-48 md:h-auto w-full md:w-9/12 bg-no-repeat bg-cover bg-left -z-10"></div>
           </div>
         </div>
       </div>
