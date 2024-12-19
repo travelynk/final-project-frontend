@@ -149,8 +149,8 @@ function NavigationBreadCr({
         )}
         {showSuccess && (
           <Toast variant="success">
-            <ToastTitle>Berhasil!</ToastTitle>
-            <ToastDescription>{successMessage}</ToastDescription>
+            <ToastTitle>Booking Berhasil Disimpan</ToastTitle>
+            <ToastDescription>Silahkan Lanjut ke Pembayaran</ToastDescription>
           </Toast>
         )}
         <ToastViewport />

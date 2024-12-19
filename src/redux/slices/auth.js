@@ -1,3 +1,4 @@
+//src/redux/slices/auth.js
 import { createSlice } from "@reduxjs/toolkit";
 
 // Default (initial) state

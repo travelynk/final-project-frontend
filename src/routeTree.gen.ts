@@ -22,10 +22,11 @@ const PaymentLazyImport = createFileRoute('/payment')()
 const IndexLazyImport = createFileRoute('/')()
 const TicketHistoryIndexLazyImport = createFileRoute('/ticket-history/')()
 const SuccessIndexLazyImport = createFileRoute('/success/')()
-const SeatIndexLazyImport = createFileRoute('/seat/')()
 const ProfileIndexLazyImport = createFileRoute('/profile/')()
 const PaymentIndexLazyImport = createFileRoute('/payment/')()
 const NotificationIndexLazyImport = createFileRoute('/notification/')()
+const UserAccountIndexLazyImport = createFileRoute('/user/account/')()
+const FlightsBookingIndexLazyImport = createFileRoute('/flights/booking/')()
 const AuthVerifyOtpIndexLazyImport = createFileRoute('/auth/verify-otp/')()
 const AuthSendResetPasswordIndexLazyImport = createFileRoute(
   '/auth/send-reset-password/',
@@ -73,12 +74,6 @@ const SuccessIndexLazyRoute = SuccessIndexLazyImport.update({
   getParentRoute: () => SuccessLazyRoute,
 } as any).lazy(() => import('./routes/success/index.lazy').then((d) => d.Route))
 
-const SeatIndexLazyRoute = SeatIndexLazyImport.update({
-  id: '/seat/',
-  path: '/seat/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/seat/index.lazy').then((d) => d.Route))
-
 const ProfileIndexLazyRoute = ProfileIndexLazyImport.update({
   id: '/profile/',
   path: '/profile/',
@@ -104,6 +99,22 @@ const FlightsParamsRoute = FlightsParamsImport.update({
   path: '/flights/$params',
   getParentRoute: () => rootRoute,
 } as any)
+
+const UserAccountIndexLazyRoute = UserAccountIndexLazyImport.update({
+  id: '/user/account/',
+  path: '/user/account/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/user/account/index.lazy').then((d) => d.Route),
+)
+
+const FlightsBookingIndexLazyRoute = FlightsBookingIndexLazyImport.update({
+  id: '/flights/booking/',
+  path: '/flights/booking/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/flights/booking/index.lazy').then((d) => d.Route),
+)
 
 const AuthVerifyOtpIndexLazyRoute = AuthVerifyOtpIndexLazyImport.update({
   id: '/auth/verify-otp/',
@@ -210,13 +221,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileIndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/seat/': {
-      id: '/seat/'
-      path: '/seat'
-      fullPath: '/seat'
-      preLoaderRoute: typeof SeatIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/success/': {
       id: '/success/'
       path: '/'
@@ -273,6 +277,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVerifyOtpIndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/flights/booking/': {
+      id: '/flights/booking/'
+      path: '/flights/booking'
+      fullPath: '/flights/booking'
+      preLoaderRoute: typeof FlightsBookingIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/user/account/': {
+      id: '/user/account/'
+      path: '/user/account'
+      fullPath: '/user/account'
+      preLoaderRoute: typeof UserAccountIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -310,24 +328,6 @@ export interface FileRoutesByFullPath {
   '/notification': typeof NotificationIndexLazyRoute
   '/payment/': typeof PaymentIndexLazyRoute
   '/profile': typeof ProfileIndexLazyRoute
-  '/seat': typeof SeatIndexLazyRoute
-  '/success/': typeof SuccessIndexLazyRoute
-  '/ticket-history': typeof TicketHistoryIndexLazyRoute
-  '/auth/login': typeof AuthLoginIndexLazyRoute
-  '/auth/register': typeof AuthRegisterIndexLazyRoute
-  '/auth/reset-password': typeof AuthResetPasswordIndexLazyRoute
-  '/auth/send-reset-passwor': typeof AuthSendResetPassworIndexLazyRoute
-  '/auth/send-reset-password': typeof AuthSendResetPasswordIndexLazyRoute
-  '/auth/verify-otp': typeof AuthVerifyOtpIndexLazyRoute
-}
-
-export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
-  '/flights/$params': typeof FlightsParamsRoute
-  '/notification': typeof NotificationIndexLazyRoute
-  '/payment': typeof PaymentIndexLazyRoute
-  '/profile': typeof ProfileIndexLazyRoute
-  '/seat': typeof SeatIndexLazyRoute
   '/success': typeof SuccessIndexLazyRoute
   '/ticket-history': typeof TicketHistoryIndexLazyRoute
   '/auth/login': typeof AuthLoginIndexLazyRoute
@@ -336,6 +336,26 @@ export interface FileRoutesByTo {
   '/auth/send-reset-passwor': typeof AuthSendResetPassworIndexLazyRoute
   '/auth/send-reset-password': typeof AuthSendResetPasswordIndexLazyRoute
   '/auth/verify-otp': typeof AuthVerifyOtpIndexLazyRoute
+  '/flights/booking': typeof FlightsBookingIndexLazyRoute
+  '/user/account': typeof UserAccountIndexLazyRoute
+}
+
+export interface FileRoutesByTo {
+  '/': typeof IndexLazyRoute
+  '/flights/$params': typeof FlightsParamsRoute
+  '/notification': typeof NotificationIndexLazyRoute
+  '/payment': typeof PaymentIndexLazyRoute
+  '/profile': typeof ProfileIndexLazyRoute
+  '/success': typeof SuccessIndexLazyRoute
+  '/ticket-history': typeof TicketHistoryIndexLazyRoute
+  '/auth/login': typeof AuthLoginIndexLazyRoute
+  '/auth/register': typeof AuthRegisterIndexLazyRoute
+  '/auth/reset-password': typeof AuthResetPasswordIndexLazyRoute
+  '/auth/send-reset-passwor': typeof AuthSendResetPassworIndexLazyRoute
+  '/auth/send-reset-password': typeof AuthSendResetPasswordIndexLazyRoute
+  '/auth/verify-otp': typeof AuthVerifyOtpIndexLazyRoute
+  '/flights/booking': typeof FlightsBookingIndexLazyRoute
+  '/user/account': typeof UserAccountIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -347,7 +367,6 @@ export interface FileRoutesById {
   '/notification/': typeof NotificationIndexLazyRoute
   '/payment/': typeof PaymentIndexLazyRoute
   '/profile/': typeof ProfileIndexLazyRoute
-  '/seat/': typeof SeatIndexLazyRoute
   '/success/': typeof SuccessIndexLazyRoute
   '/ticket-history/': typeof TicketHistoryIndexLazyRoute
   '/auth/login/': typeof AuthLoginIndexLazyRoute
@@ -356,6 +375,8 @@ export interface FileRoutesById {
   '/auth/send-reset-passwor/': typeof AuthSendResetPassworIndexLazyRoute
   '/auth/send-reset-password/': typeof AuthSendResetPasswordIndexLazyRoute
   '/auth/verify-otp/': typeof AuthVerifyOtpIndexLazyRoute
+  '/flights/booking/': typeof FlightsBookingIndexLazyRoute
+  '/user/account/': typeof UserAccountIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -368,23 +389,6 @@ export interface FileRouteTypes {
     | '/notification'
     | '/payment/'
     | '/profile'
-    | '/seat'
-    | '/success/'
-    | '/ticket-history'
-    | '/auth/login'
-    | '/auth/register'
-    | '/auth/reset-password'
-    | '/auth/send-reset-passwor'
-    | '/auth/send-reset-password'
-    | '/auth/verify-otp'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/flights/$params'
-    | '/notification'
-    | '/payment'
-    | '/profile'
-    | '/seat'
     | '/success'
     | '/ticket-history'
     | '/auth/login'
@@ -393,6 +397,25 @@ export interface FileRouteTypes {
     | '/auth/send-reset-passwor'
     | '/auth/send-reset-password'
     | '/auth/verify-otp'
+    | '/flights/booking'
+    | '/user/account'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/flights/$params'
+    | '/notification'
+    | '/payment'
+    | '/profile'
+    | '/success'
+    | '/ticket-history'
+    | '/auth/login'
+    | '/auth/register'
+    | '/auth/reset-password'
+    | '/auth/send-reset-passwor'
+    | '/auth/send-reset-password'
+    | '/auth/verify-otp'
+    | '/flights/booking'
+    | '/user/account'
   id:
     | '__root__'
     | '/'
@@ -402,7 +425,6 @@ export interface FileRouteTypes {
     | '/notification/'
     | '/payment/'
     | '/profile/'
-    | '/seat/'
     | '/success/'
     | '/ticket-history/'
     | '/auth/login/'
@@ -411,6 +433,8 @@ export interface FileRouteTypes {
     | '/auth/send-reset-passwor/'
     | '/auth/send-reset-password/'
     | '/auth/verify-otp/'
+    | '/flights/booking/'
+    | '/user/account/'
   fileRoutesById: FileRoutesById
 }
 
@@ -421,7 +445,7 @@ export interface RootRouteChildren {
   FlightsParamsRoute: typeof FlightsParamsRoute
   NotificationIndexLazyRoute: typeof NotificationIndexLazyRoute
   ProfileIndexLazyRoute: typeof ProfileIndexLazyRoute
-  SeatIndexLazyRoute: typeof SeatIndexLazyRoute
+  SuccessIndexLazyRoute: typeof SuccessIndexLazyRoute
   TicketHistoryIndexLazyRoute: typeof TicketHistoryIndexLazyRoute
   AuthLoginIndexLazyRoute: typeof AuthLoginIndexLazyRoute
   AuthRegisterIndexLazyRoute: typeof AuthRegisterIndexLazyRoute
@@ -429,6 +453,8 @@ export interface RootRouteChildren {
   AuthSendResetPassworIndexLazyRoute: typeof AuthSendResetPassworIndexLazyRoute
   AuthSendResetPasswordIndexLazyRoute: typeof AuthSendResetPasswordIndexLazyRoute
   AuthVerifyOtpIndexLazyRoute: typeof AuthVerifyOtpIndexLazyRoute
+  FlightsBookingIndexLazyRoute: typeof FlightsBookingIndexLazyRoute
+  UserAccountIndexLazyRoute: typeof UserAccountIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -438,7 +464,7 @@ const rootRouteChildren: RootRouteChildren = {
   FlightsParamsRoute: FlightsParamsRoute,
   NotificationIndexLazyRoute: NotificationIndexLazyRoute,
   ProfileIndexLazyRoute: ProfileIndexLazyRoute,
-  SeatIndexLazyRoute: SeatIndexLazyRoute,
+  SuccessIndexLazyRoute: SuccessIndexLazyRoute,
   TicketHistoryIndexLazyRoute: TicketHistoryIndexLazyRoute,
   AuthLoginIndexLazyRoute: AuthLoginIndexLazyRoute,
   AuthRegisterIndexLazyRoute: AuthRegisterIndexLazyRoute,
@@ -446,6 +472,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSendResetPassworIndexLazyRoute: AuthSendResetPassworIndexLazyRoute,
   AuthSendResetPasswordIndexLazyRoute: AuthSendResetPasswordIndexLazyRoute,
   AuthVerifyOtpIndexLazyRoute: AuthVerifyOtpIndexLazyRoute,
+  FlightsBookingIndexLazyRoute: FlightsBookingIndexLazyRoute,
+  UserAccountIndexLazyRoute: UserAccountIndexLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -464,14 +492,16 @@ export const routeTree = rootRoute
         "/flights/$params",
         "/notification/",
         "/profile/",
-        "/seat/",
+        "/success/",
         "/ticket-history/",
         "/auth/login/",
         "/auth/register/",
         "/auth/reset-password/",
         "/auth/send-reset-passwor/",
         "/auth/send-reset-password/",
-        "/auth/verify-otp/"
+        "/auth/verify-otp/",
+        "/flights/booking/",
+        "/user/account/"
       ]
     },
     "/": {
@@ -502,9 +532,6 @@ export const routeTree = rootRoute
     "/profile/": {
       "filePath": "profile/index.lazy.jsx"
     },
-    "/seat/": {
-      "filePath": "seat/index.lazy.jsx"
-    },
     "/success/": {
       "filePath": "success/index.lazy.jsx",
       "parent": "/success"
@@ -529,6 +556,12 @@ export const routeTree = rootRoute
     },
     "/auth/verify-otp/": {
       "filePath": "auth/verify-otp/index.lazy.jsx"
+    },
+    "/flights/booking/": {
+      "filePath": "flights/booking/index.lazy.jsx"
+    },
+    "/user/account/": {
+      "filePath": "user/account/index.lazy.jsx"
     }
   }
 }

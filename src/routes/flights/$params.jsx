@@ -57,22 +57,22 @@ function Flight() {
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
       pessanger: null,
-      flights: [{ departure: null, arrival: null }],
+      flights: [{ pergi: null, pulang: null }],
     };
 
     if (storedCart.flights.length > 0) {
-      const { departure, arrival } = storedCart.flights[0];
+      const { pergi, pulang } = storedCart.flights[0];
 
-      if (departure) {
-        setCartDepartureFlight(departure);
+      if (pergi) {
+        setCartDepartureFlight(pergi);
       }
 
-      if (arrival) {
-        setCartArrivalFlight(arrival);
-        if (cartArrivalFlight) {
-          // alert("Cart arrival ada isi");
-          setRoundTrip(true);
-        }
+      if (pulang) {
+        setCartArrivalFlight(pulang);
+      }
+
+      if (pulang) {
+        setRoundTrip(true);
       }
     }
 
@@ -225,12 +225,13 @@ const HeaderComponent = ({
   useEffect(() => {
     const listDates = (startDate) => {
       const dates = [];
-      const length = !roundTrip && returnDate
-        ? Math.ceil(
-            (new Date(returnDate) - new Date(departureDate)) /
-              (1000 * 3600 * 24)
-          ) + 1
-        : 8;
+      const length =
+        !roundTrip && returnDate
+          ? Math.ceil(
+              (new Date(returnDate) - new Date(departureDate)) /
+                (1000 * 3600 * 24)
+            ) + 1
+          : 8;
 
       for (let i = 0; i < length; i++) {
         const newDate = new Date(
@@ -600,12 +601,12 @@ const BodyComponent = ({
 
     const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
       pessanger: null,
-      flights: [{ departure: null, arrival: null }],
+      flights: [{ pergi: null, pulang: null }],
     };
 
     const updatedFlights = !roundTrip
-      ? [{ departure: data, arrival: storedCart.flights[0].arrival }]
-      : [{ departure: storedCart.flights[0].departure, arrival: data }];
+      ? [{ pergi: data, pulang: storedCart.flights[0].pulang }]
+      : [{ pergi: storedCart.flights[0].pergi, pulang: data }];
 
     const updatedCart = { ...storedCart, flights: updatedFlights };
     localStorage.setItem("cartTicket", JSON.stringify(updatedCart));
@@ -623,15 +624,15 @@ const BodyComponent = ({
   const deleteHandle = (flightNumber) => {
     const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
       pessanger: null,
-      flights: [{ departure: null, arrival: null }],
+      flights: [{ pergi: null, pulang: null }],
     };
 
     if (flightNumber === 1) {
-      storedCart.flights[0].departure = null;
+      storedCart.flights[0].pergi = null;
       setCartDepartureFlight(null);
       setRoundTrip(false);
     } else if (flightNumber === 2) {
-      storedCart.flights[0].arrival = null;
+      storedCart.flights[0].pulang = null;
       setCartArrivalFlight(null);
     }
 
@@ -641,7 +642,7 @@ const BodyComponent = ({
   const handlePay = (pessanger) => {
     const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
       pessanger: null,
-      flights: [{ departure: null, arrival: null }],
+      flights: [{ pergi: null, pulang: null }],
     };
     const [countAdult, countChild, countBaby] = pessanger
       .split(".")
@@ -654,7 +655,7 @@ const BodyComponent = ({
 
     localStorage.setItem("cartTicket", JSON.stringify(updatedCart));
 
-    navigate({ to: "/seat" });
+    navigate({ to: "/flights/booking" });
   };
   return (
     <>
