@@ -48,7 +48,7 @@ function Profile() {
 
     // localStorage.removeItem("token"); // Jika token disimpan di localStorage
     // Navigasi ke halaman login
-    navigate({ to: "/" });
+    navigate({ to: "/auth/login" });
   };
 
   const handleSubmit = async (e) => {

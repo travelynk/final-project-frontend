@@ -1,40 +1,40 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
-import { Button } from '../../../components/ui/button'
-import { Input } from '../../../components/ui/input'
-import { Label } from '../../../components/ui/label'
-import { Card } from '../../../components/ui/card'
-import { useToast } from '../../../hooks/use-toast'
-import { sendOtp } from '../../../service/auth'
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
+import { Card } from "../../../components/ui/card";
+import { useToast } from "../../../hooks/use-toast";
+import { sendOtp } from "../../../service/auth";
 
-export const Route = createLazyFileRoute('/auth/send-reset-password/')({
+export const Route = createLazyFileRoute("/auth/send-reset-password/")({
   component: sendOTP,
-})
+});
 
 function sendOTP() {
-  const { toast } = useToast()
+  const { toast } = useToast();
   const handleSubmit = async (event) => {
-    event.preventDefault()
-    const email = event.target.email.value
+    event.preventDefault();
+    const email = event.target.email.value;
 
     try {
       // Call the sendOtp API
-      const response = await sendOtp(email)
+      const response = await sendOtp(email);
 
       // Show success toast
       toast({
-        title: 'OTP Sent!',
-        description: 'Please check your email for the OTP.',
-        variant: 'success',
-      })
+        title: "OTP Sent!",
+        description: "Please check your email for the OTP.",
+        variant: "success",
+      });
     } catch (error) {
       // Show error toast
       toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to send OTP',
-        variant: 'destructive',
-      })
+        title: "Error",
+        description: error.response?.data?.message || "Failed to send OTP",
+        variant: "destructive",
+      });
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -44,12 +44,12 @@ function sendOTP() {
           <img
             src="/img/logo.png"
             alt="Cover Image"
-            style={{ marginLeft: '100px', marginTop: '200px' }}
+            style={{ marginLeft: "100px", marginTop: "200px" }}
           />
           <img
             src="/img/leaves.png"
             alt="Cover Image"
-            style={{ marginTop: '-80px' }}
+            style={{ marginTop: "-80px" }}
           />
         </div>
       </div>
@@ -86,5 +86,5 @@ function sendOTP() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

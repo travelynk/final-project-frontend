@@ -406,30 +406,32 @@ export default function FlightDetail({
                         {flight.departure.terminal || "Terminal tidak tersedia"}
                       </p>
                       <hr className="my-4" />
-                      <p>
-                        <strong>
-                          {flight.airline.name || "Airline tidak tersedia"} -{" "}
-                          {seatClass || "Kelas tidak tersedia"}
-                        </strong>
-                      </p>
-                      <p className="mb-4">
-                        <strong>
-                          {flight.flightNum ||
-                            "Nomor penerbangan tidak tersedia"}
-                        </strong>
-                      </p>
                       <div>
-                        <strong>Fasilitas:</strong>
-                        <br />
-                        {Array.isArray(flight.facility) ? (
-                          <ul>
-                            {flight.facility.map((item, idx) => (
-                              <li key={idx}>{item}</li>
-                            ))}
-                          </ul>
-                        ) : (
-                          flight.facility || "Fasilitas tidak tersedia"
-                        )}
+                        <p>
+                          <strong>
+                            {flight.airline.name || "Airline tidak tersedia"} -{" "}
+                            {seatClass || "Kelas tidak tersedia"}
+                          </strong>
+                        </p>
+                        <p className="mb-4">
+                          <strong>
+                            {flight.flightNum ||
+                              "Nomor penerbangan tidak tersedia"}
+                          </strong>
+                        </p>
+                        <div>
+                          <strong>Fasilitas:</strong>
+                          <br />
+                          {Array.isArray(flight.facility) ? (
+                            <ul>
+                              {flight.facility.map((item, idx) => (
+                                <li key={idx}>{item}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            flight.facility || "Fasilitas tidak tersedia"
+                          )}
+                        </div>
                       </div>
                       <hr className="my-4" />
                       <p>
