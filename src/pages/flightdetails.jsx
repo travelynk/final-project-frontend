@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
+
 import PropTypes from "prop-types";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { getVouchers, getVoucherByCode } from "../services/vouchers";
@@ -20,6 +22,8 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "../components/ui/accordion"; // ShadCN Accordion
+import { useSelector } from "react-redux";
+
 import { IoIosInformationCircle } from "react-icons/io";
 
 export default function FlightDetail({
@@ -39,6 +43,15 @@ export default function FlightDetail({
   // Tambahkan state baru untuk passengerCount dan seatClass
   const [passengerCount, setPassengerCount] = useState(null);
   const [seatClass, setSeatClass] = useState(null);
+  const navigate = useNavigate();
+
+  const { token } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (!token) {
+      navigate({ to: "/auth/login" });
+    }
+  }, [navigate, token]);
 
   useEffect(() => {
     try {

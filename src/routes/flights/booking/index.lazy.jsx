@@ -2,7 +2,16 @@ import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import BookingForm from "../../../pages/bookingform";
 import FlightDetail from "../../../pages/flightdetails";
 import NavigationBreadCr from "../../../pages/navigationBreadCr";
-import { useState } from "react";
+import SocketioNotif from "../../../pages/socketioNotif";
+import { useEffect, useState } from "react";
+import {
+  Toast,
+  ToastProvider,
+  ToastViewport,
+  ToastTitle,
+  ToastDescription,
+} from "@/components/ui/toast";
+import { useSelector } from "react-redux";
 
 export const Route = createLazyFileRoute("/flights/booking/")({
   component: Booking,
@@ -14,6 +23,18 @@ export default function Booking() {
   const [bookingId, setBookingId] = useState(null); // Tambahkan state untuk bookingId
   const [status, setStatus] = useState(null); // Tambahkan state untuk status
   const navigate = useNavigate();
+
+  const [showToast, setShowToast] = useState(false); // State untuk toast
+  const { token } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (!token) {
+      setShowToast(true); // Tampilkan toast
+      setTimeout(() => {
+        navigate({ to: "/auth/login" }); // Arahkan ke /auth/login setelah 1 detik
+      }, 1000); // 1000ms = 1 detik
+    }
+  }, [navigate, token]);
 
   const handleFormSubmit = ({ bookingResult }) => {
     if (bookingResult?.data?.bookingCode) {
@@ -56,6 +77,19 @@ export default function Booking() {
           onPaymentRedirect={handlePaymentRedirect}
         />
       </div>
+      <SocketioNotif />
+
+      <ToastProvider>
+        {showToast && (
+          <Toast variant="warning">
+            <ToastTitle>Anda Belum Login</ToastTitle>
+            <ToastDescription>
+              Anda akan diarahkan ke halaman login.
+            </ToastDescription>
+          </Toast>
+        )}
+        <ToastViewport className="!top-0 !right-0 !p-4" />
+      </ToastProvider>
     </>
   );
 }

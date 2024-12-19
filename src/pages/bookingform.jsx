@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import PropTypes from "prop-types"; // Import PropTypes
 import { useQueryClient, useQuery } from "@tanstack/react-query"; // Import React Query Client
 import {
@@ -18,8 +19,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { z } from "zod";
-import { Seat } from "@/services/seat";
-
+import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 // New function for booking API call
 const storeBooking = async (bookingData) => {
   const token = localStorage.getItem("token");
@@ -47,6 +47,7 @@ const storeBooking = async (bookingData) => {
     }
 
     console.log("Booking successful:", responseBody);
+
     return responseBody;
   } catch (error) {
     console.error("Booking error:", error);
@@ -82,6 +83,79 @@ const bookingSchema = z.object({
     .min(1, "Setidaknya satu kursi harus dipilih"),
 });
 export default function BookingForm({ onFormSubmit }) {
+  const [socket, setSocket] = useState(null);
+  const [notification, setNotification] = useState("");
+  useEffect(() => {
+    // Initialize socket connection
+    const socketInstance = io(
+      "https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app"
+    );
+
+    // Event when connected
+    socketInstance.on("connect", () => {
+      console.log("Connected to server");
+    });
+
+    // Event for Unpaid status
+    socketInstance.on("Status Pembayaran (Unpaid)", (data) => {
+      setNotification(data.message); // Set notification message
+      console.log("isi pesan :", data.message);
+      console.log("tanggal pemesanan:", data.createdAt);
+    });
+
+    // Handle connection error
+    socketInstance.on("connect_error", (err) => {
+      console.log("Connection error:", err.message);
+    });
+
+    setSocket(socketInstance); // Save socket instance to state
+
+    // Cleanup on component unmount
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, []);
+  console.log(notification);
+
+  const Notification = ({ message, onDismiss }) => {
+    if (!message) return null;
+    return (
+      message && (
+        <div className="absolute right-28 top-18 max-w-sm border bg-white text-black py-4 rounded-lg shadow-lg">
+          <div className="px-4">
+            <p>Segera Selesaikan Pembayaran!</p>
+          </div>
+          <div className="flex items-start border-y border-gray-400">
+            <div className="flex items-start px-4 py-2">
+              <p>{message}</p>
+              <button onClick={onDismiss} className="text-black">
+                {/* SVG icon for the "X" mark */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )
+    );
+  };
+
+  const handleDismissNotification = () => {
+    setNotification(""); // Clear the notification
+  };
+
   const queryClient = useQueryClient();
   const profileData = queryClient.getQueryData(["profile"]);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -135,38 +209,14 @@ export default function BookingForm({ onFormSubmit }) {
   }, []);
 
   useEffect(() => {
-    if (flightId && flightId[currentFlightIndex]) {
-      console.log(`Active Flight ID: ${flightId[currentFlightIndex].flightId}`);
-
-      console.log(
-        `Fetching seats for flightId: ${flightId[currentFlightIndex]}`
-      );
-      refetch(); // Fetch data untuk flight aktif
-    }
-  }, [currentFlightIndex, flightId]);
-
-  useEffect(() => {
     const cartTicket = localStorage.getItem("cartTicket");
     if (cartTicket) {
       try {
         const cartData = JSON.parse(cartTicket);
 
-        // Debugging: Inspect the parsed data
-        console.log("Parsed cart data:", cartData);
-
-        const currentFlightData = {
-          pergi:
-            cartData?.flights?.[0]?.pergi?.flights[currentFlightIndex] || {},
-          pulang:
-            cartData?.flights?.[0]?.pulang?.flights[currentFlightIndex] || {},
-        };
-        console.log("Current Outbound Flight:", currentFlightData.pergi);
-        console.log("Current Return Flight:", currentFlightData.pulang);
-
         const pergiFlights = cartData?.flights?.[0]?.pergi?.flights || [];
         const pulangFlights = cartData?.flights?.[0]?.pulang?.flights || [];
 
-        // Gabungkan flightId dengan status pergi/pulang
         const pergiFlightIds = pergiFlights.map((f) => ({
           flightId: f.flightId,
           isReturn: false,
@@ -177,36 +227,30 @@ export default function BookingForm({ onFormSubmit }) {
           isReturn: true,
         }));
 
-        // Gabungkan semua flightId (pergi + pulang)
         const allFlightIds = [...pergiFlightIds, ...pulangFlightIds];
 
         if (allFlightIds.length > 0) {
-          setFlightId(allFlightIds); // Simpan semua flightId
+          setFlightId(allFlightIds);
         } else {
           console.warn("No valid flight IDs found in localStorage");
         }
-        // Mengambil data passengerCount untuk pergi
+
         const pergiPassengerCount =
           cartData?.flights[0]?.pergi?.passengerCount || 0;
 
-        // Tentukan passengerCount pulang
-        let pulangPassengerCount = 0;
-
-        // Jika ada penerbangan pulang, bagi passengerCount menjadi dua
-        if (pulangFlights.length > 0) {
-          pulangPassengerCount = Math.floor(pergiPassengerCount / 2);
-        } else {
-          pulangPassengerCount = pergiPassengerCount; // Jika tidak ada pulang, gunakan yang sama
-        }
-
-        // Menghasilkan penumpang berdasarkan passengerCount
         const pergiPassengers = generatePassengers(pergiPassengerCount);
-        const pulangPassengers = generatePassengers(pulangPassengerCount);
+        const pulangPassengers =
+          pulangFlights.length > 0 ? pergiPassengers : [];
 
-        // Update formState untuk penumpang pergi dan pulang
+        // Debugging: Pastikan jumlah penumpang benar
+        console.log("Passengers for Outbound Flight:", pergiPassengers);
+        console.log("Passengers for Return Flight:", pulangPassengers);
+        console.log("Combined Passengers:", [...pergiPassengers]);
+
         setFormState((prev) => ({
           ...prev,
-          passengers: [...pergiPassengers, ...pulangPassengers], // Gabungkan penumpang pergi dan pulang
+          passengers:
+            pulangFlights.length > 0 ? pergiPassengers : [...pergiPassengers],
         }));
       } catch (error) {
         console.error("Failed to parse cartTicket:", error);
@@ -215,6 +259,27 @@ export default function BookingForm({ onFormSubmit }) {
       console.warn("No cartTicket found in localStorage");
     }
   }, []);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+
+    // Jika bukan di halaman "/flights/booking", hapus cartTicket dan seatSelection dari localStorage
+    if (!currentPath.startsWith("/flights/booking")) {
+      localStorage.removeItem("cartTicket");
+      localStorage.removeItem("seatSelection");
+    }
+
+    // Jika di halaman "/flights/booking" tapi cartTicket tidak ada, redirect ke "/auth/login"
+    if (currentPath.startsWith("/flights/booking")) {
+      const cartTicket = localStorage.getItem("cartTicket");
+      if (!cartTicket) {
+        navigate({ to: "/" });
+      }
+    }
+  }, [location, navigate]);
 
   //generatePassengers untuk Isi Data Penumpang
   const generatePassengers = (passengerCount) => {
@@ -428,6 +493,8 @@ export default function BookingForm({ onFormSubmit }) {
       // Call the storeBooking API function
       const response = await storeBooking(bookingData);
 
+      // Notify user of successful booking
+
       // Handle successful booking
       console.log("Booking successful:", response);
 
@@ -437,6 +504,7 @@ export default function BookingForm({ onFormSubmit }) {
       }
 
       localStorage.removeItem("cartTicket");
+      localStorage.removeItem("seatSelection");
 
       // Reset formState or navigate to confirmation page
       setFormState({
@@ -551,6 +619,12 @@ export default function BookingForm({ onFormSubmit }) {
 
   return (
     <ToastProvider>
+      {notification && (
+        <Notification
+          message={notification}
+          onDismiss={handleDismissNotification}
+        />
+      )}
       <div className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4">
         {/* Data Diri Pemesan */}
         <div className="border p-6 rounded-lg shadow-md bg-white">
