@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/toast";
 import { useSelector } from "react-redux";
 
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,9 +16,10 @@ import { Label } from "@/components/ui/label";
 import { FaPen, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-
+import { useDispatch } from "react-redux";
 import { ProfileUpdate } from "../../../services/auth"; // Assuming profile function is in src/service/auth
 import { useQueryClient } from "@tanstack/react-query";
+import { setToken } from "../../../redux/slices/auth";
 
 export const Route = createLazyFileRoute("/user/account/")({
   component: Profile,
@@ -29,11 +30,12 @@ function Profile() {
   const [successMessage, setSuccessMessage] = useState("");
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Cek token saat komponen pertama kali di-render
   useEffect(() => {
     if (!token) {
-      navigate({ to: "/auth/login" }); // Arahkan ke halaman login jika token tidak ada
+      navigate({ to: "/" });
     }
   }, [token, navigate]);
 
@@ -66,6 +68,8 @@ function Profile() {
     }
   };
 
+
+
   return (
     <>
       <ToastProvider>
@@ -78,10 +82,18 @@ function Profile() {
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
               {/* Beranda Card */}
-              <Card className="p-4 rounded-[12px] flex justify-between items-center bg-[#A06ECE] w-full sm:w-[968px] h-[50px] mx-auto">
+              <Card className="p-4 rounded-[12px] flex justify-between items-center bg-darkblue05 w-full sm:w-[968px] h-[50px] mx-auto">
                 <div className="flex items-center space-x-4 w-full">
                   <Button variant="link" size="icon" className="p-0">
-                    <ArrowLeft className="w-6 h-6 text-white" />
+                    <Link to="/" className="flex items-center">
+                      <ArrowLeft
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          color: "white",
+                        }}
+                      />
+                    </Link>
                   </Button>
                   <h1 className="font-normal text-lg text-white text-left flex-grow">
                     Beranda
@@ -99,17 +111,16 @@ function Profile() {
             {/* Left Menu */}
             <div className="border-gray-200 p-4 w-full">
               <ul className="space-y-4">
-                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
+                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2">
                   <FaPen />
                   <span>Ubah Profil</span>
                 </li>
-                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
+                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2">
                   <FaCog />
                   <span>Pengaturan Akun</span>
                 </li>
                 <li
                   className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2"
-                  onClick={() => navigate({ to: "/auth/login" })}
                 >
                   <FaSignOutAlt />
                   <button
@@ -132,13 +143,13 @@ function Profile() {
               Ubah Data Profil
             </h2>
 
-            <div className="bg-[#A06ECE] p-4 rounded-t-[12px] text-white mb-2 font-bold">
+            <div className="bg-darkblue05 p-4 rounded-t-[12px] text-white mb-2 font-bold">
               Data Diri
             </div>
 
             <form className="space-y-4 px-4 pt-2" onSubmit={handleSubmit}>
               <div>
-                <Label className="font-bold text-[#4B1979]" htmlFor="fullName">
+                <Label className="font-bold text-darkblue05" htmlFor="fullName">
                   Nama Lengkap
                 </Label>
                 <Input
@@ -151,7 +162,7 @@ function Profile() {
               </div>
 
               <div>
-                <Label className="font-bold text-[#4B1979]" htmlFor="phone">
+                <Label className="font-bold text-darkblue05" htmlFor="phone">
                   Nomor Telepon
                 </Label>
                 <Input
@@ -164,7 +175,7 @@ function Profile() {
               </div>
 
               <div>
-                <Label className="font-bold text-[#4B1979]" htmlFor="email">
+                <Label className="font-bold text-darkblue05" htmlFor="email">
                   Email
                 </Label>
                 <Input
@@ -180,7 +191,7 @@ function Profile() {
                 <Button
                   type="submit"
                   variant="default"
-                  className="w-[150px] bg-[#4B1979] rounded-[12px]"
+                  className="w-[150px] bg-darkblue05 rounded-[12px]"
                 >
                   Simpan
                 </Button>

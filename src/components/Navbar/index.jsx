@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "@tanstack/react-router";
 import { useSelector } from "react-redux";
 import { Link } from "@tanstack/react-router";
+import DarkMode from "../DarkMode";
 import { profile } from "../../services/auth"; // Ensure this is the correct path to your API function
 
 const NavigationBar = () => {
@@ -23,16 +24,27 @@ const NavigationBar = () => {
   }
 
   return (
-    <header className="bg-white shadow-md py-3 border-b-2">
-      <div className="container mx-auto flex flex-col md:flex-row md:justify-between md:px-4">
-        <div className="hidden md:flex items-center space-x-2 mb-3 md:mb-0">
-          <Link as={Link} to="/">
-            <img src="/svg/binar.svg" alt="TraveLynk" className="w-24 h-8" />
+    <header className="shadow-md py-3 border-b-2  dark:border-white">
+      <div className="container mx-auto flex flex-wrap items-center justify-between">
+        {/* Logo Section */}
+        <div className="flex items-center space-x-2 ms-5">
+          <Link
+            to="/"
+            className="flex items-center dark:text-darkblue05 gap-3 font-semibold"
+          >
+            <img
+              src="/img/logo-travelynk.png"
+              alt="TraveLynk"
+              className="w-12 h-auto rounded-full"
+            />
+            <span className="hidden lg:flex">TraveLynk</span>
           </Link>
         </div>
 
         {/* Navbar Items */}
         <div className="flex items-center space-x-6">
+          <DarkMode />
+
           {token ? (
             // If logged in
             <div className="flex justify-end items-center">
@@ -104,7 +116,7 @@ const NavigationBar = () => {
             // If not logged in
             <Link
               to="/auth/login"
-              className="flex items-center space-x-2 bg-purple-600 text-white px-5 py-2 rounded-full hover:bg-purple-700"
+              className="flex items-center space-x-2 bg-darkblue05 text-white px-5 py-2 rounded-full hover:bg-darkblue04"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
