@@ -40,11 +40,7 @@ function Profile() {
 
   useEffect(() => {
     if (!token) {
-<<<<<<< HEAD
-      navigate({ to: "/" });
-=======
       navigate({ to: "/auth/login" });
->>>>>>> feature/fetch-pemesanan-profile2
     }
   }, [navigate, token]);
 
