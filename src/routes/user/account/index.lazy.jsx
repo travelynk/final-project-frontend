@@ -39,6 +39,12 @@ function Profile() {
 
   const queryClient = useQueryClient();
   const profileData = queryClient.getQueryData(["profile"]); // Retrieve cached profile data
+  const handleLogout = () => {
+    // Hapus token dari Redux store atau localStorage
+    localStorage.removeItem("token"); // Jika token disimpan di localStorage
+    // Navigasi ke halaman login
+    navigate({ to: "/auth/login" });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -101,9 +107,17 @@ function Profile() {
                   <FaCog />
                   <span>Pengaturan Akun</span>
                 </li>
-                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
+                <li
+                  className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2"
+                  onClick={() => navigate({ to: "/auth/login" })}
+                >
                   <FaSignOutAlt />
-                  <span>Keluar</span>
+                  <button
+                    onClick={handleLogout}
+                    className="text-left focus:outline-none"
+                  >
+                    Keluar
+                  </button>
                 </li>
               </ul>
               <div className="mt-4 text-gray-400 text-sm text-center">
