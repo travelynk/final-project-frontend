@@ -3,7 +3,7 @@ import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Separator } from "../../components/ui/separator";
 import { ArrowLeft, Filter, X } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -32,7 +32,7 @@ function TicketHistory() {
     from: null,
     to: null,
   });
-
+  const detailsRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
 
   // Detect mobile mode
@@ -63,6 +63,13 @@ function TicketHistory() {
     },
     enabled: !!token,
   });
+
+  useEffect(() => {
+    // If selectedBooking changes, scroll to the BookingDetails section
+    if (selectedBooking && detailsRef.current) {
+      detailsRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [selectedBooking]); // Dependency on selectedBooking to trigger the scroll
 
   const fetchFlightDetails = async (flightId) => {
     try {
@@ -252,13 +259,9 @@ function TicketHistory() {
       </div>
       <Separator className="mt-[25px] shadow" />
 
-      <div className="container mx-auto max-w-5xl mt-8 px-4">
-        {fetchBookingsQuery.isLoading && <div>Loading bookings...</div>}
-        {fetchBookingsQuery.error && (
-          <div>{fetchBookingsQuery.error.message}</div>
-        )}
+      <div className="container mx-auto max-w-5xl mt-2 px-4">
         {/* Conditional rendering for mobile mode */}
-        <div className="grid grid-cols-1 md:grid-cols-[550px_370px] gap-2 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-[550px_370px] gap-2">
           {isMobile ? (
             selectedBooking ? (
               <div>
@@ -275,7 +278,6 @@ function TicketHistory() {
               <BookingList
                 bookings={bookings}
                 setSelectedBooking={setSelectedBooking}
-                isLoading={fetchBookingsQuery.isLoading}
                 error={fetchBookingsQuery.error}
                 groupedBookings={groupedBookings}
                 openMonth={openMonth}
@@ -287,15 +289,16 @@ function TicketHistory() {
               <BookingList
                 bookings={bookings}
                 setSelectedBooking={setSelectedBooking}
-                isLoading={fetchBookingsQuery.isLoading}
                 error={fetchBookingsQuery.error}
                 groupedBookings={groupedBookings}
                 openMonth={openMonth}
                 setOpenMonth={setOpenMonth}
               />
-              {selectedBooking && (
-                <BookingDetails selectedBooking={selectedBooking} />
-              )}
+              <div className="mt-[50px]" ref={detailsRef}>
+                {selectedBooking && (
+                  <BookingDetails selectedBooking={selectedBooking} />
+                )}
+              </div>
             </>
           )}
         </div>
