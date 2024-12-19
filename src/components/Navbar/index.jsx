@@ -6,7 +6,8 @@ import DarkMode from "../DarkMode";
 import { profile } from "../../services/auth"; // Ensure this is the correct path to your API function
 
 const NavigationBar = () => {
-  const { token } = useSelector((state) => state.auth);
+  // const { token } = useSelector((state) => state.auth);
+  const token = localStorage.getItem("token");
 
   const location = useLocation();
   const shouldHideNavbar = location.pathname.startsWith("/auth/");
