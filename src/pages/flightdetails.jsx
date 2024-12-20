@@ -23,7 +23,8 @@ import {
   AccordionContent,
 } from "../components/ui/accordion"; // ShadCN Accordion
 import { useSelector } from "react-redux";
-
+import { useToast } from "@/hooks/use-toast.js";
+import { ToastAction } from "@/components/ui/toast";
 import { IoIosInformationCircle } from "react-icons/io";
 
 export default function FlightDetail({
@@ -38,6 +39,7 @@ export default function FlightDetail({
   const [toastTitle, setToastTitle] = useState("");
   const [toastDescription, setToastDescription] = useState("");
   const [localData, setLocalData] = useState(null);
+  const { toast } = useToast();
 
   const [flightData, setFlightData] = useState(null);
   // Tambahkan state baru untuk passengerCount dan seatClass
@@ -187,6 +189,21 @@ export default function FlightDetail({
 
     applyVoucherMutation.mutate({ code: voucher.code });
   };
+
+  useEffect(() => {
+    if (showToast) {
+      // Call toast when showToast is true
+      toast({
+        variant: toastVariant,
+        title: toastTitle,
+        description: toastDescription,
+        action: <ToastAction altText="Try again">OK</ToastAction>,
+      });
+
+      // Reset showToast after displaying
+      setShowToast(false);
+    }
+  }, [showToast, toastVariant, toastTitle, toastDescription, toast]);
 
   return (
     <ToastProvider>
@@ -625,12 +642,7 @@ export default function FlightDetail({
             Lanjut Bayar
           </button>
         )}
-        {showToast && (
-          <Toast variant={toastVariant}>
-            <ToastTitle>{toastTitle}</ToastTitle>
-            <ToastDescription>{toastDescription}</ToastDescription>
-          </Toast>
-        )}
+
         <ToastViewport />
       </div>
     </ToastProvider>
