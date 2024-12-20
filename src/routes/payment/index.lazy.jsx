@@ -445,12 +445,14 @@ function Payment() {
                       <hr className="my-4 border-2 border-gray-800" />
                     </div>
                   ))}
-                  <p className="text-lg font-bold">
-                    Voucher Code:{" "}
-                    <span className="text-darkblue05">
-                      {bookingInfo.data.voucherCode}
-                    </span>
-                  </p>
+                  {bookingInfo?.data?.voucherCode && (
+                    <p className="text-lg font-bold">
+                      Voucher Code:{" "}
+                      <span className="text-darkblue05">
+                        {bookingInfo.data.voucherCode}
+                      </span>
+                    </p>
+                  )}
                   <strong className="text-lg">Rincian Harga</strong>
                   <p>
                     {bookingInfo.data.passengerCount.adult} Adults
@@ -470,13 +472,15 @@ function Payment() {
                     {bookingInfo.data.passengerCount.infant} Baby
                     <span className="float-right">IDR 0</span>
                   </p>
-                  {/* <p>
-                    Diskon Voucher
-                    <span className="float-right">
-                      IDR{" "}
-                      {bookingInfo.data.voucher.value.toLocaleString("id-ID")}
-                    </span>
-                  </p> */}
+                  {bookingInfo?.data?.voucher?.value && (
+                    <p>
+                      Diskon Voucher
+                      <span className="float-right">
+                        IDR{" "}
+                        {bookingInfo.data.voucher.value.toLocaleString("id-ID")}
+                      </span>
+                    </p>
+                  )}
                   <p>
                     Tax
                     <span className="float-right">
