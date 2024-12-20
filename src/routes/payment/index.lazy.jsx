@@ -445,12 +445,14 @@ function Payment() {
                       <hr className="my-4 border-2 border-gray-800" />
                     </div>
                   ))}
-                  <p className="text-lg font-bold">
-                    Voucher Code:{" "}
-                    <span className="text-darkblue05">
-                      {bookingInfo.data.voucherCode}
-                    </span>
-                  </p>
+                  {bookingInfo?.data?.voucherCode && (
+                    <p className="text-lg font-bold">
+                      Voucher Code:{" "}
+                      <span className="text-darkblue05">
+                        {bookingInfo.data.voucherCode}
+                      </span>
+                    </p>
+                  )}
                   <strong className="text-lg">Rincian Harga</strong>
                   <p>
                     {bookingInfo.data.passengerCount.adult} Adults
