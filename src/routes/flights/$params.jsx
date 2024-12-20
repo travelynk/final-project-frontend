@@ -264,7 +264,6 @@ const HeaderComponent = ({
         </h1>
         <div className="navigation px-2 grid grid-cols-1 sm:grid-cols-7 gap-3 text-white">
           <div className="labels col-span-1 sm:col-span-6 flex gap-x-3 bg-darkblue03 p-3 rounded-lg">
-            <img src="/svg/arrow-left.svg" alt="" />
             <p className="text-sm sm:text-base">
               {`${origin} > ${destination} - ${countAdult + countChild + countBaby} Penumpang - ${sc}`}
             </p>
