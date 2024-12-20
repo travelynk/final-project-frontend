@@ -674,7 +674,7 @@ const ResultSection = () => {
                               : "Penumpang"}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-96 ">
+                        <PopoverContent className="w-96 " modal={true}>
                           <div className="grid gap-4 z-50">
                             <div className="flex justify-end border-b-2 border-gray-100 pb-2 ">
                               {/* <Button>X</Button> */}
