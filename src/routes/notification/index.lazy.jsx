@@ -146,15 +146,15 @@ function Notification() {
 
       <Separator className="my-6" />
 
-      <div className="container max-w-4xl mx-auto px-4">
+      <div className="container max-w-4xl mx-auto px-4 flex flex-col gap-1">
         {notifications?.map((notification) => (
           <Card
             key={notification.id}
             onClick={() => handleNotificationClick(notification)} // Mark as read on click
-            className={`w-full p-6 border-none shadow-none rounded-none transition-all duration-300 ease-in-out ${
+            className={`w-full p-6 border-none shadow-none rounded-xl transition-all duration-300 ease-in-out  ${
               notification.isRead
                 ? "bg-gray-200 shadow-md opacity-70" // Read notifications style
-                : "bg-white hover:bg-gray-50" // Unread notifications have white bg and hover effect
+                : "bg-white hover:bg-gray-200" // Unread notifications have white bg and hover effect
             }`} // Conditional styling for bright and dim notifications
           >
             <div className="flex items-start justify-between w-full">
@@ -185,8 +185,6 @@ function Notification() {
             <div className="flex justify-end text-xs">
               {formatDate(notification.createdAt)}
             </div>
-
-            <Separator className="absolute bottom-0 left-0 w-full border-t-2" />
           </Card>
         ))}
       </div>

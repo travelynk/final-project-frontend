@@ -138,7 +138,7 @@ function Profile() {
 
           {/* Profile Form */}
           <div className=" w-full sm:w-[550px] lg:w-2/3 px-6 pt-6 pb-4 border rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 dark:text-white">
               Ubah Data Profil
             </h2>
 
@@ -190,7 +190,7 @@ function Profile() {
                 <Button
                   type="submit"
                   variant="default"
-                  className="w-[150px] bg-darkblue05 rounded-[12px]"
+                  className="w-[150px] bg-darkblue05 rounded-[12px] "
                 >
                   Simpan
                 </Button>

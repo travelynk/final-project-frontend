@@ -666,13 +666,13 @@ export default function BookingForm({ onFormSubmit }) {
       )}
       <div className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4">
         {/* Data Diri Pemesan */}
-        <div className="border p-6 rounded-lg shadow-md bg-white">
+        <div className="border p-6 rounded-lg shadow-md bg-white text-black">
           <p className="text-xl font-bold mb-4">Isi Data Pemesan</p>
           <div className="bg-[#3C3C3C] text-white rounded-t-lg px-4 py-2 max-h-[40px]">
             <p className="text-xl font-semibold">Data Diri Pemesan</p>
           </div>
 
-          <div className="space-y-4 p-4">
+          <div className="space-y-4 p-4 dark:text-white">
             <div>
               <Label
                 className="text-darkblue05 font-bold text-[14px]"
@@ -690,7 +690,7 @@ export default function BookingForm({ onFormSubmit }) {
               />
             </div>
             <div className="flex items-center justify-between mb-4">
-              <Label>Punya Nama Keluarga</Label>
+              <Label className="dark:text-black">Punya Nama Keluarga</Label>
               <Switch required id="lastNameSwitch" name="lastNameSwitch" />
             </div>
             <div>
@@ -747,7 +747,7 @@ export default function BookingForm({ onFormSubmit }) {
         {/*komponen data diri penumpang dan seat selection harus dirender ulang berdasarkan jumlah penerbangan saat pergi dan pulang berdasarkan flightId baik itu isTransit = true atau langsung*/}
         <div>
           {/* Data Diri Penumpang */}
-          <div className="border p-6 rounded-lg shadow-md bg-white">
+          <div className="border p-6 rounded-lg shadow-md bg-white dark:text-black">
             <h3 className="text-xl font-bold mb-4">Isi Data Penumpang</h3>
             <Accordion type="single" collapsible>
               {formState.passengers?.map((passenger, index) => (
@@ -757,7 +757,7 @@ export default function BookingForm({ onFormSubmit }) {
                     {formState.flightNum}
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="space-y-4 p-4">
+                    <div className="space-y-4 p-4 dark:text-white">
                       <div>
                         <Label
                           className="text-darkblue05 font-bold text-[14px]"
@@ -795,7 +795,7 @@ export default function BookingForm({ onFormSubmit }) {
                           disabled={isSubmitted}
                         />
                       </div>
-                      <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center justify-between mb-4 dark:text-black">
                         <Label>Punya Nama Keluarga?</Label>
                         <Switch required />
                       </div>
@@ -922,7 +922,7 @@ export default function BookingForm({ onFormSubmit }) {
           </div>
 
           {/* Seat Selection */}
-          <div className="border p-6 rounded-lg shadow-md bg-white mt-5">
+          <div className="border p-6 rounded-lg shadow-md bg-white mt-5 dark:text-black">
             <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
             <div className="flex items-center justify-center text-center p-2 text-lg font-sm mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10">
               Penerbangan {formState.flightNum} -{" "}

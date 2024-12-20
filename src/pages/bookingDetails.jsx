@@ -22,8 +22,8 @@ const BookingDetails = ({ selectedBooking }) => {
   };
 
   return (
-    <div className="rounded-lg py-4 pr-4 ms-2">
-      <div className="flex items-center justify-between">
+    <div className="rounded-lg py-4 pr-4 ms-2  ">
+      <div className="flex items-center justify-between ">
         <h2 className="text-xl font-bold">Detail Pesanan</h2>
         <div
           className={`flex justify-center items-center text-white w-auto h-[28px] px-4 rounded-full ${
@@ -40,9 +40,9 @@ const BookingDetails = ({ selectedBooking }) => {
         </div>
       </div>
 
-      <h2 className="text-lg">
+      <h2 className="text-lg dark:text-darkblue05">
         Booking Code:{" "}
-        <span className="text-darkblue05 font-bold">
+        <span className="text-darkblue05 font-bold dark:text-black">
           {selectedBooking.bookingCode || "N/A"}
         </span>
       </h2>
