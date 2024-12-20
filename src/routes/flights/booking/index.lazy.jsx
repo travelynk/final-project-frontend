@@ -54,7 +54,14 @@ export default function Booking() {
     console.log("Booking ID:", bookingId);
 
     if (status?.toLowerCase() === "unpaid" && bookingId) {
-      await updateTotalPrice(); // Panggil fungsi untuk PATCH request
+      if (selectedVoucher) {
+        // Jika ada voucher, panggil API untuk update total harga
+        await updateTotalPrice();
+      } else {
+        // Jika tidak ada voucher, langsung navigasi
+        console.log("Navigasi langsung tanpa voucher.");
+        navigate({ to: `/payment?bookingId=${bookingId}` });
+      }
     } else {
       console.error(
         "Tidak bisa redirect, status bukan unpaid atau bookingId tidak tersedia."
@@ -78,7 +85,7 @@ export default function Booking() {
             Authorization: `Bearer ${token}`, // Gunakan token untuk otentikasi
           },
           body: JSON.stringify({
-            voucherCode: selectedVoucher ? selectedVoucher.code : null, // Sertakan voucherCode jika ada
+            voucherCode: selectedVoucher?.code, // Sertakan voucherCode jika ada
             totalPrice: totalPrice, // Harga total
           }),
         }
