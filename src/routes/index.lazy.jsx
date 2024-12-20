@@ -41,6 +41,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -587,7 +588,7 @@ const ResultSection = () => {
                         .name
                     }
                   </DialogTitle>
-                  <DialogDescription className="lg:max-h-[50rem] max-h-[25rem]  overflow-y-auto overflow-x-hidden ">
+                  <div className="lg:max-h-[50rem] max-h-[25rem]  overflow-y-auto overflow-x-hidden ">
                     {flight.flights.map((data) => {
                       return (
                         <div key={data.flightId}>
@@ -660,164 +661,164 @@ const ResultSection = () => {
                         </div>
                       );
                     })}
-                    <div className="action flex gap-2 items-center ">
-                      <div className="flex flex-col ">
-                        <Popover className="z-50">
-                          <PopoverTrigger asChild>
-                            <Button variant="outline">
-                              {countAdult + countChild + countBaby !== 0
-                                ? `${countAdult + countBaby + countChild}  Penumpang`
-                                : "Penumpang"}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-96 ">
-                            <div className="grid gap-4 z-50">
-                              <div className="flex justify-end border-b-2 border-gray-100 pb-2 ">
-                                {/* <Button>X</Button> */}
-                              </div>
-                              <div className="grid gap-2">
-                                <div className="grid grid-cols-2   gap-4  border-b-2 border-gray-100 pb-2 ">
-                                  <div className="grid grid-cols-6  ">
-                                    <img
-                                      src="/svg/adult.svg"
-                                      alt="adult"
-                                      className="w-4 "
-                                    />
-                                    <Label
-                                      htmlFor="width"
-                                      className="col-span-5 text-lg p-0"
-                                    >
-                                      Dewasa
-                                    </Label>
-                                    <p className="font-light col-span-5 col-end-7 text-sm ">
-                                      (12 Tahun Keatas)
-                                    </p>
-                                  </div>
-                                  <div className="grid grid-cols-3 gap-x-2 items-center justify-center">
-                                    <Button
-                                      onClick={() => {
-                                        countAdult != 0 &&
-                                          setCountAdult(countAdult - 1);
-                                      }}
-                                    >
-                                      -
-                                    </Button>
-                                    <Input
-                                      id="width"
-                                      value={countAdult}
-                                      className="text-center"
-                                    />
-                                    <Button
-                                      onClick={() =>
-                                        setCountAdult(countAdult + 1)
-                                      }
-                                    >
-                                      +
-                                    </Button>
-                                  </div>
-                                </div>
-                                <div className="grid grid-cols-2   gap-4 border-b-2 border-gray-100 pb-2 ">
-                                  <div className="grid grid-cols-6  ">
-                                    <img
-                                      src="/svg/child.svg"
-                                      alt="adult"
-                                      className="w-4 "
-                                    />
-                                    <Label
-                                      htmlFor="width"
-                                      className="col-span-5 text-lg p-0"
-                                    >
-                                      Anak-Anak
-                                    </Label>
-                                    <p className="font-light col-span-5 col-end-7 text-sm ">
-                                      (2 - 11 Tahun Keatas)
-                                    </p>
-                                  </div>
-                                  <div className="grid grid-cols-3 gap-x-2 items-center justify-center">
-                                    <Button
-                                      onClick={() => {
-                                        countChild != 0 &&
-                                          setCountChild(countChild - 1);
-                                      }}
-                                    >
-                                      -
-                                    </Button>
-
-                                    <Input
-                                      id="width"
-                                      value={countChild}
-                                      className="text-center"
-                                    />
-                                    <Button
-                                      onClick={() =>
-                                        setCountChild(countChild + 1)
-                                      }
-                                    >
-                                      +
-                                    </Button>
-                                  </div>
-                                </div>
-                                <div className="grid grid-cols-2   gap-4  border-b-2 border-gray-100 pb-2 ">
-                                  <div className="grid grid-cols-6  ">
-                                    <img
-                                      src="/svg/baby.svg"
-                                      alt="adult"
-                                      className="w-4 "
-                                    />
-                                    <Label
-                                      htmlFor="width"
-                                      className="col-span-5 text-lg p-0"
-                                    >
-                                      Bayi
-                                    </Label>
-                                    <p className="font-light col-span-5 col-end-7 text-sm ">
-                                      (Dibawahh 2 tahun)
-                                    </p>
-                                  </div>
-                                  <div className="grid grid-cols-3 gap-x-2 items-center justify-center">
-                                    <Button
-                                      onClick={() => {
-                                        countBaby != 0 &&
-                                          setCountBaby(countBaby - 1);
-                                      }}
-                                    >
-                                      -
-                                    </Button>
-                                    <Input
-                                      id="width"
-                                      value={countBaby}
-                                      className="text-center"
-                                    />
-                                    <Button
-                                      onClick={() =>
-                                        setCountBaby(countBaby + 1)
-                                      }
-                                    >
-                                      +
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="flex justify-end"></div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                      <Button
-                        className="w-full mx-2"
-                        disabled={!countAdult > 0}
-                        onClick={() =>
-                          handlePay(
-                            `${countAdult}.${countChild}.${countBaby}`,
-                            flight
-                          )
-                        }
-                      >
-                        Booking
-                      </Button>
-                    </div>
-                  </DialogDescription>
+                  </div>
                 </DialogHeader>
+                <DialogFooter>
+                  <div className="action flex gap-2 items-center ">
+                    <div className="relative  flex flex-col z-50">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline">
+                            {countAdult + countChild + countBaby !== 0
+                              ? `${countAdult + countBaby + countChild}  Penumpang`
+                              : "Penumpang"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-96 ">
+                          <div className="grid gap-4 z-50">
+                            <div className="flex justify-end border-b-2 border-gray-100 pb-2 ">
+                              {/* <Button>X</Button> */}
+                            </div>
+                            <div className="grid gap-2">
+                              <div className="grid grid-cols-2   gap-4  border-b-2 border-gray-100 pb-2 ">
+                                <div className="grid grid-cols-6  ">
+                                  <img
+                                    src="/svg/adult.svg"
+                                    alt="adult"
+                                    className="w-4 "
+                                  />
+                                  <Label
+                                    htmlFor="width"
+                                    className="col-span-5 text-lg p-0"
+                                  >
+                                    Dewasa
+                                  </Label>
+                                  <p className="font-light col-span-5 col-end-7 text-sm ">
+                                    (12 Tahun Keatas)
+                                  </p>
+                                </div>
+                                <div className="grid grid-cols-3 gap-x-2 items-center justify-center">
+                                  <Button
+                                    onClick={() => {
+                                      countAdult != 0 &&
+                                        setCountAdult(countAdult - 1);
+                                    }}
+                                  >
+                                    -
+                                  </Button>
+                                  <Input
+                                    id="width"
+                                    value={countAdult}
+                                    className="text-center"
+                                  />
+                                  <Button
+                                    onClick={() =>
+                                      setCountAdult(countAdult + 1)
+                                    }
+                                  >
+                                    +
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2   gap-4 border-b-2 border-gray-100 pb-2 ">
+                                <div className="grid grid-cols-6  ">
+                                  <img
+                                    src="/svg/child.svg"
+                                    alt="adult"
+                                    className="w-4 "
+                                  />
+                                  <Label
+                                    htmlFor="width"
+                                    className="col-span-5 text-lg p-0"
+                                  >
+                                    Anak-Anak
+                                  </Label>
+                                  <p className="font-light col-span-5 col-end-7 text-sm ">
+                                    (2 - 11 Tahun Keatas)
+                                  </p>
+                                </div>
+                                <div className="grid grid-cols-3 gap-x-2 items-center justify-center">
+                                  <Button
+                                    onClick={() => {
+                                      countChild != 0 &&
+                                        setCountChild(countChild - 1);
+                                    }}
+                                  >
+                                    -
+                                  </Button>
+
+                                  <Input
+                                    id="width"
+                                    value={countChild}
+                                    className="text-center"
+                                  />
+                                  <Button
+                                    onClick={() =>
+                                      setCountChild(countChild + 1)
+                                    }
+                                  >
+                                    +
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2   gap-4  border-b-2 border-gray-100 pb-2 ">
+                                <div className="grid grid-cols-6  ">
+                                  <img
+                                    src="/svg/baby.svg"
+                                    alt="adult"
+                                    className="w-4 "
+                                  />
+                                  <Label
+                                    htmlFor="width"
+                                    className="col-span-5 text-lg p-0"
+                                  >
+                                    Bayi
+                                  </Label>
+                                  <p className="font-light col-span-5 col-end-7 text-sm ">
+                                    (Dibawahh 2 tahun)
+                                  </p>
+                                </div>
+                                <div className="grid grid-cols-3 gap-x-2 items-center justify-center">
+                                  <Button
+                                    onClick={() => {
+                                      countBaby != 0 &&
+                                        setCountBaby(countBaby - 1);
+                                    }}
+                                  >
+                                    -
+                                  </Button>
+                                  <Input
+                                    id="width"
+                                    value={countBaby}
+                                    className="text-center"
+                                  />
+                                  <Button
+                                    onClick={() => setCountBaby(countBaby + 1)}
+                                  >
+                                    +
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex justify-end"></div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <Button
+                      className="w-full mx-2"
+                      disabled={!countAdult > 0}
+                      onClick={() =>
+                        handlePay(
+                          `${countAdult}.${countChild}.${countBaby}`,
+                          flight
+                        )
+                      }
+                    >
+                      Booking
+                    </Button>
+                  </div>
+                </DialogFooter>
               </DialogContent>
             </Dialog>
           );
