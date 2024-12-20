@@ -120,14 +120,14 @@ function Profile() {
                   <FaCog />
                   <span>Pengaturan Akun</span>
                 </li>
-                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2">
+                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2 group">
                   <FaSignOutAlt />
-                  <button
+                  <Button
                     onClick={handleLogout}
-                    className="text-left focus:outline-none"
+                    className="text focus:outline-none bg-transparent hover:bg-transparent  w-full text-black dark:text-black flex justify-start"
                   >
-                    Keluar
-                  </button>
+                    <span className="group-hover:text-darkblue05">Keluar</span>
+                  </Button>
                 </li>
               </ul>
               <div className="mt-4 text-gray-400 text-sm text-center">

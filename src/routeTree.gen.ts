@@ -20,7 +20,6 @@ import { Route as FlightsParamsImport } from './routes/flights/$params'
 const IndexLazyImport = createFileRoute('/')()
 const TicketHistoryIndexLazyImport = createFileRoute('/ticket-history/')()
 const SuccessIndexLazyImport = createFileRoute('/success/')()
-const ProfileIndexLazyImport = createFileRoute('/profile/')()
 const PaymentIndexLazyImport = createFileRoute('/payment/')()
 const NotificationIndexLazyImport = createFileRoute('/notification/')()
 const UserAccountIndexLazyImport = createFileRoute('/user/account/')()
@@ -56,12 +55,6 @@ const SuccessIndexLazyRoute = SuccessIndexLazyImport.update({
   path: '/success/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/success/index.lazy').then((d) => d.Route))
-
-const ProfileIndexLazyRoute = ProfileIndexLazyImport.update({
-  id: '/profile/',
-  path: '/profile/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/profile/index.lazy').then((d) => d.Route))
 
 const PaymentIndexLazyRoute = PaymentIndexLazyImport.update({
   id: '/payment/',
@@ -174,13 +167,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaymentIndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/profile/': {
-      id: '/profile/'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileIndexLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/success/': {
       id: '/success/'
       path: '/success'
@@ -254,7 +240,6 @@ export interface FileRoutesByFullPath {
   '/flights/$params': typeof FlightsParamsRoute
   '/notification': typeof NotificationIndexLazyRoute
   '/payment': typeof PaymentIndexLazyRoute
-  '/profile': typeof ProfileIndexLazyRoute
   '/success': typeof SuccessIndexLazyRoute
   '/ticket-history': typeof TicketHistoryIndexLazyRoute
   '/auth/login': typeof AuthLoginIndexLazyRoute
@@ -271,7 +256,6 @@ export interface FileRoutesByTo {
   '/flights/$params': typeof FlightsParamsRoute
   '/notification': typeof NotificationIndexLazyRoute
   '/payment': typeof PaymentIndexLazyRoute
-  '/profile': typeof ProfileIndexLazyRoute
   '/success': typeof SuccessIndexLazyRoute
   '/ticket-history': typeof TicketHistoryIndexLazyRoute
   '/auth/login': typeof AuthLoginIndexLazyRoute
@@ -289,7 +273,6 @@ export interface FileRoutesById {
   '/flights/$params': typeof FlightsParamsRoute
   '/notification/': typeof NotificationIndexLazyRoute
   '/payment/': typeof PaymentIndexLazyRoute
-  '/profile/': typeof ProfileIndexLazyRoute
   '/success/': typeof SuccessIndexLazyRoute
   '/ticket-history/': typeof TicketHistoryIndexLazyRoute
   '/auth/login/': typeof AuthLoginIndexLazyRoute
@@ -308,7 +291,6 @@ export interface FileRouteTypes {
     | '/flights/$params'
     | '/notification'
     | '/payment'
-    | '/profile'
     | '/success'
     | '/ticket-history'
     | '/auth/login'
@@ -324,7 +306,6 @@ export interface FileRouteTypes {
     | '/flights/$params'
     | '/notification'
     | '/payment'
-    | '/profile'
     | '/success'
     | '/ticket-history'
     | '/auth/login'
@@ -340,7 +321,6 @@ export interface FileRouteTypes {
     | '/flights/$params'
     | '/notification/'
     | '/payment/'
-    | '/profile/'
     | '/success/'
     | '/ticket-history/'
     | '/auth/login/'
@@ -358,7 +338,6 @@ export interface RootRouteChildren {
   FlightsParamsRoute: typeof FlightsParamsRoute
   NotificationIndexLazyRoute: typeof NotificationIndexLazyRoute
   PaymentIndexLazyRoute: typeof PaymentIndexLazyRoute
-  ProfileIndexLazyRoute: typeof ProfileIndexLazyRoute
   SuccessIndexLazyRoute: typeof SuccessIndexLazyRoute
   TicketHistoryIndexLazyRoute: typeof TicketHistoryIndexLazyRoute
   AuthLoginIndexLazyRoute: typeof AuthLoginIndexLazyRoute
@@ -375,7 +354,6 @@ const rootRouteChildren: RootRouteChildren = {
   FlightsParamsRoute: FlightsParamsRoute,
   NotificationIndexLazyRoute: NotificationIndexLazyRoute,
   PaymentIndexLazyRoute: PaymentIndexLazyRoute,
-  ProfileIndexLazyRoute: ProfileIndexLazyRoute,
   SuccessIndexLazyRoute: SuccessIndexLazyRoute,
   TicketHistoryIndexLazyRoute: TicketHistoryIndexLazyRoute,
   AuthLoginIndexLazyRoute: AuthLoginIndexLazyRoute,
@@ -401,7 +379,6 @@ export const routeTree = rootRoute
         "/flights/$params",
         "/notification/",
         "/payment/",
-        "/profile/",
         "/success/",
         "/ticket-history/",
         "/auth/login/",
@@ -424,9 +401,6 @@ export const routeTree = rootRoute
     },
     "/payment/": {
       "filePath": "payment/index.lazy.jsx"
-    },
-    "/profile/": {
-      "filePath": "profile/index.lazy.jsx"
     },
     "/success/": {
       "filePath": "success/index.lazy.jsx"
