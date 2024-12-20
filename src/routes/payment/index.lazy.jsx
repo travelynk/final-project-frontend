@@ -474,7 +474,9 @@ function Payment() {
                     Diskon Voucher
                     <span className="float-right">
                       IDR{" "}
-                      {bookingInfo.data.voucher.value.toLocaleString("id-ID")}
+                      {bookingInfo.data.voucher?.value
+                        ? bookingInfo.data.voucher.value.toLocaleString("id-ID")
+                        : "0"}
                     </span>
                   </p>
                   <p>
