@@ -34,8 +34,6 @@ export const updateNotificationReadStatus = async (notificationId) => {
   const data = await response.json();
   return data; // Returning updated notification status and message
 };
-<<<<<<< HEAD
-=======
 
 export const deleteNotifications = async (notificationId) => {
   console.log(notificationId);
@@ -54,4 +52,3 @@ export const deleteNotifications = async (notificationId) => {
   const data = await response.json();
   return data; // Returning updated notification status and message
 };
->>>>>>> development

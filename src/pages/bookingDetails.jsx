@@ -206,38 +206,14 @@ const BookingDetails = ({ selectedBooking }) => {
         <p>
           {selectedBooking?.passengerCount?.adult || 0} Adults
           <span className="float-right">
-<<<<<<< HEAD
-            IDR{" "}
-            {selectedBooking.totalPrice &&
-            selectedBooking?.passengerCount?.adult
-              ? Math.floor(
-                  (selectedBooking.totalPrice - selectedBooking.tax) /
-                    (selectedBooking?.passengerCount?.adult +
-                      selectedBooking?.passengerCount?.child)
-                ).toLocaleString()
-              : "0"}
-=======
             IDR {selectedBooking.adultTotalPrice.toLocaleString() || "0"}
->>>>>>> development
           </span>
         </p>
 
         <p>
           {selectedBooking?.passengerCount?.child || 0} Children
           <span className="float-right">
-<<<<<<< HEAD
-            IDR{" "}
-            {selectedBooking.totalPrice &&
-            selectedBooking?.passengerCount?.child
-              ? Math.floor(
-                  (selectedBooking.totalPrice - selectedBooking.tax) /
-                    (selectedBooking?.passengerCount?.adult +
-                      selectedBooking?.passengerCount?.child)
-                ).toLocaleString()
-              : "0"}
-=======
             IDR {selectedBooking.childTotalPrice.toLocaleString() || "0"}
->>>>>>> development
           </span>
         </p>
 
@@ -246,8 +222,6 @@ const BookingDetails = ({ selectedBooking }) => {
           <span className="float-right">IDR 0</span>
         </p>
 
-<<<<<<< HEAD
-=======
         {selectedBooking?.voucherCode && (
           <p>
             Diskon
@@ -257,7 +231,6 @@ const BookingDetails = ({ selectedBooking }) => {
           </p>
         )}
 
->>>>>>> development
         <p>
           Tax
           <span className="float-right">
