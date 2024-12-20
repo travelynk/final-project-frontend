@@ -37,8 +37,8 @@ function Flight() {
   const [maxPrize, setMaxprize] = useState();
   const [checkedAirlines, setCheckedAirlines] = useState([]);
   const [sort, setSort] = useState("1");
-  const [cartDepartureFlight, setCartDepartureFlight] = useState([]);
-  const [cartArrivalFlight, setCartArrivalFlight] = useState([]);
+  const [cartDepartureFlight, setCartDepartureFlight] = useState(null);
+  const [cartArrivalFlight, setCartArrivalFlight] = useState(null);
   const [transitFilter, setTransitFilter] = useState({
     isDirect: true,
     isOneTransit: true,
@@ -225,12 +225,13 @@ const HeaderComponent = ({
   useEffect(() => {
     const listDates = (startDate) => {
       const dates = [];
-      const length = !roundTrip
-        ? Math.ceil(
-            (new Date(returnDate) - new Date(departureDate)) /
-              (1000 * 3600 * 24)
-          ) + 1
-        : 8;
+      const length =
+        !roundTrip && returnDate
+          ? Math.ceil(
+              (new Date(returnDate) - new Date(departureDate)) /
+                (1000 * 3600 * 24)
+            ) + 1
+          : 8;
 
       for (let i = 0; i < length; i++) {
         const newDate = new Date(
@@ -270,7 +271,10 @@ const HeaderComponent = ({
           </div>
           <Button
             className="bg-[#73CA5C] hover:bg-[#73CA5C]/70 h-full px-4 py-2 rounded-lg"
-            onClick={() => navigate({ to: "/" })}
+            onClick={() => {
+              navigate({ to: "/" });
+              localStorage.removeItem("cartTicket");
+            }}
           >
             Ubah Penerbangan
           </Button>
@@ -726,8 +730,13 @@ const BodyComponent = ({
               )}
             </div>
             <Button
-              className="rounded-xl bg-darkblue04 w-full"
               onClick={() => handlePay(searchQuery.ps)}
+              disabled={
+                (roundTrip && !!cartArrivalFlight && !!cartDepartureFlight) ||
+                (!roundTrip && !!cartDepartureFlight) //true
+                  ? false
+                  : true
+              }
             >
               Pembayaran
             </Button>
