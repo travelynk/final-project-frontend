@@ -23,6 +23,8 @@ export default function Booking() {
   const [bookingId, setBookingId] = useState(null); // Tambahkan state untuk bookingId
   const [status, setStatus] = useState(null); // Tambahkan state untuk status
   const navigate = useNavigate();
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const [showToast, setShowToast] = useState(false); // State untuk toast
   const { token } = useSelector((state) => state.auth);
@@ -37,28 +39,65 @@ export default function Booking() {
   }, [navigate, token]);
 
   const handleFormSubmit = ({ bookingResult }) => {
-    if (bookingResult?.data?.bookingCode) {
+    if (bookingResult?.response?.data?.bookingCode) {
       setSuccessMessageVisible(true);
-      setBookingCode(bookingResult.data.bookingCode);
-      setBookingId(bookingResult.data.id); // Simpan bookingId
-      setStatus(bookingResult.data.status); // Simpan status
+      setBookingCode(bookingResult.response.data.bookingCode);
+      setBookingId(bookingResult.response.data.id); // Simpan bookingId
+      setStatus(bookingResult.response.data.status); // Simpan status
     } else {
       console.error("Booking code tidak ditemukan");
     }
   };
 
-  const handlePaymentRedirect = () => {
+  const handlePaymentRedirect = async () => {
     console.log("Status:", status);
     console.log("Booking ID:", bookingId);
 
     if (status?.toLowerCase() === "unpaid" && bookingId) {
-      navigate({ to: `/payment?bookingId=${bookingId}` });
+      await updateTotalPrice(); // Panggil fungsi untuk PATCH request
     } else {
       console.error(
         "Tidak bisa redirect, status bukan unpaid atau bookingId tidak tersedia."
       );
     }
   };
+
+  const updateTotalPrice = async () => {
+    if (!bookingId || !totalPrice) {
+      console.error("Booking ID atau Total Price tidak tersedia.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app/api/v1/bookings/total/${bookingId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Gunakan token untuk otentikasi
+          },
+          body: JSON.stringify({
+            voucherCode: selectedVoucher ? selectedVoucher.code : null, // Sertakan voucherCode jika ada
+            totalPrice: totalPrice, // Harga total
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Gagal memperbarui total harga.");
+      }
+
+      const data = await response.json();
+      console.log("Berhasil memperbarui total harga:", data);
+
+      // Arahkan ke halaman pembayaran
+      navigate({ to: `/payment?bookingId=${bookingId}` });
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  };
+
   return (
     <>
       <NavigationBreadCr
@@ -75,6 +114,10 @@ export default function Booking() {
           isSubmitted={successMessageVisible}
           bookingCode={bookingCode}
           onPaymentRedirect={handlePaymentRedirect}
+          selectedVoucher={selectedVoucher}
+          totalPrice={totalPrice}
+          setSelectedVoucher={setSelectedVoucher} // Pass the setter
+          setTotalPrice={setTotalPrice} // Pass the setter
         />
       </div>
       <SocketioNotif />
