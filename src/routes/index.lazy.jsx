@@ -520,7 +520,7 @@ const ResultSection = () => {
         <h1 className="font-bold text-3xl">Destinasi Favorit</h1>
         <div className="filter text-white grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-7 gap-5">
           <Button
-            className="bg-darkblue03 py-4 px-6 rounded-lg"
+            className="bg-darkblue03 py-4 px-6 rounded-lg w-fit"
             onClick={() => {
               handleDestination("JKT.DPS", "2024-12-30", "1.0.0", "Economy");
             }}
@@ -528,7 +528,7 @@ const ResultSection = () => {
             <img src="/svg/search.svg" alt="" /> Bali
           </Button>
           <Button
-            className="bg-darkblue03 py-4 px-6 rounded-lg"
+            className="bg-darkblue03 py-4 px-6 rounded-lg "
             onClick={() => {
               handleDestination("JKT.SUB", "2024-12-30", "1.0.0", "Economy");
             }}
@@ -536,7 +536,7 @@ const ResultSection = () => {
             <img src="/svg/search.svg" alt="" /> Surabaya
           </Button>
           <Button
-            className="bg-darkblue03 py-4 px-6 rounded-lg"
+            className="bg-darkblue03 py-4 px-6 rounded-lg w-fit"
             onClick={() => {
               handleDestination("JKT.JOG", "2024-12-30", "1.0.0", "Economy");
             }}
@@ -577,8 +577,8 @@ const ResultSection = () => {
                   </CardFooter>
                 </Card>
               </DialogTrigger>
-              <DialogContent >
-                <DialogHeader >
+              <DialogContent>
+                <DialogHeader>
                   <DialogTitle>
                     {" "}
                     {flight.flights[0].departure.city.name} {">"}{" "}
@@ -587,12 +587,12 @@ const ResultSection = () => {
                         .name
                     }
                   </DialogTitle>
-                  <DialogDescription className="max-h-[50rem]  overflow-y-auto overflow-x-hidden ">
+                  <DialogDescription className="lg:max-h-[50rem] max-h-[25rem]  overflow-y-auto overflow-x-hidden ">
                     {flight.flights.map((data) => {
                       return (
                         <div key={data.flightId}>
                           <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
-                            <h1 className="text-darkblue05  font-bold lg:col-span-10 col-end-7  mb-1 ">
+                            <h1 className="text-darkblue05  font-bold col-span-10   mb-1 ">
                               Keberangkatan
                             </h1>
                             <div className="col-span-9 ">
@@ -642,7 +642,7 @@ const ResultSection = () => {
                           </div>
 
                           <div className="return text-lg grid grid-cols-10 justify-items-stretch">
-                            <h1 className="text-darkblue05  font-bold lg:col-span-10 col-end-7 mb-1">
+                            <h1 className="text-darkblue05  font-bold col-span-10  mb-1">
                               Kedatangan
                             </h1>
                             <div className="col-span-9 ">
