@@ -662,7 +662,7 @@ const ResultSection = () => {
                     })}
                     <div className="action flex gap-2 items-center ">
                       <div className="flex flex-col ">
-                        <Popover>
+                        <Popover className="z-50">
                           <PopoverTrigger asChild>
                             <Button variant="outline">
                               {countAdult + countChild + countBaby !== 0
@@ -670,8 +670,8 @@ const ResultSection = () => {
                                 : "Penumpang"}
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-96">
-                            <div className="grid gap-4 ">
+                          <PopoverContent className="w-96 ">
+                            <div className="grid gap-4 z-50">
                               <div className="flex justify-end border-b-2 border-gray-100 pb-2 ">
                                 {/* <Button>X</Button> */}
                               </div>
