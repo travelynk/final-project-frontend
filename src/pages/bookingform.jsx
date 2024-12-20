@@ -51,7 +51,11 @@ const storeBooking = async (bookingData) => {
 
     console.log("Booking successful:", responseBody);
 
-    return responseBody;
+    // Mengembalikan data yang dikirim dan respons
+    return {
+      sentData: bookingData, // Data yang dikirim
+      response: responseBody, // Respons API
+    };
   } catch (error) {
     console.error("Booking error:", error);
     throw error;
@@ -121,7 +125,7 @@ export default function BookingForm({ onFormSubmit }) {
       socketInstance.disconnect();
     };
   }, []);
-  console.log(notification);
+  // console.log(notification);
 
   const Notification = ({ message, onDismiss }) => {
     if (!message) return null;

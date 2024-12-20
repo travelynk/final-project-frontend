@@ -37,11 +37,11 @@ export default function Booking() {
   }, [navigate, token]);
 
   const handleFormSubmit = ({ bookingResult }) => {
-    if (bookingResult?.data?.bookingCode) {
+    if (bookingResult?.response?.data?.bookingCode) {
       setSuccessMessageVisible(true);
-      setBookingCode(bookingResult.data.bookingCode);
-      setBookingId(bookingResult.data.id); // Simpan bookingId
-      setStatus(bookingResult.data.status); // Simpan status
+      setBookingCode(bookingResult.response.data.bookingCode);
+      setBookingId(bookingResult.response.data.id); // Simpan bookingId
+      setStatus(bookingResult.response.data.status); // Simpan status
     } else {
       console.error("Booking code tidak ditemukan");
     }
