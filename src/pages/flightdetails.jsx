@@ -9,13 +9,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "../components/ui/popover";
-import {
-  ToastProvider,
-  ToastViewport,
-  Toast,
-  ToastTitle,
-  ToastDescription,
-} from "../components/ui/toast";
+import { ToastProvider, ToastViewport } from "../components/ui/toast";
 import {
   Accordion,
   AccordionItem,
@@ -31,9 +25,11 @@ export default function FlightDetail({
   isSubmitted,
   bookingCode,
   onPaymentRedirect,
+  selectedVoucher,
+  totalPrice,
+  setSelectedVoucher, // Terima setter dari props
+  setTotalPrice, // Terima setter dari props
 }) {
-  const [selectedVoucher, setSelectedVoucher] = useState(null);
-  const [totalPrice, setTotalPrice] = useState(0); // Base total price
   const [showToast, setShowToast] = useState(false);
   const [toastVariant, setToastVariant] = useState("default");
   const [toastTitle, setToastTitle] = useState("");
@@ -153,6 +149,18 @@ export default function FlightDetail({
     }
   }, [localData]);
 
+  const handleCancelVoucher = () => {
+    console.log("Voucher canceled"); // Log pembatalan voucher
+    setSelectedVoucher(null); // Hapus voucher yang dipilih
+    setTotalPrice(initialTotalPrice); // Kembalikan harga ke total awal
+    setToastVariant("info");
+    setToastTitle("Voucher Canceled");
+    setToastDescription(
+      "Voucher telah dibatalkan, total harga telah diperbarui."
+    );
+    setShowToast(true);
+  };
+
   // Fetch vouchers
   const { data: vouchers = [], isLoading: isFetchingVouchers } = useQuery({
     queryKey: ["vouchers"],
@@ -213,10 +221,12 @@ export default function FlightDetail({
         </h2>
         {/*data penerbangan */}
 
-        <Accordion type="single" collapsible className="mt-4">
+        <Accordion type="single" collapsible className="mt-4  ">
           {/* Accordion untuk Pergi */}
           <AccordionItem value="pergi">
-            <AccordionTrigger>Penerbangan Pergi</AccordionTrigger>
+            <AccordionTrigger className="bg-[#3C3C3C] text-white rounded-lg px-4 py-2 mb-1 ">
+              Penerbangan Pergi
+            </AccordionTrigger>
             <AccordionContent>
               {localData?.flights?.[0]?.pergi ? (
                 localData.flights[0].pergi.isTransit ? (
@@ -400,7 +410,9 @@ export default function FlightDetail({
 
           {/* Accordion untuk Pulang */}
           <AccordionItem value="pulang">
-            <AccordionTrigger>Penerbangan Pulang</AccordionTrigger>
+            <AccordionTrigger className="bg-[#3C3C3C] text-white rounded-lg px-4 py-2 mb-1">
+              Penerbangan Pulang
+            </AccordionTrigger>
             <AccordionContent>
               {localData?.flights?.[0]?.pulang ? (
                 localData.flights[0].pulang.isTransit ? (
@@ -562,30 +574,40 @@ export default function FlightDetail({
                 {selectedVoucher ? selectedVoucher.code : "Tidak ada"}
               </span>
             </div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="bg-purple-500 text-white px-4 py-1 rounded">
-                  {isFetchingVouchers ? "Loading..." : "Cek"}
+            <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="bg-purple-500 text-white px-4 py-1 rounded">
+                    {isFetchingVouchers ? "Loading..." : "Cek"}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="bg-white shadow-md rounded-lg p-4 w-64">
+                  <h3 className="font-bold text-lg mb-2">Daftar Voucher</h3>
+                  <ul className="space-y-2">
+                    {vouchers.map((voucher) => (
+                      <li
+                        key={voucher.id}
+                        onClick={() => handleVoucherSelect(voucher)}
+                        className="p-2 border rounded-lg hover:bg-purple-100 cursor-pointer"
+                      >
+                        <div className="font-semibold">{voucher.code}</div>
+                        <div className="text-sm text-gray-600">
+                          {voucher.description}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </PopoverContent>
+              </Popover>
+              {selectedVoucher && (
+                <button
+                  onClick={handleCancelVoucher}
+                  className="bg-red-500 text-white px-4 py-1 rounded"
+                >
+                  Batalkan
                 </button>
-              </PopoverTrigger>
-              <PopoverContent className="bg-white shadow-md rounded-lg p-4 w-64">
-                <h3 className="font-bold text-lg mb-2">Daftar Voucher</h3>
-                <ul className="space-y-2">
-                  {vouchers.map((voucher) => (
-                    <li
-                      key={voucher.id}
-                      onClick={() => handleVoucherSelect(voucher)}
-                      className="p-2 border rounded-lg hover:bg-purple-100 cursor-pointer"
-                    >
-                      <div className="font-semibold">{voucher.code}</div>
-                      <div className="text-sm text-gray-600">
-                        {voucher.description}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </PopoverContent>
-            </Popover>
+              )}
+            </div>
           </div>
 
           {/* Pricing Section berdasarkan flight id*/}
