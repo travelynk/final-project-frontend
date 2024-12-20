@@ -131,7 +131,7 @@ export default function BookingForm({ onFormSubmit }) {
     if (!message) return null;
     return (
       message && (
-        <div className="absolute right-28 top-18 max-w-sm border bg-white text-black py-4 rounded-lg shadow-lg">
+        <div className="absolute right-20 top-[120px] max-w-sm border bg-white text-black py-4 rounded-lg shadow-lg">
           <div className="px-4">
             <p>Segera Selesaikan Pembayaran!</p>
           </div>
@@ -196,6 +196,8 @@ export default function BookingForm({ onFormSubmit }) {
   });
 
   const handleChange = (field, value, index = null) => {
+    // Jika field adalah 'namakeluarga' dan value kosong, set ke undefined
+
     if (index !== null) {
       setFormState((prev) => {
         const passengers = [...prev.passengers];
@@ -212,12 +214,18 @@ export default function BookingForm({ onFormSubmit }) {
   const [currentFlightIndex, setCurrentFlightIndex] = useState(0); // Flight aktif
   const [selectedSeats, setSelectedSeats] = useState([]); // Kursi yang dipilih
   const [seatSelectionComplete, setSeatSelectionComplete] = useState([]); // Track seat completion per flight
+  const [hasFamilyName, setHasFamilyName] = useState(false);
 
   // Clear seat selection data on refresh
   useEffect(() => {
     // Reset seat selection data on page refresh
     localStorage.removeItem("seatSelection");
   }, []);
+  useEffect(() => {
+    if (isSubmitted) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [isSubmitted]);
 
   useEffect(() => {
     const cartTicket = localStorage.getItem("cartTicket");
@@ -314,6 +322,7 @@ export default function BookingForm({ onFormSubmit }) {
   const createPassengerObject = (type) => ({
     title: "",
     fullname: "",
+    namakeluarga: undefined, // Default string kosong
     birthdate: "",
     citizenship: "",
     passport: "",
@@ -688,24 +697,35 @@ export default function BookingForm({ onFormSubmit }) {
                 disabled={isSubmitted}
               />
             </div>
+            {/* Switch Punya Nama Keluarga */}
             <div className="flex items-center justify-between mb-4">
               <Label className="dark:text-black">Punya Nama Keluarga</Label>
-              <Switch required id="lastNameSwitch" name="lastNameSwitch" />
-            </div>
-            <div>
-              <Label
-                className="text-darkblue05 font-bold text-[14px]"
-                htmlFor="namakeluarga"
-              >
-                Nama Keluarga
-              </Label>
-              <Input
-                required
-                id="namakeluarga"
-                placeholder="Masukan nama keluarga"
-                className="mb-2"
+              <Switch
+                checked={hasFamilyName}
+                onCheckedChange={(value) => setHasFamilyName(value)}
               />
             </div>
+
+            {/* Conditional Rendering: Nama Keluarga */}
+            {hasFamilyName && (
+              <div>
+                <Label
+                  className="text-darkblue05 font-bold text-[14px]"
+                  htmlFor="namakeluarga"
+                >
+                  Nama Keluarga
+                </Label>
+                <Input
+                  required
+                  id="namakeluarga"
+                  placeholder="Masukkan nama keluarga"
+                  className="mb-2"
+                  value={formState.namakeluarga}
+                  onChange={(e) => handleChange("namakeluarga", e.target.value)}
+                  disabled={isSubmitted}
+                />
+              </div>
+            )}
             <div>
               <Label
                 className="text-darkblue05 font-bold text-[14px]"
@@ -796,22 +816,36 @@ export default function BookingForm({ onFormSubmit }) {
                       </div>
                       <div className="flex items-center justify-between mb-4 dark:text-black">
                         <Label>Punya Nama Keluarga?</Label>
-                        <Switch required />
-                      </div>
-                      <div>
-                        <Label
-                          className="text-darkblue05 font-bold text-[14px]"
-                          htmlFor={`namakeluarga-${index}`}
-                        >
-                          Nama Keluarga
-                        </Label>
-                        <Input
-                          required
-                          id={`namakeluarga-${index}`}
-                          placeholder="Masukan Nama Keluarga"
-                          className="mb-2"
+                        <Switch
+                          checked={hasFamilyName}
+                          onCheckedChange={(value) => setHasFamilyName(value)}
                         />
                       </div>
+                      {/* Conditional Rendering: Nama Keluarga */}
+                      {hasFamilyName && (
+                        <div>
+                          <Label
+                            className="text-darkblue05 font-bold text-[14px]"
+                            htmlFor={`namakeluarga-${index}`}
+                          >
+                            Nama Keluarga
+                          </Label>
+                          <Input
+                            required
+                            id={`namakeluarga-${index}`}
+                            placeholder="Masukan Nama Keluarga"
+                            className="mb-2"
+                            value={formState.passengers[index]?.namakeluarga}
+                            onChange={(e) =>
+                              handleChange(
+                                "namakeluarga",
+                                e.target.value,
+                                index
+                              )
+                            }
+                          />
+                        </div>
+                      )}
                       <div>
                         <Label
                           className="text-darkblue05 font-bold text-[14px]"
@@ -1032,7 +1066,7 @@ export default function BookingForm({ onFormSubmit }) {
             // Tombol Booking Pesanan
             <button
               onClick={handleSubmit}
-              className={`mt-1 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040] ${
+              className={`mt-1 bg-green-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040] ${
                 isSubmitted
                   ? "bg-gray-500 cursor-not-allowed"
                   : "bg-blue-500 text-white"
