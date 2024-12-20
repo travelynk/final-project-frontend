@@ -162,7 +162,7 @@ function Payment() {
     <>
       {/*navigationbreadcr disini*/}
       <NavigationBreadCr
-        initialTime={5000}
+        initialTime={300}
         label="Selesaikan Pembayaran Dalam"
         expirationMessage="Maaf, Waktu pembayaran habis. Silahkan ulangi lagi!"
         redirectPath="/ticket-history"
@@ -357,9 +357,11 @@ function Payment() {
                   {bookingInfo.data.segments.map((segment, index) => (
                     <div key={index}>
                       <strong className="text-lg text-darkblue05">
-                        {segment.isReturn
-                          ? "Penerbangan Pulang"
-                          : `Penerbangan ke-${index + 1}`}
+                        {index === 0
+                          ? "Penerbangan Awal"
+                          : segment.isReturn
+                            ? "Penerbangan Pulang"
+                            : `Transit ke-${index}`}
                       </strong>
                       <strong>
                         {segment?.flight?.departureTime && (
@@ -443,6 +445,12 @@ function Payment() {
                       <hr className="my-4 border-2 border-gray-800" />
                     </div>
                   ))}
+                  <p className="text-lg font-bold">
+                    Voucher Code:{" "}
+                    <span className="text-darkblue05">
+                      {bookingInfo.data.voucherCode}
+                    </span>
+                  </p>
                   <strong className="text-lg">Rincian Harga</strong>
                   <p>
                     {bookingInfo.data.passengerCount.adult} Adults
@@ -463,13 +471,20 @@ function Payment() {
                     <span className="float-right">IDR 0</span>
                   </p>
                   <p>
+                    Diskon Voucher
+                    <span className="float-right">
+                      IDR{" "}
+                      {bookingInfo.data.voucher.value.toLocaleString("id-ID")}
+                    </span>
+                  </p>
+                  <p>
                     Tax
                     <span className="float-right">
                       {bookingInfo.data.tax}
                       {" %"}
                     </span>
                   </p>
-                  <hr className="my-4 border-2 border-gray-400" />
+                  <hr className="my-4 border-2 border-gray-800" />
                   <strong className="text-lg">
                     Total
                     <span className="float-right text-darkblue05">
