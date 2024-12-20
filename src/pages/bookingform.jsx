@@ -218,6 +218,11 @@ export default function BookingForm({ onFormSubmit }) {
     // Reset seat selection data on page refresh
     localStorage.removeItem("seatSelection");
   }, []);
+  useEffect(() => {
+    if (isSubmitted) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [isSubmitted]);
 
   useEffect(() => {
     const cartTicket = localStorage.getItem("cartTicket");
