@@ -124,13 +124,13 @@ function Payment() {
     try {
       if (bookingId) {
         const response = await CreateVa(bookingId, bankValue);
-        console.log("response sampai ke front end: ", response);
+        // console.log("response sampai ke front end: ", response);
         const vaNum = response.data.data.paymentUrl.va_numbers[0].va_number;
         const trxId = response.data.data.paymentUrl.transaction_id;
         const trxStatus = response.data.data.paymentUrl.transaction_status;
-        console.log("dapat transaction id:", trxId);
-        console.log("dapat transaction status:", trxStatus);
-        console.log("dapat va number:", vaNum);
+        // console.log("dapat transaction id:", trxId);
+        // console.log("dapat transaction status:", trxStatus);
+        // console.log("dapat va number:", vaNum);
         setVaNumber(vaNum);
 
         const paymentStatus = async () => {
@@ -162,7 +162,7 @@ function Payment() {
     <>
       {/*navigationbreadcr disini*/}
       <NavigationBreadCr
-        initialTime={300}
+        initialTime={5000}
         label="Selesaikan Pembayaran Dalam"
         expirationMessage="Maaf, Waktu pembayaran habis. Silahkan ulangi lagi!"
         redirectPath="/ticket-history"
@@ -353,9 +353,14 @@ function Payment() {
                     {bookingInfo.data.bookingCode}
                   </span>
                 </strong>
-                <div className="mt-4 text-sm">
+                <div className="mt-4 text-sm ">
                   {bookingInfo.data.segments.map((segment, index) => (
                     <div key={index}>
+                      <strong className="text-lg text-darkblue05">
+                        {segment.isReturn
+                          ? "Penerbangan Pulang"
+                          : `Penerbangan ke-${index + 1}`}
+                      </strong>
                       <strong>
                         {segment?.flight?.departureTime && (
                           <p>
