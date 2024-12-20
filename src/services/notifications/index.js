@@ -34,3 +34,21 @@ export const updateNotificationReadStatus = async (notificationId) => {
   const data = await response.json();
   return data; // Returning updated notification status and message
 };
+
+export const deleteNotifications = async (notificationId) => {
+  console.log(notificationId);
+  const url = `${import.meta.env.VITE_API_URL}/notifications/${notificationId}/soft-delete`;
+  const response = await fetch(url, {
+    method: "PATCH",
+    headers: {
+      authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update notification status");
+  }
+
+  const data = await response.json();
+  return data; // Returning updated notification status and message
+};

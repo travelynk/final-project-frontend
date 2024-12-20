@@ -2,14 +2,23 @@ import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Separator } from "../../components/ui/separator";
-import { ArrowLeft, Bell, Filter, Search } from "lucide-react";
+import { ArrowLeft, Bell, Filter, Search, Trash2, X } from "lucide-react";
 import {
   getNotificationsById,
   updateNotificationReadStatus,
+  deleteNotifications,
 } from "../../services/notifications";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Calendar } from "../../components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../components/ui/popover";
+import { cn } from "../../lib/utils";
 
 export const Route = createLazyFileRoute("/notification/")({
   component: Notification,
@@ -17,50 +26,96 @@ export const Route = createLazyFileRoute("/notification/")({
 
 function Notification() {
   const { token } = useSelector((state) => state.auth);
-  const [notifications, setNotifications] = useState([]);
-  const { data, isSuccess, isPending } = useQuery({
-    queryKey: ["notifications"],
-    queryFn: () => getNotificationsById(),
-    enabled: !!token,
-  });
+  const [showDeleteButtons, setShowDeleteButtons] = useState(false);
+  const [dateRange, setDateRange] = useState({ from: null, to: null });
+  const [searchTerm, setSearchTerm] = useState("");
 
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const {
+    data: notifications,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: getNotificationsById,
+    enabled: !!token,
+  });
+
+  const readMutation = useMutation({
     mutationFn: updateNotificationReadStatus,
     onSuccess: (data, variables) => {
-      console.log("Notification updated successfully", data); // Log data on success
-      queryClient.setQueryData(["notifications"], (oldNotifications) => {
-        return oldNotifications.map((notif) =>
+      queryClient.setQueryData(["notifications"], (oldNotifications) =>
+        oldNotifications.map((notif) =>
           notif.id === variables ? { ...notif, isRead: true } : notif
-        );
-      });
-    },
-    onError: (error) => {
-      console.error("Error updating notification status:", error.message); // Log error message
-      alert("Failed to update notification status"); // Optionally, show an alert to the user
+        )
+      );
     },
   });
 
-  const handleNotificationClick = (notification) => {
-    console.log("Notification clicked:", notification); // Log the entire notification object
+  const deleteMutation = useMutation({
+    mutationFn: deleteNotifications,
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(["notifications"], (oldNotifications) =>
+        oldNotifications.filter((notif) => notif.id !== variables)
+      );
+    },
+  });
 
-    if (notification && notification.id) {
-      // Pass only the notification.id (not as an object)
-      mutation.mutate(notification.id); // Directly pass notification.id
-    } else {
-      console.error("Invalid notification data", notification); // Log an error if data is invalid
+  const filteredNotifications = useMemo(() => {
+    if (!notifications) return [];
+
+    let result = [...notifications];
+
+    // Normalize date for comparison (removing time component)
+    const normalizeDate = (date) => {
+      return new Date(date).setHours(0, 0, 0, 0);
+    };
+
+    if (dateRange.from || dateRange.to) {
+      const fromDate = dateRange.from ? normalizeDate(dateRange.from) : null;
+      const toDate = dateRange.to ? normalizeDate(dateRange.to) : null;
+
+      result = result.filter((notification) => {
+        const notifDate = normalizeDate(notification.createdAt);
+
+        // Check if the notification's date falls within the range
+        return (
+          (!fromDate || notifDate >= fromDate) &&
+          (!toDate || notifDate <= toDate)
+        );
+      });
+    }
+
+    if (searchTerm) {
+      result = result.filter(
+        (notification) =>
+          notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          notification.message.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    return result;
+  }, [notifications, dateRange, searchTerm]);
+
+  const handleNotificationClick = (notification) => {
+    if (notification && !notification.isRead) {
+      readMutation.mutate(notification.id);
     }
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      setNotifications(data);
-    }
-  }, [data, isSuccess]);
+  const handleDeleteClick = (e, notificationId) => {
+    e.stopPropagation();
+    deleteMutation.mutate(notificationId);
+  };
 
-  // Function to format the date in the required format
-  function formatDate(dateString) {
+  const handleDateSelect = (range) =>
+    setDateRange(range || { from: null, to: null });
+  const handleResetFilter = () => setDateRange({ from: null, to: null });
+  const handleSearchChange = (e) => setSearchTerm(e.target.value);
+
+  const formatDate = (dateString) => {
     const months = [
       "Januari",
       "Februari",
@@ -75,7 +130,6 @@ function Notification() {
       "November",
       "Desember",
     ];
-
     const date = new Date(dateString);
     const day = date.getDate();
     const month = months[date.getMonth()];
@@ -84,60 +138,100 @@ function Notification() {
     const minutes = date.getMinutes();
 
     return `${day} ${month} ${year}, ${hours}:${minutes < 10 ? "0" + minutes : minutes}`;
-  }
+  };
 
   return (
     <>
-      <div className="container max-w-4xl mx-auto px-4 py-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold">Notifikasi</h2>
+      <div className="container max-w-[1024px] mx-auto sm:pt-8 pt-2 px-4">
+        <div className="flex justify-between items-center ms-0 lg:-ms-5 mt-2 sm:mb-8 mb-4">
+          <h2 className="text-xl font-bold text-center sm:text-left">
+            Riwayat Pemesanan
+          </h2>
         </div>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <Card className="lg:col-span-9 p-4 rounded-xl bg-darkblue05 h-[50px] flex items-center">
-              <div className="flex items-center w-full">
-                <Button variant="link" size="icon" className="p-0">
-                  <Link to="/" className="flex items-center">
-                    <ArrowLeft
-                      style={{
-                        width: "24px",
-                        height: "24px",
-                        color: "white",
-                      }}
-                    />
-                  </Link>
-                </Button>
-                <h1 className="flex-1 text-lg text-white text-center">
-                  Beranda
-                </h1>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Card className="p-4 rounded-[12px] flex justify-between items-center bg-darkblue05 h-[50px]  w-full sm:w-[777px]">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center justify-center w-8 h-8 text-white rounded-full">
+                  <Button variant="link" size="icon" className="p-0">
+                    <Link to="/" className="flex items-center">
+                      <ArrowLeft
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          color: "white",
+                        }}
+                      />
+                    </Link>
+                  </Button>
+                </div>
+
+                <div className="flex flex-grow justify-center">
+                  <h1 className="font-normal text-lg text-white text-center">
+                    Beranda
+                  </h1>
+                </div>
               </div>
             </Card>
 
-            <div className="lg:col-span-3 flex justify-end items-center gap-2">
-              <div className="flex w-full lg:hidden justify-between">
-                <Button
-                  variant="outline"
-                  className="w-24 h-9 rounded-full border-darkblue05"
-                >
-                  <Filter className="mr-2" />
-                  Filter
-                </Button>
-                <Button variant="link" size="icon" className="h-9 w-9">
-                  <Search className="w-6 h-6 text-darkblue05" />
-                </Button>
-              </div>
-              <div className="hidden lg:flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  className="w-24 h-9 rounded-full border-darkblue05"
-                >
-                  <Filter className="mr-2" />
-                  Filter
-                </Button>
-                <Button variant="link" size="icon">
-                  <Search className="w-6 h-6 text-darkblue05" />
-                </Button>
+            <div className="flex sm:flex-row items-center gap-4 sm:gap-2">
+              <div className="flex justify-between w-full sm:flex-row items-center gap-2">
+                {/* Date Range Picker */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-auto justify-start text-left font-normal rounded-[18px] border border-darkblue05",
+                        !dateRange.from && "text-muted-foreground"
+                      )}
+                    >
+                      <Filter className="mr-2 h-4 w-4" />
+                      {dateRange.from
+                        ? `${format(dateRange.from, "LLL dd, y")} - ${
+                            dateRange.to
+                              ? format(dateRange.to, "LLL dd, y")
+                              : ""
+                          }`
+                        : "Filter"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      initialFocus
+                      mode="range"
+                      defaultMonth={dateRange.from}
+                      selected={dateRange}
+                      onSelect={handleDateSelect}
+                      numberOfMonths={2}
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                {/* Reset Filter Button - Only show if a filter is applied */}
+                {(dateRange.from || dateRange.to) && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleResetFilter}
+                    className="text-red-500 hover:bg-red-50"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+
+                {/* Search Button */}
+                <div className="relative w-full sm:w-[180px]">
+                  <input
+                    type="text"
+                    className="border border-darkblue05 rounded-[18px] p-2 pl-10 pr-2 w-full"
+                    placeholder="Cari Notifikasi"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                  />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                </div>
               </div>
             </div>
           </div>
@@ -146,47 +240,91 @@ function Notification() {
 
       <Separator className="my-6" />
 
-      <div className="container max-w-4xl mx-auto px-4 flex flex-col gap-1">
-        {notifications?.map((notification) => (
-          <Card
-            key={notification.id}
-            onClick={() => handleNotificationClick(notification)} // Mark as read on click
-            className={`w-full p-6 border-none shadow-none rounded-xl transition-all duration-300 ease-in-out  ${
-              notification.isRead
-                ? "bg-gray-200 shadow-md opacity-70" // Read notifications style
-                : "bg-white hover:bg-gray-200" // Unread notifications have white bg and hover effect
-            }`} // Conditional styling for bright and dim notifications
+      <div className="container max-w-4xl mx-auto px-4">
+        <div className="container flex justify-self-end w-[130px] px-4 mb-6">
+          <Button
+            variant="outline"
+            className={
+              showDeleteButtons
+                ? "text-red-500 border-red-500 rounded-[18px]"
+                : "text-darkblue05 border-darkblue05 rounded-[18px]"
+            }
+            onClick={() => setShowDeleteButtons(!showDeleteButtons)}
           >
-            <div className="flex items-start justify-between w-full">
-              <div className="flex gap-4">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-darkblue05 flex items-center justify-center">
-                  <Bell className="w-4 h-4 text-white" />
+            <Trash2 />
+            {showDeleteButtons ? "Cancel" : "Delete"}
+          </Button>
+        </div>
+        <div className="mb-5 border border-gray-300 rounded-lg bg-white shadow-md">
+          {filteredNotifications.length === 0 ? (
+            <div className="p-6 text-center text-gray-500">
+              Tidak ada notifikasi tersedia
+            </div>
+          ) : (
+            filteredNotifications.map((notification) => (
+              <Card
+                key={notification.id}
+                onClick={() =>
+                  !showDeleteButtons && handleNotificationClick(notification)
+                }
+                className={`w-full p-6 border-none shadow-none rounded-none transition-all duration-300 ease-in-out relative ${
+                  notification.isRead
+                    ? "bg-gray-200 shadow-md opacity-70"
+                    : "bg-white hover:bg-gray-50"
+                } cursor-pointer`}
+              >
+                <div className="flex items-start justify-between w-full">
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-darkblue05 flex items-center justify-center">
+                      <Bell className="w-4 h-4 text-white" />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <span className="text-base font-medium text-gray-900">
+                        {notification.title}
+                      </span>
+                      <span className="text-sm text-gray-500 mt-0.5">
+                        {notification.message}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`flex items-center text-sm text-gray-500 w-[20px] justify-end ${
+                        showDeleteButtons ? "hidden" : ""
+                      }`}
+                    >
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          notification.isRead ? "bg-gray-500" : "bg-green-500"
+                        }`}
+                      />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-300 ${
+                        showDeleteButtons
+                          ? "scale-100 opacity-100"
+                          : "scale-0 opacity-0 hidden"
+                      }`}
+                      onClick={(e) => handleDeleteClick(e, notification.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
 
-                <div className="flex flex-col">
-                  <span className="text-base font-medium text-gray-900">
-                    {notification.title}
-                  </span>
-                  <span className="text-sm text-gray-500 mt-0.5">
-                    {notification.message}
-                  </span>
+                <div className="flex justify-end text-xs">
+                  {formatDate(notification.createdAt)}
                 </div>
-              </div>
 
-              <div className="flex items-center text-sm text-gray-500 min-w-[120px] justify-end">
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    notification.isRead ? "bg-gray-500" : "bg-green-500"
-                  }`} // Change the indicator color based on read status
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end text-xs">
-              {formatDate(notification.createdAt)}
-            </div>
-          </Card>
-        ))}
+                <Separator className="absolute bottom-0 left-0 w-full border-t-2" />
+              </Card>
+            ))
+          )}
+        </div>
       </div>
     </>
   );

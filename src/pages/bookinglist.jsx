@@ -13,6 +13,7 @@ const BookingList = ({
   setOpenMonth,
 }) => {
   const [statusFilter, setStatusFilter] = useState("All");
+  const [selectedBooking, setSelectedBookingState] = useState(null);
   const [filteredGroupedBookings, setFilteredGroupedBookings] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -183,8 +184,15 @@ const BookingList = ({
                         .map((booking) => (
                           <Card
                             key={booking.id}
-                            className="border shadow h-auto w-full rounded-lg p-4 mb-4"
-                            onClick={() => setSelectedBooking(booking)}
+                            className={`border shadow h-auto w-full rounded-lg p-4 mb-4 cursor-pointer ${
+                              selectedBooking?.id === booking.id
+                                ? "bg-slate-200"
+                                : ""
+                            }`}
+                            onClick={() => {
+                              setSelectedBooking(booking);
+                              setSelectedBookingState(booking);
+                            }}
                           >
                             {/* Status Badge */}
                             <div className="flex mb-4">

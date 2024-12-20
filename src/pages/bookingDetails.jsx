@@ -22,8 +22,8 @@ const BookingDetails = ({ selectedBooking }) => {
   };
 
   return (
-    <div className="rounded-lg py-4 pr-4 ms-2  ">
-      <div className="flex items-center justify-between ">
+    <div className="rounded-lg py-4 pr-4 ms-2">
+      <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Detail Pesanan</h2>
         <div
           className={`flex justify-center items-center text-white w-auto h-[28px] px-4 rounded-full ${
@@ -40,9 +40,9 @@ const BookingDetails = ({ selectedBooking }) => {
         </div>
       </div>
 
-      <h2 className="text-lg dark:text-darkblue05">
+      <h2 className="text-lg">
         Booking Code:{" "}
-        <span className="text-darkblue05 font-bold dark:text-black">
+        <span className="text-darkblue05 font-bold">
           {selectedBooking.bookingCode || "N/A"}
         </span>
       </h2>
@@ -206,30 +206,14 @@ const BookingDetails = ({ selectedBooking }) => {
         <p>
           {selectedBooking?.passengerCount?.adult || 0} Adults
           <span className="float-right">
-            IDR{" "}
-            {selectedBooking.totalPrice &&
-            selectedBooking?.passengerCount?.adult
-              ? Math.floor(
-                  (selectedBooking.totalPrice - selectedBooking.tax) /
-                    (selectedBooking?.passengerCount?.adult +
-                      selectedBooking?.passengerCount?.child)
-                ).toLocaleString()
-              : "0"}
+            IDR {selectedBooking.adultTotalPrice.toLocaleString() || "0"}
           </span>
         </p>
 
         <p>
           {selectedBooking?.passengerCount?.child || 0} Children
           <span className="float-right">
-            IDR{" "}
-            {selectedBooking.totalPrice &&
-            selectedBooking?.passengerCount?.child
-              ? Math.floor(
-                  (selectedBooking.totalPrice - selectedBooking.tax) /
-                    (selectedBooking?.passengerCount?.adult +
-                      selectedBooking?.passengerCount?.child)
-                ).toLocaleString()
-              : "0"}
+            IDR {selectedBooking.childTotalPrice.toLocaleString() || "0"}
           </span>
         </p>
 
@@ -237,6 +221,15 @@ const BookingDetails = ({ selectedBooking }) => {
           {selectedBooking?.passengerCount?.infant || "0"} Infant
           <span className="float-right">IDR 0</span>
         </p>
+
+        {selectedBooking?.voucherCode && (
+          <p>
+            Diskon
+            <span className="float-right">
+              IDR {selectedBooking.voucher?.value?.toLocaleString() || "0"}
+            </span>
+          </p>
+        )}
 
         <p>
           Tax

@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useSelector } from "react-redux";
 
-const Protected = ({ children, roles }) => {
+const Protected = ({ children }) => {
   const navigate = useNavigate();
 
   const { token } = useSelector((state) => state.auth);
