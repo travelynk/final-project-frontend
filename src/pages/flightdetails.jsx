@@ -23,7 +23,8 @@ import {
   AccordionContent,
 } from "../components/ui/accordion"; // ShadCN Accordion
 import { useSelector } from "react-redux";
-
+import { useToast } from "@/hooks/use-toast.js";
+import { ToastAction } from "@/components/ui/toast";
 import { IoIosInformationCircle } from "react-icons/io";
 
 export default function FlightDetail({
@@ -38,6 +39,7 @@ export default function FlightDetail({
   const [toastTitle, setToastTitle] = useState("");
   const [toastDescription, setToastDescription] = useState("");
   const [localData, setLocalData] = useState(null);
+  const { toast } = useToast();
 
   const [flightData, setFlightData] = useState(null);
   // Tambahkan state baru untuk passengerCount dan seatClass
@@ -89,6 +91,9 @@ export default function FlightDetail({
   }, []);
 
   //price calculation
+
+  const [initialTotalPrice, setInitialTotalPrice] = useState(0);
+
   const calculatePassengerPrice = (pergiData, pulangData, count) => {
     if (count === 0) return 0; // Return 0 if no passengers in this category
 
@@ -141,7 +146,10 @@ export default function FlightDetail({
       const totalBeforeTax = pergiPrice + pulangPrice;
       const totalWithTax = totalBeforeTax * 1.11; // Add 11% tax
 
-      setTotalPrice(Math.round(totalWithTax)); // Update state
+      const roundedTotal = Math.round(totalWithTax);
+
+      setInitialTotalPrice(roundedTotal); // Simpan total awal
+      setTotalPrice(roundedTotal); // Update total harga
     }
   }, [localData]);
 
@@ -154,12 +162,12 @@ export default function FlightDetail({
 
   // Apply voucher mutation
   const applyVoucherMutation = useMutation({
-    mutationFn: ({ code }) => getVoucherByCode(code, totalPrice),
+    mutationFn: ({ code }) => getVoucherByCode(code, initialTotalPrice),
     onSuccess: (data) => {
       console.log("Voucher applied successfully:", data); // Log data yang berhasil diterima
 
       setSelectedVoucher(data);
-      setTotalPrice(data.updatedTotalPrice);
+      setTotalPrice(data.updatedTotalPrice); // Update total harga berdasarkan diskon dari initialTotalPrice
 
       setToastVariant("success");
       setToastTitle("Voucher Applied");
@@ -181,6 +189,21 @@ export default function FlightDetail({
 
     applyVoucherMutation.mutate({ code: voucher.code });
   };
+
+  useEffect(() => {
+    if (showToast) {
+      // Call toast when showToast is true
+      toast({
+        variant: toastVariant,
+        title: toastTitle,
+        description: toastDescription,
+        action: <ToastAction altText="Try again">OK</ToastAction>,
+      });
+
+      // Reset showToast after displaying
+      setShowToast(false);
+    }
+  }, [showToast, toastVariant, toastTitle, toastDescription, toast]);
 
   return (
     <ToastProvider>
@@ -400,30 +423,32 @@ export default function FlightDetail({
                         {flight.departure.terminal || "Terminal tidak tersedia"}
                       </p>
                       <hr className="my-4" />
-                      <p>
-                        <strong>
-                          {flight.airline.name || "Airline tidak tersedia"} -{" "}
-                          {seatClass || "Kelas tidak tersedia"}
-                        </strong>
-                      </p>
-                      <p className="mb-4">
-                        <strong>
-                          {flight.flightNum ||
-                            "Nomor penerbangan tidak tersedia"}
-                        </strong>
-                      </p>
                       <div>
-                        <strong>Fasilitas:</strong>
-                        <br />
-                        {Array.isArray(flight.facility) ? (
-                          <ul>
-                            {flight.facility.map((item, idx) => (
-                              <li key={idx}>{item}</li>
-                            ))}
-                          </ul>
-                        ) : (
-                          flight.facility || "Fasilitas tidak tersedia"
-                        )}
+                        <p>
+                          <strong>
+                            {flight.airline.name || "Airline tidak tersedia"} -{" "}
+                            {seatClass || "Kelas tidak tersedia"}
+                          </strong>
+                        </p>
+                        <p className="mb-4">
+                          <strong>
+                            {flight.flightNum ||
+                              "Nomor penerbangan tidak tersedia"}
+                          </strong>
+                        </p>
+                        <div>
+                          <strong>Fasilitas:</strong>
+                          <br />
+                          {Array.isArray(flight.facility) ? (
+                            <ul>
+                              {flight.facility.map((item, idx) => (
+                                <li key={idx}>{item}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            flight.facility || "Fasilitas tidak tersedia"
+                          )}
+                        </div>
                       </div>
                       <hr className="my-4" />
                       <p>
@@ -617,12 +642,7 @@ export default function FlightDetail({
             Lanjut Bayar
           </button>
         )}
-        {showToast && (
-          <Toast variant={toastVariant}>
-            <ToastTitle>{toastTitle}</ToastTitle>
-            <ToastDescription>{toastDescription}</ToastDescription>
-          </Toast>
-        )}
+
         <ToastViewport />
       </div>
     </ToastProvider>
