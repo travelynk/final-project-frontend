@@ -7,6 +7,7 @@ import {
   ToastDescription,
 } from "@/components/ui/toast";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
@@ -16,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { FaPen, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useDispatch } from "react-redux";
+
 import { ProfileUpdate } from "../../../services/auth"; // Assuming profile function is in src/service/auth
 import { useQueryClient } from "@tanstack/react-query";
 import { setToken } from "../../../redux/slices/auth";
@@ -43,7 +44,9 @@ function Profile() {
   const profileData = queryClient.getQueryData(["profile"]); // Retrieve cached profile data
   const handleLogout = () => {
     // Hapus token dari Redux store atau localStorage
-    localStorage.removeItem("token"); // Jika token disimpan di localStorage
+    dispatch(setToken(null));
+
+    // localStorage.removeItem("token"); // Jika token disimpan di localStorage
     // Navigasi ke halaman login
     navigate({ to: "/auth/login" });
   };
@@ -67,8 +70,6 @@ function Profile() {
       alert("Gagal memperbarui profil. Silakan coba lagi.");
     }
   };
-
-
 
   return (
     <>
@@ -119,16 +120,14 @@ function Profile() {
                   <FaCog />
                   <span>Pengaturan Akun</span>
                 </li>
-                <li
-                  className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-purple-600 border-b w-full p-2"
-                >
+                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2 group">
                   <FaSignOutAlt />
-                  <button
+                  <Button
                     onClick={handleLogout}
-                    className="text-left focus:outline-none"
+                    className="text focus:outline-none bg-transparent hover:bg-transparent  w-full text-black dark:text-black flex justify-start"
                   >
-                    Keluar
-                  </button>
+                    <span className="group-hover:text-darkblue05">Keluar</span>
+                  </Button>
                 </li>
               </ul>
               <div className="mt-4 text-gray-400 text-sm text-center">
@@ -139,7 +138,7 @@ function Profile() {
 
           {/* Profile Form */}
           <div className=" w-full sm:w-[550px] lg:w-2/3 px-6 pt-6 pb-4 border rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 dark:text-white">
               Ubah Data Profil
             </h2>
 
@@ -191,7 +190,7 @@ function Profile() {
                 <Button
                   type="submit"
                   variant="default"
-                  className="w-[150px] bg-darkblue05 rounded-[12px]"
+                  className="w-[150px] bg-darkblue05 rounded-[12px] "
                 >
                   Simpan
                 </Button>

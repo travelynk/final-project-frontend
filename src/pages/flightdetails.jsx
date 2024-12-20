@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "../components/ui/popover";
+<<<<<<< HEAD
 import {
   ToastProvider,
   ToastViewport,
@@ -16,6 +17,9 @@ import {
   ToastTitle,
   ToastDescription,
 } from "../components/ui/toast";
+=======
+import { ToastProvider, ToastViewport } from "../components/ui/toast";
+>>>>>>> development
 import {
   Accordion,
   AccordionItem,
@@ -23,21 +27,38 @@ import {
   AccordionContent,
 } from "../components/ui/accordion"; // ShadCN Accordion
 import { useSelector } from "react-redux";
+<<<<<<< HEAD
 
+=======
+import { useToast } from "@/hooks/use-toast.js";
+import { ToastAction } from "@/components/ui/toast";
+>>>>>>> development
 import { IoIosInformationCircle } from "react-icons/io";
 
 export default function FlightDetail({
   isSubmitted,
   bookingCode,
   onPaymentRedirect,
+<<<<<<< HEAD
 }) {
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0); // Base total price
+=======
+  selectedVoucher,
+  totalPrice,
+  setSelectedVoucher, // Terima setter dari props
+  setTotalPrice, // Terima setter dari props
+}) {
+>>>>>>> development
   const [showToast, setShowToast] = useState(false);
   const [toastVariant, setToastVariant] = useState("default");
   const [toastTitle, setToastTitle] = useState("");
   const [toastDescription, setToastDescription] = useState("");
   const [localData, setLocalData] = useState(null);
+<<<<<<< HEAD
+=======
+  const { toast } = useToast();
+>>>>>>> development
 
   const [flightData, setFlightData] = useState(null);
   // Tambahkan state baru untuk passengerCount dan seatClass
@@ -89,6 +110,12 @@ export default function FlightDetail({
   }, []);
 
   //price calculation
+<<<<<<< HEAD
+=======
+
+  const [initialTotalPrice, setInitialTotalPrice] = useState(0);
+
+>>>>>>> development
   const calculatePassengerPrice = (pergiData, pulangData, count) => {
     if (count === 0) return 0; // Return 0 if no passengers in this category
 
@@ -141,10 +168,32 @@ export default function FlightDetail({
       const totalBeforeTax = pergiPrice + pulangPrice;
       const totalWithTax = totalBeforeTax * 1.11; // Add 11% tax
 
+<<<<<<< HEAD
       setTotalPrice(Math.round(totalWithTax)); // Update state
     }
   }, [localData]);
 
+=======
+      const roundedTotal = Math.round(totalWithTax);
+
+      setInitialTotalPrice(roundedTotal); // Simpan total awal
+      setTotalPrice(roundedTotal); // Update total harga
+    }
+  }, [localData]);
+
+  const handleCancelVoucher = () => {
+    console.log("Voucher canceled"); // Log pembatalan voucher
+    setSelectedVoucher(null); // Hapus voucher yang dipilih
+    setTotalPrice(initialTotalPrice); // Kembalikan harga ke total awal
+    setToastVariant("info");
+    setToastTitle("Voucher Canceled");
+    setToastDescription(
+      "Voucher telah dibatalkan, total harga telah diperbarui."
+    );
+    setShowToast(true);
+  };
+
+>>>>>>> development
   // Fetch vouchers
   const { data: vouchers = [], isLoading: isFetchingVouchers } = useQuery({
     queryKey: ["vouchers"],
@@ -154,12 +203,20 @@ export default function FlightDetail({
 
   // Apply voucher mutation
   const applyVoucherMutation = useMutation({
+<<<<<<< HEAD
     mutationFn: ({ code }) => getVoucherByCode(code, totalPrice),
+=======
+    mutationFn: ({ code }) => getVoucherByCode(code, initialTotalPrice),
+>>>>>>> development
     onSuccess: (data) => {
       console.log("Voucher applied successfully:", data); // Log data yang berhasil diterima
 
       setSelectedVoucher(data);
+<<<<<<< HEAD
       setTotalPrice(data.updatedTotalPrice);
+=======
+      setTotalPrice(data.updatedTotalPrice); // Update total harga berdasarkan diskon dari initialTotalPrice
+>>>>>>> development
 
       setToastVariant("success");
       setToastTitle("Voucher Applied");
@@ -182,18 +239,48 @@ export default function FlightDetail({
     applyVoucherMutation.mutate({ code: voucher.code });
   };
 
+<<<<<<< HEAD
   return (
     <ToastProvider>
       <div className="bg-white rounded-lg p-4">
+=======
+  useEffect(() => {
+    if (showToast) {
+      // Call toast when showToast is true
+      toast({
+        variant: toastVariant,
+        title: toastTitle,
+        description: toastDescription,
+        action: <ToastAction altText="Try again">OK</ToastAction>,
+      });
+
+      // Reset showToast after displaying
+      setShowToast(false);
+    }
+  }, [showToast, toastVariant, toastTitle, toastDescription, toast]);
+
+  return (
+    <ToastProvider>
+      <div className="bg-white rounded-lg p-4 w-1/2 dark:text-black h-fit">
+>>>>>>> development
         <h2 className="text-lg font-bold">
           Booking Code: <span className="text-purple-600">{bookingCode}</span>
         </h2>
         {/*data penerbangan */}
 
+<<<<<<< HEAD
         <Accordion type="single" collapsible className="mt-4">
           {/* Accordion untuk Pergi */}
           <AccordionItem value="pergi">
             <AccordionTrigger>Penerbangan Pergi</AccordionTrigger>
+=======
+        <Accordion type="single" collapsible className="mt-4  ">
+          {/* Accordion untuk Pergi */}
+          <AccordionItem value="pergi">
+            <AccordionTrigger className="bg-[#3C3C3C] text-white rounded-lg px-4 py-2 mb-1 ">
+              Penerbangan Pergi
+            </AccordionTrigger>
+>>>>>>> development
             <AccordionContent>
               {localData?.flights?.[0]?.pergi ? (
                 localData.flights[0].pergi.isTransit ? (
@@ -377,7 +464,13 @@ export default function FlightDetail({
 
           {/* Accordion untuk Pulang */}
           <AccordionItem value="pulang">
+<<<<<<< HEAD
             <AccordionTrigger>Penerbangan Pulang</AccordionTrigger>
+=======
+            <AccordionTrigger className="bg-[#3C3C3C] text-white rounded-lg px-4 py-2 mb-1">
+              Penerbangan Pulang
+            </AccordionTrigger>
+>>>>>>> development
             <AccordionContent>
               {localData?.flights?.[0]?.pulang ? (
                 localData.flights[0].pulang.isTransit ? (
@@ -400,6 +493,7 @@ export default function FlightDetail({
                         {flight.departure.terminal || "Terminal tidak tersedia"}
                       </p>
                       <hr className="my-4" />
+<<<<<<< HEAD
                       <p>
                         <strong>
                           {flight.airline.name || "Airline tidak tersedia"} -{" "}
@@ -424,6 +518,34 @@ export default function FlightDetail({
                         ) : (
                           flight.facility || "Fasilitas tidak tersedia"
                         )}
+=======
+                      <div>
+                        <p>
+                          <strong>
+                            {flight.airline.name || "Airline tidak tersedia"} -{" "}
+                            {seatClass || "Kelas tidak tersedia"}
+                          </strong>
+                        </p>
+                        <p className="mb-4">
+                          <strong>
+                            {flight.flightNum ||
+                              "Nomor penerbangan tidak tersedia"}
+                          </strong>
+                        </p>
+                        <div>
+                          <strong>Fasilitas:</strong>
+                          <br />
+                          {Array.isArray(flight.facility) ? (
+                            <ul>
+                              {flight.facility.map((item, idx) => (
+                                <li key={idx}>{item}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            flight.facility || "Fasilitas tidak tersedia"
+                          )}
+                        </div>
+>>>>>>> development
                       </div>
                       <hr className="my-4" />
                       <p>
@@ -537,6 +659,7 @@ export default function FlightDetail({
                 {selectedVoucher ? selectedVoucher.code : "Tidak ada"}
               </span>
             </div>
+<<<<<<< HEAD
             <Popover>
               <PopoverTrigger asChild>
                 <button className="bg-purple-500 text-white px-4 py-1 rounded">
@@ -561,6 +684,42 @@ export default function FlightDetail({
                 </ul>
               </PopoverContent>
             </Popover>
+=======
+            <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="bg-purple-500 text-white px-4 py-1 rounded">
+                    {isFetchingVouchers ? "Loading..." : "Cek"}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="bg-white shadow-md rounded-lg p-4 w-64 dark:text-black">
+                  <h3 className="font-bold text-lg mb-2">Daftar Voucher</h3>
+                  <ul className="space-y-2">
+                    {vouchers.map((voucher) => (
+                      <li
+                        key={voucher.id}
+                        onClick={() => handleVoucherSelect(voucher)}
+                        className="p-2 border rounded-lg hover:bg-purple-100 cursor-pointer"
+                      >
+                        <div className="font-semibold">{voucher.code}</div>
+                        <div className="text-sm text-gray-600">
+                          {voucher.description}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </PopoverContent>
+              </Popover>
+              {selectedVoucher && (
+                <button
+                  onClick={handleCancelVoucher}
+                  className="bg-red-500 text-white px-4 py-1 rounded"
+                >
+                  Batalkan
+                </button>
+              )}
+            </div>
+>>>>>>> development
           </div>
 
           {/* Pricing Section berdasarkan flight id*/}
@@ -617,12 +776,16 @@ export default function FlightDetail({
             Lanjut Bayar
           </button>
         )}
+<<<<<<< HEAD
         {showToast && (
           <Toast variant={toastVariant}>
             <ToastTitle>{toastTitle}</ToastTitle>
             <ToastDescription>{toastDescription}</ToastDescription>
           </Toast>
         )}
+=======
+
+>>>>>>> development
         <ToastViewport />
       </div>
     </ToastProvider>

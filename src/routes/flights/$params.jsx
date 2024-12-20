@@ -264,7 +264,6 @@ const HeaderComponent = ({
         </h1>
         <div className="navigation px-2 grid grid-cols-1 sm:grid-cols-7 gap-3 text-white">
           <div className="labels col-span-1 sm:col-span-6 flex gap-x-3 bg-darkblue03 p-3 rounded-lg">
-            <img src="/svg/arrow-left.svg" alt="" />
             <p className="text-sm sm:text-base">
               {`${origin} > ${destination} - ${countAdult + countChild + countBaby} Penumpang - ${sc}`}
             </p>
@@ -283,7 +282,7 @@ const HeaderComponent = ({
           {dates.map((day, i) => {
             return (
               <Button
-                onClick={() =>
+                onClick={() => {
                   navigate({
                     to: "/flights/search",
                     search: {
@@ -294,10 +293,10 @@ const HeaderComponent = ({
                       ps: `${countAdult}.${countChild}.${countBaby}`,
                       sc,
                     },
-                  })
-                }
+                  });
+                }}
                 key={i}
-                className="border border-gray-300 bg-white h-auto  text-black p-3 flex flex-col justify-center items-center min-w-[150px] sm:max-w-[120px] rounded-lg hover:bg-darkblue03 transition text-xl  cursor-pointer"
+                className="border border-gray-300 bg-white h-auto text-black p-3 flex flex-col justify-center items-center min-w-[150px] sm:max-w-[120px] rounded-lg hover:bg-darkblue03 transition text-xl cursor-pointer dark:text-black"
               >
                 <span className="text-sm sm:text-xl ">
                   {new Date(day).toLocaleDateString("id-ID", {

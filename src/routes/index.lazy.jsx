@@ -28,13 +28,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../components/ui/popover";
-import { format, setQuarter } from "date-fns";
+import { format, set, setQuarter } from "date-fns";
 import { getAirpots } from "../services/airports";
 import { useQuery } from "@tanstack/react-query";
 import { getCities } from "../services/cities";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { useParams } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
+import { getFlights } from "../services/flights";
+import Loading from "../components/Utils/Loading";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
 
 export const Route = createLazyFileRoute("/")({
   component: HomePage,
@@ -453,44 +463,365 @@ const MenuSection = () => {
 };
 
 const ResultSection = () => {
+  const [listFlight, setListFlight] = useState([]);
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState();
+  const [countAdult, setCountAdult] = useState(0);
+  const [countChild, setCountChild] = useState(0);
+  const [countBaby, setCountBaby] = useState(0);
+  const { data, isSuccess, isLoading } = useQuery({
+    queryKey: ["flights", searchQuery],
+    queryFn: () => getFlights(searchQuery),
+    enabled: !!searchQuery,
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setSearchQuery({
+        rf: "JKT.DPS",
+        dt: "2024-12-30",
+        ps: "1.0.0",
+        sc: "Economy",
+      });
+    }
+    isSuccess && setListFlight(data?.outboundFlights);
+  }, [data?.outboundFlights, isSuccess, searchQuery]);
+
+  const handleDestination = (rf, dt, ps, sc) => {
+    setSearchQuery({ rf, dt, ps, sc });
+  };
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  const handlePay = (pessanger, data) => {
+    const storedCart = JSON.parse(localStorage.getItem("cartTicket")) || {
+      pessanger: null,
+      flights: [{ pergi: null, pulang: null }],
+    };
+    const [countAdult, countChild, countBaby] = pessanger
+      .split(".")
+      .map(Number);
+
+    const updatedCart = {
+      ...storedCart,
+      flights: [{ pergi: data, pulang: null }],
+      pessanger: { adult: countAdult, child: countChild, babby: countBaby },
+    };
+
+    localStorage.setItem("cartTicket", JSON.stringify(updatedCart));
+
+    navigate({ to: "/flights/booking" });
+  };
   return (
     <div className="flex flex-col items-center w-full gap-3 py-5">
       <div className="w-full">
         <h1 className="font-bold text-3xl">Destinasi Favorit</h1>
         <div className="filter text-white grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-7 gap-5">
-          <Button className="bg-darkblue03 py-4 px-6 rounded-lg">
-            <img src="/svg/search.svg" alt="" /> Semua
+          <Button
+            className="bg-darkblue03 py-4 px-6 rounded-lg w-fit"
+            onClick={() => {
+              handleDestination("JKT.DPS", "2024-12-30", "1.0.0", "Economy");
+            }}
+          >
+            <img src="/svg/search.svg" alt="" /> Bali
           </Button>
-          <Button className="bg-darkblue03 py-4 px-6 rounded-lg">
-            <img src="/svg/search.svg" alt="" /> Asia
+          <Button
+            className="bg-darkblue03 py-4 px-6 rounded-lg "
+            onClick={() => {
+              handleDestination("JKT.SUB", "2024-12-30", "1.0.0", "Economy");
+            }}
+          >
+            <img src="/svg/search.svg" alt="" /> Surabaya
           </Button>
-          <Button className="bg-darkblue03 py-4 px-6 rounded-lg">
-            <img src="/svg/search.svg" alt="" /> Amerika
-          </Button>
-          <Button className="bg-darkblue03 py-4 px-6 rounded-lg">
-            <img src="/svg/search.svg" alt="" /> Eropa
+          <Button
+            className="bg-darkblue03 py-4 px-6 rounded-lg w-fit"
+            onClick={() => {
+              handleDestination("JKT.JOG", "2024-12-30", "1.0.0", "Economy");
+            }}
+          >
+            <img src="/svg/search.svg" alt="" /> Yogyakarta
           </Button>
         </div>
       </div>
 
-      <div className="card grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full gap-4 font-semibold">
-        <Card className="p-2">
-          <img src="img/bangkokCard.png" alt="" className="w-full" />
-          <CardHeader>
-            <CardTitle>Jakarta {">"} Bangkok</CardTitle>
-            <CardDescription className="text-darkblue05 text-lg p-0">
-              Air Asia
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="py-0">
-            <p>20 - 30 Maret 2023</p>
-          </CardContent>
-          <CardFooter>
-            <p>
-              Mulai Dari <span className="text-red-500">IDR 950.000</span>
-            </p>
-          </CardFooter>
-        </Card>
+      <div className="card grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full gap-4 font-semibold ">
+        {listFlight?.map((flight, i) => {
+          return (
+            <Dialog key={i} className="text-start ">
+              <DialogTrigger className="border-0">
+                <Card
+                  className="p-2 text-start hover:bg-darkblue02/50 transition-colors"
+                  key={i}
+                >
+                  <img src="img/bangkokCard.png" alt="" className="w-full" />
+                  <CardHeader>
+                    <CardTitle>
+                      {flight.flights[0].departure.city.name} {">"}{" "}
+                      {
+                        flight.flights[flight.flights.length - 1].arrival.city
+                          .name
+                      }
+                    </CardTitle>
+                    {flight.isTransit && <i>Transit</i>}
+                    <CardDescription className="text-darkblue05 text-lg p-0">
+                      {flight.flights[0].airline.name}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="py-0">
+                    <p>{flight.schedule.date}</p>
+                  </CardContent>
+                  <CardFooter>
+                    <span className="text-red-500">{flight.price}</span>
+                  </CardFooter>
+                </Card>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {" "}
+                    {flight.flights[0].departure.city.name} {">"}{" "}
+                    {
+                      flight.flights[flight.flights.length - 1].arrival.city
+                        .name
+                    }
+                  </DialogTitle>
+                  <DialogDescription className="lg:max-h-[50rem] max-h-[25rem]  overflow-y-auto overflow-x-hidden ">
+                    {flight.flights.map((data) => {
+                      return (
+                        <div key={data.flightId}>
+                          <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
+                            <h1 className="text-darkblue05  font-bold col-span-10   mb-1 ">
+                              Keberangkatan
+                            </h1>
+                            <div className="col-span-9 ">
+                              <h1 className="font-bold ">
+                                {data.departure.time}
+                              </h1>
+                              <p>
+                                {/* {new Date(data.departure.date)} */}
+                                {/* {format(data.departure.date, "d MMMM")} */}
+                                {new Date(
+                                  data.departure.date
+                                ).toLocaleDateString("id-ID", {
+                                  day: "numeric",
+                                  month: "long",
+                                })}
+                                {/* {new Date(data.departure.date)} */}
+                              </p>
+                              <span className="font-semibold text-lg">
+                                {data.departure.airport} -
+                                {data.departure.terminal}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
+                            <div className="col-span-9 ">
+                              <div className="flex gap-2">
+                                <img
+                                  src={data.airline.image}
+                                  alt="logo airlines"
+                                  className="h-auto w-7"
+                                />
+                                <h1 className="font-bold ">
+                                  {data.airline.name} - {data.seatClass}
+                                </h1>
+                              </div>
+                              <h1 className="font-bold ">{data.flightNum}</h1>
+
+                              <span className="font-bold text-lg">
+                                Informasi
+                              </span>
+
+                              <ul className="px-10">
+                                <li> {data.facility}</li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div className="return text-lg grid grid-cols-10 justify-items-stretch">
+                            <h1 className="text-darkblue05  font-bold col-span-10  mb-1">
+                              Kedatangan
+                            </h1>
+                            <div className="col-span-9 ">
+                              <h1 className="font-bold ">
+                                {data.arrival.time}
+                              </h1>
+                              <p>
+                                {/* {format(data.arrival.date, "d MMMM")} */}
+                              </p>
+                              <span className="font-semibold text-lg">
+                                {data.arrival.airport} -{data.arrival.terminal}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div className="action flex gap-2 items-center ">
+                      <div className="flex flex-col ">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline">
+                              {countAdult + countChild + countBaby !== 0
+                                ? `${countAdult + countBaby + countChild}  Penumpang`
+                                : "Penumpang"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-96">
+                            <div className="grid gap-4 ">
+                              <div className="flex justify-end border-b-2 border-gray-100 pb-2 ">
+                                {/* <Button>X</Button> */}
+                              </div>
+                              <div className="grid gap-2">
+                                <div className="grid grid-cols-2   gap-4  border-b-2 border-gray-100 pb-2 ">
+                                  <div className="grid grid-cols-6  ">
+                                    <img
+                                      src="/svg/adult.svg"
+                                      alt="adult"
+                                      className="w-4 "
+                                    />
+                                    <Label
+                                      htmlFor="width"
+                                      className="col-span-5 text-lg p-0"
+                                    >
+                                      Dewasa
+                                    </Label>
+                                    <p className="font-light col-span-5 col-end-7 text-sm ">
+                                      (12 Tahun Keatas)
+                                    </p>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-x-2 items-center justify-center">
+                                    <Button
+                                      onClick={() => {
+                                        countAdult != 0 &&
+                                          setCountAdult(countAdult - 1);
+                                      }}
+                                    >
+                                      -
+                                    </Button>
+                                    <Input
+                                      id="width"
+                                      value={countAdult}
+                                      className="text-center"
+                                    />
+                                    <Button
+                                      onClick={() =>
+                                        setCountAdult(countAdult + 1)
+                                      }
+                                    >
+                                      +
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-2   gap-4 border-b-2 border-gray-100 pb-2 ">
+                                  <div className="grid grid-cols-6  ">
+                                    <img
+                                      src="/svg/child.svg"
+                                      alt="adult"
+                                      className="w-4 "
+                                    />
+                                    <Label
+                                      htmlFor="width"
+                                      className="col-span-5 text-lg p-0"
+                                    >
+                                      Anak-Anak
+                                    </Label>
+                                    <p className="font-light col-span-5 col-end-7 text-sm ">
+                                      (2 - 11 Tahun Keatas)
+                                    </p>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-x-2 items-center justify-center">
+                                    <Button
+                                      onClick={() => {
+                                        countChild != 0 &&
+                                          setCountChild(countChild - 1);
+                                      }}
+                                    >
+                                      -
+                                    </Button>
+
+                                    <Input
+                                      id="width"
+                                      value={countChild}
+                                      className="text-center"
+                                    />
+                                    <Button
+                                      onClick={() =>
+                                        setCountChild(countChild + 1)
+                                      }
+                                    >
+                                      +
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-2   gap-4  border-b-2 border-gray-100 pb-2 ">
+                                  <div className="grid grid-cols-6  ">
+                                    <img
+                                      src="/svg/baby.svg"
+                                      alt="adult"
+                                      className="w-4 "
+                                    />
+                                    <Label
+                                      htmlFor="width"
+                                      className="col-span-5 text-lg p-0"
+                                    >
+                                      Bayi
+                                    </Label>
+                                    <p className="font-light col-span-5 col-end-7 text-sm ">
+                                      (Dibawahh 2 tahun)
+                                    </p>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-x-2 items-center justify-center">
+                                    <Button
+                                      onClick={() => {
+                                        countBaby != 0 &&
+                                          setCountBaby(countBaby - 1);
+                                      }}
+                                    >
+                                      -
+                                    </Button>
+                                    <Input
+                                      id="width"
+                                      value={countBaby}
+                                      className="text-center"
+                                    />
+                                    <Button
+                                      onClick={() =>
+                                        setCountBaby(countBaby + 1)
+                                      }
+                                    >
+                                      +
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex justify-end"></div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      <Button
+                        className="w-full mx-2"
+                        disabled={!countAdult > 0}
+                        onClick={() =>
+                          handlePay(
+                            `${countAdult}.${countChild}.${countBaby}`,
+                            flight
+                          )
+                        }
+                      >
+                        Booking
+                      </Button>
+                    </div>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          );
+        })}
       </div>
     </div>
   );

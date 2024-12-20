@@ -12,6 +12,12 @@ import {
   ToastTitle,
   ToastDescription,
 } from "../components/ui/toast";
+<<<<<<< HEAD
+=======
+import { useToast } from "@/hooks/use-toast.js";
+import { ToastAction } from "@/components/ui/toast";
+
+>>>>>>> development
 import {
   Accordion,
   AccordionItem,
@@ -48,7 +54,15 @@ const storeBooking = async (bookingData) => {
 
     console.log("Booking successful:", responseBody);
 
+<<<<<<< HEAD
     return responseBody;
+=======
+    // Mengembalikan data yang dikirim dan respons
+    return {
+      sentData: bookingData, // Data yang dikirim
+      response: responseBody, // Respons API
+    };
+>>>>>>> development
   } catch (error) {
     console.error("Booking error:", error);
     throw error;
@@ -68,7 +82,9 @@ const bookingSchema = z.object({
       namakeluarga: z.string().optional(),
       birthdate: z.string().nonempty("Tanggal lahir harus diisi"),
       citizenship: z.string().nonempty("Kewarganegaraan harus diisi"),
-      passport: z.string().nonempty("KTP/Paspor harus diisi"),
+      passport: z
+        .string()
+        .regex(/^\d{16}$/, "KTP/Paspor harus berupa angka 16 digit"),
       negarapenerbit: z.string().nonempty("Negara penerbit harus diisi"),
       expiry: z.string().nonempty("Berlaku sampai harus diisi"),
     })
@@ -82,6 +98,7 @@ const bookingSchema = z.object({
     )
     .min(1, "Setidaknya satu kursi harus dipilih"),
 });
+
 export default function BookingForm({ onFormSubmit }) {
   const [socket, setSocket] = useState(null);
   const [notification, setNotification] = useState("");
@@ -115,7 +132,11 @@ export default function BookingForm({ onFormSubmit }) {
       socketInstance.disconnect();
     };
   }, []);
+<<<<<<< HEAD
   console.log(notification);
+=======
+  // console.log(notification);
+>>>>>>> development
 
   const Notification = ({ message, onDismiss }) => {
     if (!message) return null;
@@ -163,6 +184,10 @@ export default function BookingForm({ onFormSubmit }) {
   const [toastVariant, setToastVariant] = useState("default");
   const [toastTitle, setToastTitle] = useState("");
   const [toastDescription, setToastDescription] = useState("");
+<<<<<<< HEAD
+=======
+  const { toast } = useToast();
+>>>>>>> development
 
   const [formState, setFormState] = useState({
     fullname: profileData?.fullName || "",
@@ -381,7 +406,11 @@ export default function BookingForm({ onFormSubmit }) {
   }
 
   // Process seat data
+<<<<<<< HEAD
   console.log("Seat Data:", seatData);
+=======
+  // console.log("Seat Data:", seatData);
+>>>>>>> development
 
   if (!seatData || !Array.isArray(seatData)) {
     console.error("seatData is not valid:", seatData);
@@ -435,7 +464,16 @@ export default function BookingForm({ onFormSubmit }) {
       ]);
       console.log(`Selected Seat ID: ${seat.id}, Position: ${seat.position}`);
     } else {
+<<<<<<< HEAD
       console.log("Maximum number of seats selected");
+=======
+      toast({
+        variant: "info",
+        title: "Pemilihan Tempat Duduk.",
+        description: "Pemilihan Telah Mencapai Batas.",
+        action: <ToastAction altText="Try again">OK</ToastAction>,
+      });
+>>>>>>> development
     }
   };
 
@@ -533,6 +571,7 @@ export default function BookingForm({ onFormSubmit }) {
   };
 
   const handleSaveAndContinue = () => {
+<<<<<<< HEAD
     // Add selectedSeats to formState for validation
     const updatedFormState = {
       ...formState,
@@ -541,6 +580,27 @@ export default function BookingForm({ onFormSubmit }) {
 
     console.log("Selected Seats before validation:", selectedSeats);
     console.log("Selected Seats before validation:", selectedSeats); // Debugging
+=======
+    // Check if the number of selected seats matches the number of passengers
+    if (selectedSeats.length !== formState.passengers.length) {
+      toast({
+        variant: "info",
+        title: "Jumlah Kursi Tidak Sesuai.",
+        description:
+          "Pastikan jumlah kursi yang dipilih sesuai dengan jumlah penumpang.",
+        action: <ToastAction altText="Try again">OK</ToastAction>,
+      });
+      return; // Stop execution if validation fails
+    }
+
+    // Add selectedSeats to formState for validation
+    const updatedFormState = {
+      ...formState,
+      selectedSeats: selectedSeats, // Ensure it's included
+    };
+
+    console.log("Selected Seats before validation:", selectedSeats);
+>>>>>>> development
 
     // Validate formState using bookingSchema
     try {
@@ -556,7 +616,11 @@ export default function BookingForm({ onFormSubmit }) {
       const selectedSeatData = selectedSeats.map((seat, index) => {
         return {
           flightId: activeFlightId,
+<<<<<<< HEAD
           isReturn: flightId[currentFlightIndex].isReturn, // Menentukan status pergi/pulang
+=======
+          isReturn: flightId[currentFlightIndex].isReturn, // Determining the return status
+>>>>>>> development
           seatId: seat.id,
           passenger: formState.passengers[index], // Assuming passenger order matches seat order
         };
@@ -578,6 +642,10 @@ export default function BookingForm({ onFormSubmit }) {
           seats: selectedSeatData,
         });
       }
+<<<<<<< HEAD
+=======
+
+>>>>>>> development
       // Check if seatSelectionData exceeds total flights
       if (seatSelectionData.length > flightId.length) {
         console.warn("Too many seat selections, trimming excess data...");
@@ -597,6 +665,7 @@ export default function BookingForm({ onFormSubmit }) {
       // Move to the next flight or finish if all are processed
       if (currentFlightIndex < flightId.length - 1) {
         // Reset seat selection and move to the next flight
+<<<<<<< HEAD
         setSelectedSeats([]); // Hanya reset jika masih ada penerbangan berikutnya
         setCurrentFlightIndex((prev) => prev + 1);
       } else {
@@ -605,11 +674,36 @@ export default function BookingForm({ onFormSubmit }) {
         setToastTitle("Data Berhasil disimpan");
         setToastDescription("Silahkan Lanjut Booking Pesanan Anda !");
         // Logika tambahan jika perlu
+=======
+        setSelectedSeats([]); // Only reset if there are more flights
+        setCurrentFlightIndex((prev) => prev + 1);
+      } else {
+        toast({
+          variant: "success",
+          title: "Berhasil Disimpan",
+          description: "Silahkan Lanjutkan untuk Booking !",
+          action: <ToastAction altText="Try again">OK</ToastAction>,
+        });
+        // Additional logic if needed
+>>>>>>> development
       }
     } catch (error) {
       // Handle validation error
       console.error("Form validation failed:", error.errors);
+<<<<<<< HEAD
       // Display validation error messages or other actions
+=======
+
+      // Iterate over validation errors and display them as toast messages
+      error.errors.forEach((err) => {
+        toast({
+          variant: "error",
+          title: "Validasi Gagal",
+          description: err.message,
+          action: <ToastAction altText="Try again">OK</ToastAction>,
+        });
+      });
+>>>>>>> development
     }
   };
 
@@ -627,13 +721,21 @@ export default function BookingForm({ onFormSubmit }) {
       )}
       <div className="max-w-[550px] md:w-2/3  space-y-6 py-[6px] px-4">
         {/* Data Diri Pemesan */}
+<<<<<<< HEAD
         <div className="border p-6 rounded-lg shadow-md bg-white">
+=======
+        <div className="border p-6 rounded-lg shadow-md bg-white text-black">
+>>>>>>> development
           <p className="text-xl font-bold mb-4">Isi Data Pemesan</p>
           <div className="bg-[#3C3C3C] text-white rounded-t-lg px-4 py-2 max-h-[40px]">
             <p className="text-xl font-semibold">Data Diri Pemesan</p>
           </div>
 
+<<<<<<< HEAD
           <div className="space-y-4 p-4">
+=======
+          <div className="space-y-4 p-4 dark:text-white">
+>>>>>>> development
             <div>
               <Label
                 className="text-darkblue05 font-bold text-[14px]"
@@ -651,7 +753,11 @@ export default function BookingForm({ onFormSubmit }) {
               />
             </div>
             <div className="flex items-center justify-between mb-4">
+<<<<<<< HEAD
               <Label>Punya Nama Keluarga</Label>
+=======
+              <Label className="dark:text-black">Punya Nama Keluarga</Label>
+>>>>>>> development
               <Switch required id="lastNameSwitch" name="lastNameSwitch" />
             </div>
             <div>
@@ -708,7 +814,11 @@ export default function BookingForm({ onFormSubmit }) {
         {/*komponen data diri penumpang dan seat selection harus dirender ulang berdasarkan jumlah penerbangan saat pergi dan pulang berdasarkan flightId baik itu isTransit = true atau langsung*/}
         <div>
           {/* Data Diri Penumpang */}
+<<<<<<< HEAD
           <div className="border p-6 rounded-lg shadow-md bg-white">
+=======
+          <div className="border p-6 rounded-lg shadow-md bg-white dark:text-black">
+>>>>>>> development
             <h3 className="text-xl font-bold mb-4">Isi Data Penumpang</h3>
             <Accordion type="single" collapsible>
               {formState.passengers?.map((passenger, index) => (
@@ -718,7 +828,11 @@ export default function BookingForm({ onFormSubmit }) {
                     {formState.flightNum}
                   </AccordionTrigger>
                   <AccordionContent>
+<<<<<<< HEAD
                     <div className="space-y-4 p-4">
+=======
+                    <div className="space-y-4 p-4 dark:text-white">
+>>>>>>> development
                       <div>
                         <Label
                           className="text-darkblue05 font-bold text-[14px]"
@@ -750,6 +864,7 @@ export default function BookingForm({ onFormSubmit }) {
                           placeholder="Masukkan nama lengkap"
                           className="mb-2"
                           value={passenger.fullname}
+<<<<<<< HEAD
                           onChange={(e) => {
                             const newPassengers = [...formState.passengers];
                             newPassengers[index].fullname = e.target.value;
@@ -762,6 +877,15 @@ export default function BookingForm({ onFormSubmit }) {
                         />
                       </div>
                       <div className="flex items-center justify-between mb-4">
+=======
+                          onChange={(e) =>
+                            handleChange("fullname", e.target.value, index)
+                          }
+                          disabled={isSubmitted}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between mb-4 dark:text-black">
+>>>>>>> development
                         <Label>Punya Nama Keluarga?</Label>
                         <Switch required />
                       </div>
@@ -888,7 +1012,11 @@ export default function BookingForm({ onFormSubmit }) {
           </div>
 
           {/* Seat Selection */}
+<<<<<<< HEAD
           <div className="border p-6 rounded-lg shadow-md bg-white mt-5">
+=======
+          <div className="border p-6 rounded-lg shadow-md bg-white mt-5 dark:text-black">
+>>>>>>> development
             <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
             <div className="flex items-center justify-center text-center p-2 text-lg font-sm mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10">
               Penerbangan {formState.flightNum} -{" "}
@@ -984,6 +1112,7 @@ export default function BookingForm({ onFormSubmit }) {
           </div>
         </div>
         {/* Buttons */}
+<<<<<<< HEAD
         <div className="mt-4 flex gap-4">
           <button
             className="bg-blue-500 text-white"
@@ -1004,6 +1133,35 @@ export default function BookingForm({ onFormSubmit }) {
             Booking Pesanan
           </button>
         </div>
+=======
+        <div className=" flex gap-4">
+          {seatSelectionComplete.length < flightId.length ||
+          seatSelectionComplete.includes(false) ? (
+            // Tombol Simpan Penerbangan Saat Ini
+            <button
+              className="mt-1 bg-blue-500 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040]"
+              onClick={handleSaveAndContinue}
+              disabled={isSubmitted}
+            >
+              Simpan Penerbangan Saat Ini
+            </button>
+          ) : (
+            // Tombol Booking Pesanan
+            <button
+              onClick={handleSubmit}
+              className={`mt-1 bg-purple-600 text-white px-6 py-3 rounded-lg w-full shadow-[0px_4px_4px_0px_#00000040] ${
+                isSubmitted
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-blue-500 text-white"
+              }`}
+              disabled={isSubmitted || isButtonDisabled}
+            >
+              Booking Pesanan
+            </button>
+          )}
+        </div>
+
+>>>>>>> development
         {showToast && (
           <Toast variant={toastVariant}>
             <ToastTitle>{toastTitle}</ToastTitle>
