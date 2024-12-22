@@ -47,14 +47,14 @@ function Payment() {
           console.error("Error fetching booking data: ", error);
         }
       } else {
-        console.log("Booking id is not available in the URL");
+        ("Booking id is not available in the URL");
       }
     };
 
     fetchBookingData();
   }, [bookingId, navigate]);
 
-  // console.log(bookingInfo);
+  //  (bookingInfo);
 
   const [creditValue, setCredit] = useState({
     card_number: "",
@@ -98,10 +98,10 @@ function Payment() {
     try {
       if (bookingId) {
         const createPayment = await createCredit(bookingId, creditValue);
-        console.log("Pembayaran Berhasil: ", createPayment);
-        console.log("Navigating to /success...");
+        "Pembayaran Berhasil: ", createPayment;
+        ("Navigating to /success...");
         window.location.href = "/success";
-        console.log("Navigation complete.");
+        ("Navigation complete.");
       } else {
         console.error("Booking ID tidak ditemukan");
       }
@@ -124,18 +124,18 @@ function Payment() {
     try {
       if (bookingId) {
         const response = await CreateVa(bookingId, bankValue);
-        // console.log("response sampai ke front end: ", response);
+        //  ("response sampai ke front end: ", response);
         const vaNum = response.data.data.paymentUrl.va_numbers[0].va_number;
         const trxId = response.data.data.paymentUrl.transaction_id;
         const trxStatus = response.data.data.paymentUrl.transaction_status;
-        // console.log("dapat transaction id:", trxId);
-        // console.log("dapat transaction status:", trxStatus);
-        // console.log("dapat va number:", vaNum);
+        //  ("dapat transaction id:", trxId);
+        //  ("dapat transaction status:", trxStatus);
+        //  ("dapat va number:", vaNum);
         setVaNumber(vaNum);
 
         const paymentStatus = async () => {
           const checkStatus = await checkPayment(trxId);
-          console.log("Status dari transaction_id saat ini: ", checkStatus);
+          "Status dari transaction_id saat ini: ", checkStatus;
 
           if (checkStatus === "settlement") {
             // Clear the interval
@@ -143,7 +143,7 @@ function Payment() {
             // Redirect to success page
             window.location.href = "/success";
           } else {
-            console.log("Payment is still pending...");
+            ("Payment is still pending...");
           }
         };
 

@@ -6,7 +6,7 @@ import { IoIosInformationCircle } from "react-icons/io"; // Transit info icon
 const BookingDetails = ({ selectedBooking }) => {
   const navigate = useNavigate();
   const [isReturnFlight, setIsReturnFlight] = useState(false);
-  console.log(selectedBooking);
+  selectedBooking;
 
   // Get unique isReturn values (either true or false)
   const uniqueReturnTypes = [

@@ -62,7 +62,7 @@ function Profile() {
 
     try {
       const updatedProfile = await ProfileUpdate(profileData);
-      console.log("Updated profile:", updatedProfile);
+      "Updated profile:", updatedProfile;
       setSuccessMessage("Profil berhasil diperbarui!");
       setToastVisible(true);
     } catch (error) {

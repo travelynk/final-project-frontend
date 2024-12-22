@@ -9,7 +9,7 @@ export const login = async (request) => {
 
   // get the data if fetching succeed!
   const result = await response.json();
-  console.log(result);
+  result;
 
   // Check if the response is not successful and throw the full result
   if (!response.ok) {
@@ -35,7 +35,7 @@ export const register = async (request) => {
   );
 
   const result = await response.json();
-  console.log(result);
+  result;
   if (!response.ok) {
     const error = new Error(result?.message || "Register failed");
     error.response = { data: result };
@@ -73,7 +73,7 @@ export const verifyOtp = async (request) => {
 };
 
 export const sendOtp = async (email) => {
-  console.log(email);
+  email;
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}/auth/reset-password/send-email`,
     {
@@ -87,7 +87,7 @@ export const sendOtp = async (email) => {
 
   // Parse the response JSON
   const result = await response.json();
-  console.log(result);
+  result;
 
   // Handle errors if the response is not successful
   if (!response.ok) {
@@ -139,7 +139,7 @@ export const googleLogin = async () => {
     error.response = { data: result };
     throw error;
   }
-  console.log(result);
+  result;
   return result?.data; // Return the Google Auth URL
 };
 
@@ -160,7 +160,7 @@ export const profile = async () => {
   }
 
   const result = await response.json();
-  // console.log("Profile data received:", result); // Debug untuk melihat respons data
+  //  ("Profile data received:", result); // Debug untuk melihat respons data
   return result?.data;
 };
 
@@ -182,6 +182,6 @@ export const ProfileUpdate = async (profileData) => {
   }
 
   const result = await response.json();
-  console.log("Profile updated successfully:", result);
+  "Profile updated successfully:", result;
   return result?.data;
 };

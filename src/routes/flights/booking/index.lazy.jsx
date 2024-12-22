@@ -50,8 +50,8 @@ export default function Booking() {
   };
 
   const handlePaymentRedirect = async () => {
-    console.log("Status:", status);
-    console.log("Booking ID:", bookingId);
+    "Status:", status;
+    "Booking ID:", bookingId;
 
     if (status?.toLowerCase() === "unpaid" && bookingId) {
       if (selectedVoucher) {
@@ -59,7 +59,7 @@ export default function Booking() {
         await updateTotalPrice();
       } else {
         // Jika tidak ada voucher, langsung navigasi
-        console.log("Navigasi langsung tanpa voucher.");
+        ("Navigasi langsung tanpa voucher.");
         navigate({ to: `/payment?bookingId=${bookingId}` });
       }
     } else {
@@ -96,7 +96,7 @@ export default function Booking() {
       }
 
       const data = await response.json();
-      console.log("Berhasil memperbarui total harga:", data);
+      "Berhasil memperbarui total harga:", data;
 
       // Arahkan ke halaman pembayaran
       navigate({ to: `/payment?bookingId=${bookingId}` });
