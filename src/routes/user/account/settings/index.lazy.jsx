@@ -18,7 +18,16 @@ import { Label } from "@/components/ui/label";
 import { FaPen, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog"; // Import AlertDialog components
 import { ProfileUpdate } from "@/services/auth"; // Assuming profile function is in src/service/auth
 import { useQueryClient } from "@tanstack/react-query";
 import { setToken } from "@/redux/slices/auth";
@@ -162,6 +171,7 @@ function Profile() {
                   id="fullName"
                   defaultValue={profileData?.fullName}
                   className="mt-2"
+                  disabled
                   placeholder="masukan nama lengkap"
                 />
               </div>
@@ -173,6 +183,7 @@ function Profile() {
                 <Input
                   type="tel"
                   id="phone"
+                  disabled
                   defaultValue={profileData?.phone}
                   className="mt-2"
                   placeholder="masukan phone"
@@ -186,22 +197,41 @@ function Profile() {
                 <Input
                   type="email"
                   id="email"
+                  disabled
                   defaultValue={profileData?.email}
                   className="mt-2"
                   placeholder="masukan email"
                 />
               </div>
             </form>
+            {/* AlertDialog for Delete */}
             <div className="flex justify-center p-2 mt-8">
-              <Button
-                type="submit"
-                variant="default"
-                className="w-[150px] bg-red-400 rounded-[12px] text focus:outline-none  hover:bg-red-600 text-white  "
-                onClick={handleDelete}
-              >
-                Hapus Akun
-                <FaTrashAlt />
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="w-[150px] bg-red-400 rounded-[12px] hover:bg-red-600 text-white flex items-center"
+                  >
+                    Hapus Akun <FaTrashAlt className="ml-2" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Hapus Akun</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Apakah Anda yakin ingin menghapus akun ini? Tindakan ini
+                      tidak dapat dibatalkan.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <Button variant="destructive" onClick={handleDelete}>
+                      Hapus
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </div>

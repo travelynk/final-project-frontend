@@ -12,8 +12,8 @@ import {
   ToastTitle,
   ToastDescription,
 } from "../components/ui/toast";
-import { useToast } from "@/hooks/use-toast.js";
 import { useSelector } from "react-redux";
+import { useToast } from "@/hooks/use-toast.js";
 
 import { ToastAction } from "@/components/ui/toast";
 import { getCountries } from "../services/country";
@@ -610,6 +610,8 @@ export default function BookingForm({ onFormSubmit }) {
   };
 
   const handleSaveAndContinue = () => {
+    const flightNum = flightId?.[currentFlightIndex]?.flightNum;
+
     // Check if the number of selected seats matches the number of passengers
     if (selectedSeats.length !== formState.passengers.length) {
       toast({
@@ -679,6 +681,15 @@ export default function BookingForm({ onFormSubmit }) {
       // Save the updated seat selection data to localStorage
       localStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
 
+      // Show toast after saving the current flight's data
+      toast({
+        variant: "success",
+        title: `Flight ${flightNum} Tersimpan "`,
+        description: `Data untuk penerbangan ${flightNum} berhasil disimpan.`,
+        action: <ToastAction altText="OK">OK</ToastAction>,
+        duration: 3000,
+      });
+
       // Mark current flight as completed
       const updatedSeatCompletion = [...seatSelectionComplete];
       updatedSeatCompletion[currentFlightIndex] = true;
@@ -695,7 +706,7 @@ export default function BookingForm({ onFormSubmit }) {
           title: "Berhasil Disimpan",
           description: "Silahkan Lanjutkan untuk Booking !",
           action: <ToastAction altText="Try again">OK</ToastAction>,
-          duration: 2500,
+          duration: 4000,
         });
         // Additional logic if needed
       }
