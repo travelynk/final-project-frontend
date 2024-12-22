@@ -9,7 +9,7 @@ export const login = async (request) => {
 
   // get the data if fetching succeed!
   const result = await response.json();
-  console.log("data login:", result);
+  // console.log("data login:", result);
   result;
 
   // Check if the response is not successful and throw the full result
