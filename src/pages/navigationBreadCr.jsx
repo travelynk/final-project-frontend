@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useLocation } from "@tanstack/react-router";
 import {
   Toast,
   ToastProvider,
@@ -14,26 +14,26 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Link, useMatch } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
 function NavigationBreadCr({
   initialTime,
   label,
   expirationMessage,
-  successMessage, // Add the successMessage prop
+  successMessage,
   redirectPath,
-  showSuccess, // Add the showSuccess prop
+  showSuccess,
 }) {
   const [timeLeft, setTimeLeft] = useState(initialTime);
   const [showToast, setShowToast] = useState(false);
   const [expired, setExpired] = useState(false);
-  const [success, setSuccess] = useState(false); // State for success message
+  const [success, setSuccess] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation(); // Use useLocation for current path detection
 
   useEffect(() => {
     if (success) {
-      // Stop timer if success is true
       return;
     }
 
@@ -43,7 +43,6 @@ function NavigationBreadCr({
           clearInterval(timer);
           setShowToast(true);
           setExpired(true);
-          console.log("Timer expired, navigating to:", redirectPath);
 
           setTimeout(() => {
             navigate({ to: redirectPath });
@@ -55,12 +54,12 @@ function NavigationBreadCr({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [navigate, redirectPath, success]); // Add success as a dependency
+  }, [navigate, redirectPath, success]);
 
   useEffect(() => {
     if (showSuccess) {
-      setSuccess(true); // Show for 3 seconds
-      setShowToast(false); // Ensure toast doesn't show when success is true
+      setSuccess(true);
+      setShowToast(false);
     }
   }, [showSuccess]);
 
@@ -70,10 +69,17 @@ function NavigationBreadCr({
     return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
-  const matchSeat = useMatch("/seat");
-  const matchPayment = useMatch("/payment");
-  const matchCompleted = useMatch("/success");
-
+  // Helper function to check if a path matches the current location
+  // Helper function to check active breadcrumbs
+  const isActive = (path) => {
+    const currentPath = location.pathname;
+    if (path === "/flights/booking")
+      return ["/flights/booking", "/payment", "/success"].includes(currentPath);
+    if (path === "/payment")
+      return ["/payment", "/success"].includes(currentPath);
+    if (path === "/success") return currentPath === "/success";
+    return false;
+  };
   return (
     <ToastProvider>
       <div className="dark:text-darkblue05 border-b h-[154px] p-3 shadow-md">
@@ -82,59 +88,53 @@ function NavigationBreadCr({
             <Breadcrumb>
               <BreadcrumbList className="flex gap-2">
                 <BreadcrumbItem>
-                  <Link
+                  <span
                     className={
-                      matchSeat || matchPayment || matchCompleted
+                      isActive("/flights/booking")
                         ? "dark:text-darkblue05 text-[20px] font-bold"
                         : "text-gray-400 text-[20px] font-bold"
                     }
-                    to="/seat"
                   >
                     Isi Data Diri
-                  </Link>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="!fontb" />
-                <BreadcrumbItem>
-                  <Link
-                    className={
-                      matchPayment || matchCompleted
-                        ? "dark:text-darkblue05 text-[20px] font-bold"
-                        : "text-gray-400 text-[20px] font-bold"
-                    }
-                    to="/payment"
-                  >
-                    Bayar
-                  </Link>
+                  </span>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="!font-bold" />
                 <BreadcrumbItem>
-                  <Link
+                  <span
                     className={
-                      matchPayment || matchCompleted
+                      isActive("/payment")
                         ? "dark:text-darkblue05 text-[20px] font-bold"
                         : "text-gray-400 text-[20px] font-bold"
                     }
-                    to="/success"
+                  >
+                    Bayar
+                  </span>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="!font-bold" />
+                <BreadcrumbItem>
+                  <span
+                    className={
+                      isActive("/success")
+                        ? "dark:text-darkblue05 text-[20px] font-bold"
+                        : "text-gray-400 text-[20px] font-bold"
+                    }
                   >
                     Selesai
-                  </Link>
+                  </span>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
           <div className="p-3">
             {success ? (
-              // Display success message
               <div className="text-center text-white font-medium py-2 rounded-md bg-green-500">
                 {successMessage}
               </div>
             ) : expired ? (
-              // Display expiration message
               <div className="text-center text-white font-medium py-2 rounded-md bg-red-500">
                 {expirationMessage}
               </div>
             ) : (
-              // Display durasi pemesanan
               <div className="text-center text-white font-medium py-2 rounded-md bg-allertdanger">
                 {label} {formatTime(timeLeft)}
               </div>
@@ -163,10 +163,8 @@ NavigationBreadCr.propTypes = {
   initialTime: PropTypes.number,
   label: PropTypes.string,
   expirationMessage: PropTypes.string,
-  successMessage: PropTypes.string, // PropType for the success message
-  success: PropTypes.bool, // Add success validation
-  showSuccess: PropTypes.bool, // Add propType for showSuccess
-
+  successMessage: PropTypes.string,
+  showSuccess: PropTypes.bool,
   redirectPath: PropTypes.string,
 };
 

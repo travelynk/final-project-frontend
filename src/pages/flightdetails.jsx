@@ -231,10 +231,7 @@ export default function FlightDetail({
               {localData?.flights?.[0]?.pergi ? (
                 localData.flights[0].pergi.isTransit ? (
                   localData.flights[0].pergi.flights.map((flight, index) => (
-                    <div
-                      key={index}
-                      className="mt-4 text-sm border-b pb-4 mb-4"
-                    >
+                    <div key={index} className="mt-4 text-sm  pb-4 mb-4">
                       <p>
                         <strong>
                           {flight.departure.time || "Waktu tidak tersedia"}
@@ -258,7 +255,7 @@ export default function FlightDetail({
                         <img
                           src={flight.airline.image}
                           alt=""
-                          className="w-8 h-8 mr-2"
+                          className="w-11 h-11 mr-5"
                         />
                         <div>
                           <p>
@@ -311,11 +308,11 @@ export default function FlightDetail({
                       {/* Transit Information */}
                       {index !==
                         localData.flights[0].pergi.flights.length - 1 && (
-                        <div className="flex items-center justify-center mt-4 border-y-2">
+                        <div className="flex items-center justify-center mt-6 border-2 border-gray-500 shadow-md rounded-md p-2">
                           <hr />
                           <div className="flex items-center ">
                             <IoIosInformationCircle className="mr-2" />
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-black">
                               Berhenti untuk ganti pesawat di{" "}
                               {flight.arrival.city.name}
                             </span>
@@ -354,7 +351,7 @@ export default function FlightDetail({
                           localData.flights[0].pergi.flights[0]?.airline.image
                         }
                         alt=""
-                        className="w-8 h-8 mr-2"
+                        className="w-11 h-11 mr-5"
                       />
                       <div>
                         <p>
@@ -519,7 +516,7 @@ export default function FlightDetail({
                           localData.flights[0].pulang.flights[0]?.airline.image
                         }
                         alt=""
-                        className="w-8 h-8 mr-2"
+                        className="w-11 h-11 mr-5"
                       />
                       <div>
                         <p>

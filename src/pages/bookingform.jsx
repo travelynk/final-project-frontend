@@ -13,9 +13,13 @@ import {
   ToastDescription,
 } from "../components/ui/toast";
 import { useToast } from "@/hooks/use-toast.js";
+import { useSelector } from "react-redux";
+
 import { ToastAction } from "@/components/ui/toast";
 import { getCountries } from "../services/country";
 import { Combobox } from "../components/ui/combobox";
+import { decodeToken } from "@/utils/decodeToken"; // Import the decodeToken function
+
 import {
   Accordion,
   AccordionItem,
@@ -96,6 +100,8 @@ const bookingSchema = z.object({
 export default function BookingForm({ onFormSubmit }) {
   const [socket, setSocket] = useState(null);
   const [notification, setNotification] = useState("");
+  const { token } = useSelector((state) => state.auth); // Ambil token dari Redux
+
   useEffect(() => {
     // Initialize socket connection
     const socketInstance = io(
@@ -104,19 +110,19 @@ export default function BookingForm({ onFormSubmit }) {
 
     // Event when connected
     socketInstance.on("connect", () => {
-      console.log("Connected to server");
+      ("Connected to server");
     });
 
     // Event for Unpaid status
     socketInstance.on("Status Pembayaran (Unpaid)", (data) => {
       setNotification(data.message); // Set notification message
-      console.log("isi pesan :", data.message);
-      console.log("tanggal pemesanan:", data.createdAt);
+      "isi pesan :", data.message;
+      "tanggal pemesanan:", data.createdAt;
     });
 
     // Handle connection error
     socketInstance.on("connect_error", (err) => {
-      console.log("Connection error:", err.message);
+      "Connection error:", err.message;
     });
 
     setSocket(socketInstance); // Save socket instance to state
@@ -264,14 +270,20 @@ export default function BookingForm({ onFormSubmit }) {
         const pergiFlights = cartData?.flights?.[0]?.pergi?.flights || [];
         const pulangFlights = cartData?.flights?.[0]?.pulang?.flights || [];
 
+        // tambahkan console.log untuk pergiFlight dan pulangFlights
+        console.log("Pergi Flights:", pergiFlights);
+        console.log("Pulang Flights:", pulangFlights);
+
         const pergiFlightIds = pergiFlights.map((f) => ({
           flightId: f.flightId,
           isReturn: false,
+          flightNum: f.flightNum,
         }));
 
         const pulangFlightIds = pulangFlights.map((f) => ({
           flightId: f.flightId,
           isReturn: true,
+          flightNum: f.flightNum,
         }));
 
         const allFlightIds = [...pergiFlightIds, ...pulangFlightIds];
@@ -281,6 +293,7 @@ export default function BookingForm({ onFormSubmit }) {
         } else {
           console.warn("No valid flight IDs found in localStorage");
         }
+        console.log("Flight IDs:", allFlightIds);
 
         const pergiPassengerCount =
           cartData?.flights[0]?.pergi?.passengerCount || 0;
@@ -488,6 +501,7 @@ export default function BookingForm({ onFormSubmit }) {
         title: "Pemilihan Tempat Duduk.",
         description: "Pemilihan Telah Mencapai Batas.",
         action: <ToastAction altText="Try again">OK</ToastAction>,
+        duration: 1000,
       });
     }
   };
@@ -502,9 +516,19 @@ export default function BookingForm({ onFormSubmit }) {
 
       // Validate if seatSelectionData matches the flights
       if (seatSelectionData.length !== flightId.length) {
-        throw new Error(
-          "Seat selection data does not match the number of flights."
-        );
+        toast({
+          variant: "info",
+          title: "Tolong Ulangi Pemesanan Anda!.",
+          description:
+            "Seat selection data does not match the number of flights!.",
+          action: <ToastAction altText="Try again">OK</ToastAction>,
+          duration: 3000,
+          onClose: () => {
+            setTimeout(() => {
+              window.location.reload();
+            }, 0);
+          },
+        });
       }
 
       // Construct flightSegments from seatSelectionData
@@ -594,6 +618,7 @@ export default function BookingForm({ onFormSubmit }) {
         description:
           "Pastikan jumlah kursi yang dipilih sesuai dengan jumlah penumpang.",
         action: <ToastAction altText="Try again">OK</ToastAction>,
+        duration: 1500,
       });
       return; // Stop execution if validation fails
     }
@@ -670,6 +695,7 @@ export default function BookingForm({ onFormSubmit }) {
           title: "Berhasil Disimpan",
           description: "Silahkan Lanjutkan untuk Booking !",
           action: <ToastAction altText="Try again">OK</ToastAction>,
+          duration: 2500,
         });
         // Additional logic if needed
       }
@@ -684,6 +710,7 @@ export default function BookingForm({ onFormSubmit }) {
           title: "Validasi Gagal",
           description: err.message,
           action: <ToastAction altText="Try again">OK</ToastAction>,
+          duration: 1500,
         });
       });
     }
@@ -692,6 +719,11 @@ export default function BookingForm({ onFormSubmit }) {
   const isButtonDisabled =
     seatSelectionComplete.length !== flightId.length ||
     seatSelectionComplete.includes(false);
+
+  // Mengakses flightNum berdasarkan currentFlightIndex
+  const flightNum = flightId?.[currentFlightIndex]?.flightNum;
+
+  console.log("Flight Number:", flightNum);
 
   return (
     <ToastProvider>
@@ -802,7 +834,7 @@ export default function BookingForm({ onFormSubmit }) {
                 <AccordionItem key={index} value={`passenger-${index}`}>
                   <AccordionTrigger className="bg-[#3C3C3C] text-white rounded-lg px-4 py-2 mb-1">
                     Data Diri Penumpang {index + 1} - {passenger.type} Flight:{" "}
-                    {formState.flightNum}
+                    {flightNum}
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="space-y-4 p-4 dark:text-white">
@@ -1011,8 +1043,8 @@ export default function BookingForm({ onFormSubmit }) {
           <div className="border p-6 rounded-lg shadow-md bg-white mt-5 dark:text-black">
             <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
             <div className="flex items-center justify-center text-center p-2 text-lg font-sm mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10">
-              Penerbangan {formState.flightNum} -{" "}
-              {allSeats.length - reservedSeats.length} Seats Available
+              Flight Num. {flightNum} - {allSeats.length - reservedSeats.length}{" "}
+              Seats Available
             </div>
             <div className="flex justify-center">
               <div className="grid grid-cols-7 gap-2 justify-center items-center">
@@ -1113,7 +1145,7 @@ export default function BookingForm({ onFormSubmit }) {
               onClick={handleSaveAndContinue}
               disabled={isSubmitted}
             >
-              Simpan Penerbangan Saat Ini
+              Simpan Penerbangan Saat Ini [ {flightNum} ]
             </button>
           ) : (
             // Tombol Booking Pesanan
