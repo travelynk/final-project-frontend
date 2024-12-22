@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Switch } from "../components/ui/switch";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import PropTypes from "prop-types"; // Import PropTypes
 import { useQueryClient, useQuery } from "@tanstack/react-query"; // Import React Query Client
@@ -24,6 +24,13 @@ import {
 } from "@/components/ui/accordion";
 import { z } from "zod";
 import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 // New function for booking API call
 const storeBooking = async (bookingData) => {
   const token = localStorage.getItem("token");
@@ -810,23 +817,22 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Title
                         </Label>
-                        <select
-                          required
-                          id={`title-${index}`}
-                          className="mb-2 border p-2 rounded-lg w-full"
-                          value={formState.passengers[index]?.title}
-                          onChange={(e) =>
-                            handleChange("title", e.target.value, index)
+                  
+                        <Select
+                          onValueChange={(value) =>
+                            handleChange("title", value, index)
                           }
                           disabled={isSubmitted}
                         >
-                          <option value="" disabled>
-                            Pilih Title
-                          </option>
-                          <option value="Mr.">Mr.</option>
-                          <option value="Mrs.">Mrs.</option>
-                          <option value="Miss">Miss</option>
-                        </select>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih Title" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Mr.">Mr.</SelectItem>
+                            <SelectItem value="Mrs.">Mrs.</SelectItem>
+                            <SelectItem value="Miss">Miss</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       <div>
@@ -907,25 +913,27 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Kewarganegaraan
                         </Label>
-                        <select
-                          required
-                          id={`citizenship-${index}`}
-                          className="mb-2 border p-2 rounded-lg w-full"
-                          value={formState.passengers[index]?.citizenship}
-                          onChange={(e) =>
-                            handleChange("citizenship", e.target.value, index)
+                
+                        <Select
+                          onValueChange={(value) =>
+                            handleChange("citizenship", value, index)
                           }
                           disabled={isSubmitted}
                         >
-                          <option value="" disabled>
-                            Pilih kewarganegaraan
-                          </option>
-                          {countries.map((country) => (
-                            <option key={country.value} value={country.label}>
-                              {country.label}
-                            </option>
-                          ))}
-                        </select>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih kewarganegaraan" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countries.map((country) => (
+                              <SelectItem
+                                key={country.value}
+                                value={country.label}
+                              >
+                                {country.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div>
                         <Label
@@ -953,29 +961,28 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Negara Penerbit
                         </Label>
-                        <select
-                          required
-                          id={`negarapenerbit-${index}`}
-                          className="mb-2 border p-2 rounded-lg w-full"
-                          value={formState.passengers[index]?.negarapenerbit}
-                          onChange={(e) =>
-                            handleChange(
-                              "negarapenerbit",
-                              e.target.value,
-                              index
-                            )
+
+                        <Select
+                          onValueChange={(value) =>
+                            handleChange("negarapenerbit", value, index)
                           }
                           disabled={isSubmitted}
                         >
-                          <option value="" disabled>
-                            Pilih negara penerbit
-                          </option>
-                          {countries.map((country) => (
-                            <option key={country.value} value={country.label}>
-                              {country.label}
-                            </option>
-                          ))}
-                        </select>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih negara penerbit" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countries.map((country) => (
+                              <SelectItem
+                                key={country.value}
+                                value={country.label}
+                              >
+                                {country.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+              
                       </div>
                       <div>
                         <Label
