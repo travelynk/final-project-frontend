@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const createCredit = async (bookingId, card) => {
   try {
-    console.log("masuk");
+    ("masuk");
     const token = localStorage.getItem("token");
     const url = new URL(`${import.meta.env.VITE_API_URL}/payments/credit-card`);
 
@@ -21,7 +21,7 @@ export const createCredit = async (bookingId, card) => {
       },
     });
 
-    console.log("dapat response", response.data);
+    "dapat response", response.data;
     return response;
   } catch (err) {
     return err;
@@ -46,7 +46,7 @@ export const CreateVa = async (bookingId, bank) => {
       },
     });
 
-    console.log(response);
+    response;
     return response;
   } catch (err) {
     return err;

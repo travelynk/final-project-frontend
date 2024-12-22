@@ -56,7 +56,7 @@ export default function FlightDetail({
       const storedData = localStorage.getItem("cartTicket");
       if (storedData) {
         const parsedData = JSON.parse(storedData);
-        console.log("Parsed Data:", parsedData);
+        "Parsed Data:", parsedData;
 
         if (parsedData && parsedData.flights && parsedData.flights.length > 0) {
           const flight = parsedData.flights[0]?.pergi?.flights;
@@ -150,7 +150,7 @@ export default function FlightDetail({
   }, [localData]);
 
   const handleCancelVoucher = () => {
-    console.log("Voucher canceled"); // Log pembatalan voucher
+    ("Voucher canceled"); // Log pembatalan voucher
     setSelectedVoucher(null); // Hapus voucher yang dipilih
     setTotalPrice(initialTotalPrice); // Kembalikan harga ke total awal
     setToastVariant("info");
@@ -172,7 +172,7 @@ export default function FlightDetail({
   const applyVoucherMutation = useMutation({
     mutationFn: ({ code }) => getVoucherByCode(code, initialTotalPrice),
     onSuccess: (data) => {
-      console.log("Voucher applied successfully:", data); // Log data yang berhasil diterima
+      "Voucher applied successfully:", data; // Log data yang berhasil diterima
 
       setSelectedVoucher(data);
       setTotalPrice(data.updatedTotalPrice); // Update total harga berdasarkan diskon dari initialTotalPrice
@@ -193,7 +193,7 @@ export default function FlightDetail({
   });
 
   const handleVoucherSelect = (voucher) => {
-    console.log("Voucher selected:", voucher); // Log voucher yang dipilih
+    "Voucher selected:", voucher; // Log voucher yang dipilih
 
     applyVoucherMutation.mutate({ code: voucher.code });
   };

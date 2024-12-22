@@ -1,7 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import NavigationBreadCr from "../../pages/navigationBreadCr";
-import { Button } from "../../components/ui/button";
 
 export const Route = createLazyFileRoute("/success/")({
   component: Success,
@@ -28,14 +27,14 @@ function Success() {
             to="/ticket-history"
             className="w-full max-w-64 mt-4 py-2 bg-darkblue05 text-white rounded-lg text-center hover:bg-darkblue06"
           >
-            Terbitkan Tiket
+            Riwayat Pemesanan
           </Link>
-          <Button
-            className="w-full max-w-64 mt-4 py-2  text-white rounded-lg text-center"
-            disabled
+          <Link
+            to="/"
+            className="w-full max-w-64 mt-4 py-2 bg-darkblue05 text-white rounded-lg text-center hover:bg-darkblue06"
           >
             Cari Penerbangan Lain
-          </Button>
+          </Link>
         </div>
       </main>
     </>

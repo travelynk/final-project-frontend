@@ -14,7 +14,7 @@ export const getBookings = async () => {
   }
 
   const result = await response.json();
-  //console.log("Bookings", result);
+  // ("Bookings", result);
   return result?.data;
 };
 
@@ -41,7 +41,7 @@ export const getBooking = async (bookingId) => {
 export const getBookingsByDate = async (startDate, endDate) => {
   const url = `${import.meta.env.VITE_API_URL}/bookings/filter?startDate=${startDate}&endDate=${endDate}`;
 
-  console.log(startDate, endDate);
+  startDate, endDate;
 
   const response = await fetch(url, {
     headers: {

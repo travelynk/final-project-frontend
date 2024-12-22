@@ -22,6 +22,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
 import { Label } from "../../components/ui/label";
+import { ScrollArea } from "../../components/ui/scroll-area";
 
 export const Route = createFileRoute("/flights/$params")({
   component: Flight,
@@ -158,28 +159,30 @@ function Flight() {
 
   return (
     <>
-      <div className="container mx-auto lg:px-28 px-2">
-        <HeaderComponent
-          flightDetails={searchQuery}
-          filters={flightFilter}
-          setSort={setSort}
-          handleCheckboxChange={handleCheckboxChange}
-          handleTransitChange={handleTransitChange}
-          listFlights={listFlights}
-          roundTrip={roundTrip}
-        />
-        <BodyComponent
-          listFlights={listFlights}
-          sort={sort}
-          filters={flightFilter}
-          isLoading={isLoading}
-          handleCheckboxChange={handleCheckboxChange}
-          handleTransitChange={handleTransitChange}
-          roundTrip={roundTrip}
-          setRoundTrip={setRoundTrip}
-          cart={cart}
-        />
-      </div>
+      <ScrollArea className="h-[89vh] ">
+        <div className="container mx-auto lg:px-28 px-2">
+          <HeaderComponent
+            flightDetails={searchQuery}
+            filters={flightFilter}
+            setSort={setSort}
+            handleCheckboxChange={handleCheckboxChange}
+            handleTransitChange={handleTransitChange}
+            listFlights={listFlights}
+            roundTrip={roundTrip}
+          />
+          <BodyComponent
+            listFlights={listFlights}
+            sort={sort}
+            filters={flightFilter}
+            isLoading={isLoading}
+            handleCheckboxChange={handleCheckboxChange}
+            handleTransitChange={handleTransitChange}
+            roundTrip={roundTrip}
+            setRoundTrip={setRoundTrip}
+            cart={cart}
+          />
+        </div>
+      </ScrollArea>
     </>
   );
 }
@@ -729,6 +732,7 @@ const BodyComponent = ({
               )}
             </div>
             <Button
+            className='flex gap-3'
               onClick={() => handlePay(searchQuery.ps)}
               disabled={
                 (roundTrip && !!cartArrivalFlight && !!cartDepartureFlight) ||
@@ -737,7 +741,11 @@ const BodyComponent = ({
                   : true
               }
             >
-              Pembayaran
+              <span>
+                
+                Pembayaran
+                </span>
+                <img src="/svg/shopping_cart.svg" alt="shopping_cart" />
             </Button>
           </div>
           <div className="filter p-5 border border-darkblue02 rounded-xl shadow-sm text-lg h-fit hidden md:block ">

@@ -49,9 +49,9 @@ export function Combobox({
           <CommandList>
             <CommandEmpty>No data found.</CommandEmpty>
             <CommandGroup>
-              {data.map((city) => (
+              {data.map((city,i) => (
                 <CommandItem
-                  key={city.id}
+                  key={i}
                   value={city.name}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : city.code);

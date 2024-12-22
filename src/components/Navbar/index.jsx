@@ -53,7 +53,7 @@ const NavigationBar = () => {
               alt="TraveLynk"
               className="w-12 h-auto rounded-full"
             />
-            <span className="hidden lg:flex">TraveLynk</span>
+            <span className="hidden lg:flex text-2xl">TraveLynk</span>
           </Link>
         </div>
 

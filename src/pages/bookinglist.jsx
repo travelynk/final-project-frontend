@@ -235,10 +235,7 @@ const BookingList = ({
                                       return acc;
                                     }, []);
 
-                                  console.log(
-                                    "filteredSegments:",
-                                    filteredSegments
-                                  );
+                                  "filteredSegments:", filteredSegments;
 
                                   // If there are multiple segments, group them as a single transit route
                                   if (filteredSegments.length > 1) {
@@ -299,7 +296,7 @@ const BookingList = ({
                                       (transit.duration - totalHours) * 60
                                     ); // Convert fractional hours to minutes
 
-                                    console.log("transit:", transit);
+                                    "transit:", transit;
 
                                     return (
                                       <div

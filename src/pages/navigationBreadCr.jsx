@@ -43,7 +43,7 @@ function NavigationBreadCr({
           clearInterval(timer);
           setShowToast(true);
           setExpired(true);
-          console.log("Timer expired, navigating to:", redirectPath);
+          "Timer expired, navigating to:", redirectPath;
 
           setTimeout(() => {
             navigate({ to: redirectPath });

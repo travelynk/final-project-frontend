@@ -13,7 +13,7 @@ export const getVouchers = async () => {
   }
 
   const data = await response.json();
-  // console.log("Vouchers data:", data); // Debug log untuk melihat data
+  //  ("Vouchers data:", data); // Debug log untuk melihat data
   return data?.data;
   // return response.json().then((data) => data?.data);
 };
@@ -37,7 +37,7 @@ export const getVouchers = async () => {
 //   }
 
 //   const data = await response.json();
-//   console.log("Voucher by code response data:", data); // Log data response
+//    ("Voucher by code response data:", data); // Log data response
 //   return data?.data;
 // };
 
@@ -62,6 +62,6 @@ export const getVoucherByCode = async (code, totalPrice) => {
 
   // return response.json().then((data) => data?.data);
   const data = await response.json();
-  console.log("Voucher by code data:", data); // Debug log untuk melihat data
+  "Voucher by code data:", data; // Debug log untuk melihat data
   return data?.data;
 };
