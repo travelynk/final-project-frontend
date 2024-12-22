@@ -19,11 +19,11 @@ import { FaPen, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
-import { ProfileUpdate } from "../../../services/auth"; // Assuming profile function is in src/service/auth
+import { ProfileUpdate } from "@/services/auth"; // Assuming profile function is in src/service/auth
 import { useQueryClient } from "@tanstack/react-query";
-import { setToken } from "../../../redux/slices/auth";
+import { setToken } from "@/redux/slices/auth";
 
-export const Route = createLazyFileRoute("/user/account/")({
+export const Route = createLazyFileRoute("/user/account/settings/")({
   component: Profile,
 });
 
@@ -33,6 +33,7 @@ function Profile() {
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Cek token saat komponen pertama kali di-render
   useEffect(() => {
@@ -40,6 +41,24 @@ function Profile() {
       navigate({ to: "/" });
     }
   }, [token, navigate]);
+
+  const handleDelete = async () => {
+    try {
+      console.log("Attempting to delete account...");
+      const result = await deleteUser();
+      console.log("Delete result:", result);
+
+      setSuccessMessage("Akun berhasil dihapus");
+      setToastVisible(true);
+
+      dispatch(setToken(null));
+      localStorage.removeItem("token");
+      navigate({ to: "/auth/login" });
+    } catch (error) {
+      console.error("Delete error:", error);
+      setErrorMessage(error.message || "Gagal menghapus akun");
+    }
+  };
 
   const queryClient = useQueryClient();
   const profileData = queryClient.getQueryData(["profile"]); // Retrieve cached profile data
@@ -52,32 +71,8 @@ function Profile() {
     navigate({ to: "/auth/login" });
   };
 
-  const handleClickSettings = () => {
-    // Hapus token dari Redux store atau localStorage
-
-    // localStorage.removeItem("token"); // Jika token disimpan di localStorage
-    // Navigasi ke halaman login
-    navigate({ to: "/user/account/settings" });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const profileData = {
-      fullName: e.target.fullName.value,
-      phone: e.target.phone.value,
-      email: e.target.email.value,
-    };
-
-    try {
-      const updatedProfile = await ProfileUpdate(profileData);
-      console.log("Updated profile:", updatedProfile);
-      setSuccessMessage("Profil berhasil diperbarui!");
-      setToastVisible(true);
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Gagal memperbarui profil. Silakan coba lagi.");
-    }
+  const handleClickUbahProfile = () => {
+    navigate({ to: "/user/account" });
   };
 
   return (
@@ -121,14 +116,14 @@ function Profile() {
             {/* Left Menu */}
             <div className="border-gray-200 p-4 w-full">
               <ul className="space-y-4">
-                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2">
+                <li
+                  className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2"
+                  onClick={handleClickUbahProfile}
+                >
                   <FaPen />
                   <span>Ubah Profil</span>
                 </li>
-                <li
-                  className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2"
-                  onClick={handleClickSettings}
-                >
+                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2">
                   <FaCog />
                   <span>Pengaturan Akun</span>
                 </li>
@@ -147,17 +142,17 @@ function Profile() {
             </div>
           </div>
 
-          {/* Profile Form */}
+          {/* Pengaturan Akun */}
           <div className=" w-full sm:w-[550px] lg:w-2/3 px-6 pt-6 pb-4 border rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold text-gray-800 mb-6 dark:text-white">
-              Ubah Data Profil
+              Pengaturan Akun
             </h2>
 
             <div className="bg-darkblue05 p-4 rounded-t-[12px] text-white mb-2 font-bold">
               Data Diri
             </div>
 
-            <form className="space-y-4 px-4 pt-2" onSubmit={handleSubmit}>
+            <form className="space-y-4 px-4 pt-2">
               <div>
                 <Label className="font-bold text-darkblue05" htmlFor="fullName">
                   Nama Lengkap
@@ -196,17 +191,18 @@ function Profile() {
                   placeholder="masukan email"
                 />
               </div>
-
-              <div className="flex justify-center p-2 mt-8">
-                <Button
-                  type="submit"
-                  variant="default"
-                  className="w-[150px] bg-darkblue05 rounded-[12px] "
-                >
-                  Simpan
-                </Button>
-              </div>
             </form>
+            <div className="flex justify-center p-2 mt-8">
+              <Button
+                type="submit"
+                variant="default"
+                className="w-[150px] bg-red-400 rounded-[12px] text focus:outline-none  hover:bg-red-600 text-white  "
+                onClick={handleDelete}
+              >
+                Hapus Akun
+                <FaTrashAlt />
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -215,6 +211,14 @@ function Profile() {
           <Toast variant="success" onOpenChange={setToastVisible}>
             <ToastTitle>Berhasil!</ToastTitle>
             <ToastDescription>{successMessage}</ToastDescription>
+          </Toast>
+        )}
+
+        {/* Error Toast */}
+        {errorMessage && (
+          <Toast variant="error" onOpenChange={() => setErrorMessage("")}>
+            <ToastTitle>Error</ToastTitle>
+            <ToastDescription>{errorMessage}</ToastDescription>
           </Toast>
         )}
         <ToastViewport />
