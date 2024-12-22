@@ -348,36 +348,47 @@ export default function FlightDetail({
                         .terminal || "Terminal tidak tersedia"}
                     </p>
                     <hr className="my-4" />
-                    <p>
-                      <strong>
-                        {localData.flights[0].pergi.flights[0]?.airline.name ||
-                          "Airline tidak tersedia"}{" "}
-                        - {seatClass || "Kelas tidak tersedia"}
-                      </strong>
-                    </p>
-                    <p className="mb-4">
-                      <strong>
-                        {localData.flights[0].pergi.flights[0]?.flightNum ||
-                          "Nomor penerbangan tidak tersedia"}
-                      </strong>
-                    </p>
-                    <div>
-                      <strong>Fasilitas:</strong>
-                      <br />
-                      {Array.isArray(
-                        localData.flights[0].pergi.flights[0]?.facility
-                      ) ? (
-                        <ul>
-                          {localData.flights[0].pergi.flights[0].facility.map(
-                            (item, idx) => (
-                              <li key={idx}>{item}</li>
-                            )
+                    <div className="flex items-center">
+                      <img
+                        src={
+                          localData.flights[0].pergi.flights[0]?.airline.image
+                        }
+                        alt=""
+                        className="w-8 h-8 mr-2"
+                      />
+                      <div>
+                        <p>
+                          <strong>
+                            {localData.flights[0].pergi.flights[0]?.airline
+                              .name || "Airline tidak tersedia"}{" "}
+                            - {seatClass || "Kelas tidak tersedia"}
+                          </strong>
+                        </p>
+                        <p className="mb-4">
+                          <strong>
+                            {localData.flights[0].pergi.flights[0]?.flightNum ||
+                              "Nomor penerbangan tidak tersedia"}
+                          </strong>
+                        </p>
+                        <div>
+                          <strong>Fasilitas:</strong>
+                          <br />
+                          {Array.isArray(
+                            localData.flights[0].pergi.flights[0]?.facility
+                          ) ? (
+                            <ul>
+                              {localData.flights[0].pergi.flights[0].facility.map(
+                                (item, idx) => (
+                                  <li key={idx}>{item}</li>
+                                )
+                              )}
+                            </ul>
+                          ) : (
+                            localData.flights[0].pergi.flights[0]?.facility ||
+                            "Fasilitas tidak tersedia"
                           )}
-                        </ul>
-                      ) : (
-                        localData.flights[0].pergi.flights[0]?.facility ||
-                        "Fasilitas tidak tersedia"
-                      )}
+                        </div>
+                      </div>
                     </div>
                     <hr className="my-4" />
                     <p>
@@ -502,36 +513,47 @@ export default function FlightDetail({
                         .terminal || "Terminal tidak tersedia"}
                     </p>
                     <hr className="my-4" />
-                    <p>
-                      <strong>
-                        {localData.flights[0].pulang.flights[0]?.airline.name ||
-                          "Airline tidak tersedia"}{" "}
-                        - {seatClass || "Kelas tidak tersedia"}
-                      </strong>
-                    </p>
-                    <p className="mb-4">
-                      <strong>
-                        {localData.flights[0].pulang.flights[0]?.flightNum ||
-                          "Nomor penerbangan tidak tersedia"}
-                      </strong>
-                    </p>
-                    <div>
-                      <strong>Fasilitas:</strong>
-                      <br />
-                      {Array.isArray(
-                        localData.flights[0].pulang.flights[0]?.facility
-                      ) ? (
-                        <ul>
-                          {localData.flights[0].pulang.flights[0].facility.map(
-                            (item, idx) => (
-                              <li key={idx}>{item}</li>
-                            )
+                    <div className="flex items-center">
+                      <img
+                        src={
+                          localData.flights[0].pulang.flights[0]?.airline.image
+                        }
+                        alt=""
+                        className="w-8 h-8 mr-2"
+                      />
+                      <div>
+                        <p>
+                          <strong>
+                            {localData.flights[0].pulang.flights[0]?.airline
+                              .name || "Airline tidak tersedia"}{" "}
+                            - {seatClass || "Kelas tidak tersedia"}
+                          </strong>
+                        </p>
+                        <p className="mb-4">
+                          <strong>
+                            {localData.flights[0].pulang.flights[0]
+                              ?.flightNum || "Nomor penerbangan tidak tersedia"}
+                          </strong>
+                        </p>
+                        <div>
+                          <strong>Fasilitas:</strong>
+                          <br />
+                          {Array.isArray(
+                            localData.flights[0].pulang.flights[0]?.facility
+                          ) ? (
+                            <ul>
+                              {localData.flights[0].pulang.flights[0].facility.map(
+                                (item, idx) => (
+                                  <li key={idx}>{item}</li>
+                                )
+                              )}
+                            </ul>
+                          ) : (
+                            localData.flights[0].pulang.flights[0]?.facility ||
+                            "Fasilitas tidak tersedia"
                           )}
-                        </ul>
-                      ) : (
-                        localData.flights[0].pulang.flights[0]?.facility ||
-                        "Fasilitas tidak tersedia"
-                      )}
+                        </div>
+                      </div>
                     </div>
                     <hr className="my-4" />
                     <p>

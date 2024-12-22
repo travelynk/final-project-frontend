@@ -14,7 +14,8 @@ import {
 } from "../components/ui/toast";
 import { useToast } from "@/hooks/use-toast.js";
 import { ToastAction } from "@/components/ui/toast";
-
+import { getCountries } from "../services/country";
+import { Combobox } from "../components/ui/combobox";
 import {
   Accordion,
   AccordionItem,
@@ -173,6 +174,35 @@ export default function BookingForm({ onFormSubmit }) {
   const [toastVariant, setToastVariant] = useState("default");
   const [toastTitle, setToastTitle] = useState("");
   const [toastDescription, setToastDescription] = useState("");
+  const [openCitizenship, setOpenCitizenship] = useState(false);
+  const [openIssuer, setOpenIssuer] = useState(false);
+  const [countries, setCountries] = useState([]);
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await getCountries();
+        console.log("Respons API:", response); // Debug respons API
+
+        // Pastikan respons adalah array
+        if (Array.isArray(response)) {
+          const formattedCountries = response.map((country) => ({
+            label: country.name,
+            value: country.code,
+          }));
+          console.log("Formatted Countries:", formattedCountries); // Debug data yang akan di-set
+          setCountries(formattedCountries);
+        } else {
+          console.error("Error: Respons API tidak berupa array", response);
+        }
+      } catch (error) {
+        console.error("Terjadi kesalahan saat mengambil data negara:", error);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
   const { toast } = useToast();
 
   const [formState, setFormState] = useState({
@@ -196,8 +226,6 @@ export default function BookingForm({ onFormSubmit }) {
   });
 
   const handleChange = (field, value, index = null) => {
-    // Jika field adalah 'namakeluarga' dan value kosong, set ke undefined
-
     if (index !== null) {
       setFormState((prev) => {
         const passengers = [...prev.passengers];
@@ -782,17 +810,25 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Title
                         </Label>
-                        <Input
+                        <select
+                          required
                           id={`title-${index}`}
-                          placeholder="Mr./Mrs./Miss"
-                          className="mb-2"
+                          className="mb-2 border p-2 rounded-lg w-full"
                           value={formState.passengers[index]?.title}
                           onChange={(e) =>
                             handleChange("title", e.target.value, index)
                           }
                           disabled={isSubmitted}
-                        />
+                        >
+                          <option value="" disabled>
+                            Pilih Title
+                          </option>
+                          <option value="Mr.">Mr.</option>
+                          <option value="Mrs.">Mrs.</option>
+                          <option value="Miss">Miss</option>
+                        </select>
                       </div>
+
                       <div>
                         <Label
                           className="text-darkblue05 font-bold text-[14px]"
@@ -871,17 +907,25 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Kewarganegaraan
                         </Label>
-                        <Input
+                        <select
                           required
                           id={`citizenship-${index}`}
-                          placeholder="Indonesia"
-                          className="mb-2"
+                          className="mb-2 border p-2 rounded-lg w-full"
                           value={formState.passengers[index]?.citizenship}
                           onChange={(e) =>
                             handleChange("citizenship", e.target.value, index)
                           }
                           disabled={isSubmitted}
-                        />
+                        >
+                          <option value="" disabled>
+                            Pilih kewarganegaraan
+                          </option>
+                          {countries.map((country) => (
+                            <option key={country.value} value={country.label}>
+                              {country.label}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <div>
                         <Label
@@ -909,11 +953,10 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Negara Penerbit
                         </Label>
-                        <Input
+                        <select
                           required
                           id={`negarapenerbit-${index}`}
-                          placeholder="Masukan Negara Penerbit"
-                          className="mb-2"
+                          className="mb-2 border p-2 rounded-lg w-full"
                           value={formState.passengers[index]?.negarapenerbit}
                           onChange={(e) =>
                             handleChange(
@@ -923,7 +966,16 @@ export default function BookingForm({ onFormSubmit }) {
                             )
                           }
                           disabled={isSubmitted}
-                        />
+                        >
+                          <option value="" disabled>
+                            Pilih negara penerbit
+                          </option>
+                          {countries.map((country) => (
+                            <option key={country.value} value={country.label}>
+                              {country.label}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <div>
                         <Label
