@@ -53,9 +53,9 @@ function Profile() {
 
   const handleDelete = async () => {
     try {
-      console.log("Attempting to delete account...");
+      // console.log("Attempting to delete account...");
       const result = await deleteUser();
-      console.log("Delete result:", result);
+      // console.log("Delete result:", result);
 
       setSuccessMessage("Akun berhasil dihapus");
       setToastVisible(true);

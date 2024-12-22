@@ -116,8 +116,8 @@ export default function BookingForm({ onFormSubmit }) {
     // Event for Unpaid status
     socketInstance.on("Status Pembayaran (Unpaid)", (data) => {
       setNotification(data.message); // Set notification message
-      "isi pesan :", data.message;
-      "tanggal pemesanan:", data.createdAt;
+      // "isi pesan :", data.message;
+      // "tanggal pemesanan:", data.createdAt;
     });
 
     // Handle connection error
@@ -188,7 +188,7 @@ export default function BookingForm({ onFormSubmit }) {
     const fetchCountries = async () => {
       try {
         const response = await getCountries();
-        console.log("Respons API:", response); // Debug respons API
+        // console.log("Respons API:", response); // Debug respons API
 
         // Pastikan respons adalah array
         if (Array.isArray(response)) {
@@ -196,7 +196,7 @@ export default function BookingForm({ onFormSubmit }) {
             label: country.name,
             value: country.code,
           }));
-          console.log("Formatted Countries:", formattedCountries); // Debug data yang akan di-set
+          // console.log("Formatted Countries:", formattedCountries); // Debug data yang akan di-set
           setCountries(formattedCountries);
         } else {
           console.error("Error: Respons API tidak berupa array", response);
@@ -271,8 +271,8 @@ export default function BookingForm({ onFormSubmit }) {
         const pulangFlights = cartData?.flights?.[0]?.pulang?.flights || [];
 
         // tambahkan console.log untuk pergiFlight dan pulangFlights
-        console.log("Pergi Flights:", pergiFlights);
-        console.log("Pulang Flights:", pulangFlights);
+        // console.log("Pergi Flights:", pergiFlights);
+        // console.log("Pulang Flights:", pulangFlights);
 
         const pergiFlightIds = pergiFlights.map((f) => ({
           flightId: f.flightId,
@@ -293,7 +293,7 @@ export default function BookingForm({ onFormSubmit }) {
         } else {
           console.warn("No valid flight IDs found in localStorage");
         }
-        console.log("Flight IDs:", allFlightIds);
+        // console.log("Flight IDs:", allFlightIds);
 
         const pergiPassengerCount =
           cartData?.flights[0]?.pergi?.passengerCount || 0;
@@ -731,7 +731,7 @@ export default function BookingForm({ onFormSubmit }) {
   // Mengakses flightNum berdasarkan currentFlightIndex
   const flightNum = flightId?.[currentFlightIndex]?.flightNum;
 
-  console.log("Flight Number:", flightNum);
+  // console.log("Flight Number:", flightNum);
 
   return (
     <ToastProvider>

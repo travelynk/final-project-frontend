@@ -4,9 +4,9 @@ export const decodeToken = (token) => {
     const payload = token.split(".")[1];
     const decoded = JSON.parse(atob(payload));
 
-    console.log("Decoded token:", decoded);
-    console.log("Role extracted:", decoded.role);
-    console.log("UserId extracted:", decoded.id);
+    // console.log("Decoded token:", decoded);
+    // console.log("Role extracted:", decoded.role);
+    // console.log("UserId extracted:", decoded.id);
 
     return {
       role: decoded.role,
