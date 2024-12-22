@@ -46,8 +46,6 @@ function Payment() {
         } catch (error) {
           console.error("Error fetching booking data: ", error);
         }
-      } else {
-        navigate({ to: "/" });
       }
     };
 
@@ -224,7 +222,7 @@ function Payment() {
                         </div>
                         {copySuccess && (
                           <div
-                            class="flex items-center bg-blue-500 text-white text-sm font-bold px-4 py-3 mt-3"
+                            className="flex items-center bg-darkblue05 rounded-lg text-white text-sm font-bold px-4 py-3 mt-3"
                             role="alert"
                           >
                             <svg
