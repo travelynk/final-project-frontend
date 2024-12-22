@@ -33,7 +33,7 @@ const storeBooking = async (bookingData) => {
   const token = localStorage.getItem("token");
 
   try {
-    console.log("Booking Request Body:", JSON.stringify(bookingData, null, 2));
+    "Booking Request Body:", JSON.stringify(bookingData, null, 2);
 
     const response = await fetch(
       "https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app/api/v1/bookings",
@@ -54,7 +54,7 @@ const storeBooking = async (bookingData) => {
       throw new Error(responseBody.message || "Booking failed");
     }
 
-    console.log("Booking successful:", responseBody);
+    "Booking successful:", responseBody;
 
     // Mengembalikan data yang dikirim dan respons
     return {
@@ -132,7 +132,7 @@ export default function BookingForm({ onFormSubmit }) {
       socketInstance.disconnect();
     };
   }, []);
-  // console.log(notification);
+  //  (notification);
 
   const Notification = ({ message, onDismiss }) => {
     if (!message) return null;
@@ -303,9 +303,9 @@ export default function BookingForm({ onFormSubmit }) {
           pulangFlights.length > 0 ? pergiPassengers : [];
 
         // Debugging: Pastikan jumlah penumpang benar
-        console.log("Passengers for Outbound Flight:", pergiPassengers);
-        console.log("Passengers for Return Flight:", pulangPassengers);
-        console.log("Combined Passengers:", [...pergiPassengers]);
+        "Passengers for Outbound Flight:", pergiPassengers;
+        "Passengers for Return Flight:", pulangPassengers;
+        "Combined Passengers:", [...pergiPassengers];
 
         setFormState((prev) => ({
           ...prev,
@@ -390,7 +390,7 @@ export default function BookingForm({ onFormSubmit }) {
 
     // Iterasi untuk setiap flightId
     for (const { flightId } of flightIds) {
-      console.log(`Fetching seats for flightId: ${flightId}`);
+      `Fetching seats for flightId: ${flightId}`;
       const response = await fetch(
         `https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app/api/v1/seats/${flightId}`, // Menggunakan path parameter
         {
@@ -442,7 +442,7 @@ export default function BookingForm({ onFormSubmit }) {
   }
 
   // Process seat data
-  // console.log("Seat Data:", seatData);
+  //  ("Seat Data:", seatData);
 
   if (!seatData || !Array.isArray(seatData)) {
     console.error("seatData is not valid:", seatData);
@@ -472,7 +472,7 @@ export default function BookingForm({ onFormSubmit }) {
         )
       : 1; // Default jika tidak ada data
 
-  // console.log("Calculated seat rows:", seatRows);
+  //  ("Calculated seat rows:", seatRows);
 
   const seatColumns = ["A", "B", "C", "", "D", "E", "F"];
   const reservedSeats = allSeats
@@ -487,14 +487,14 @@ export default function BookingForm({ onFormSubmit }) {
     if (selectedSeats.some((s) => s.id === seat.id)) {
       // If seat is selected, deselect it
       setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.id));
-      console.log(`Deselected Seat ID: ${seat.id}, Position: ${seat.position}`);
+      `Deselected Seat ID: ${seat.id}, Position: ${seat.position}`;
     } else if (selectedSeats.length < totalPassengers) {
       // If seat is not selected, select it
       setSelectedSeats([
         ...selectedSeats,
         { id: seat.id, position: seat.position },
       ]);
-      console.log(`Selected Seat ID: ${seat.id}, Position: ${seat.position}`);
+      `Selected Seat ID: ${seat.id}, Position: ${seat.position}`;
     } else {
       toast({
         variant: "info",
@@ -512,7 +512,7 @@ export default function BookingForm({ onFormSubmit }) {
       const seatSelectionData =
         JSON.parse(localStorage.getItem("seatSelection")) || [];
 
-      console.log("seatSelectionData:", seatSelectionData);
+      "seatSelectionData:", seatSelectionData;
 
       // Validate if seatSelectionData matches the flights
       if (seatSelectionData.length !== flightId.length) {
@@ -562,10 +562,7 @@ export default function BookingForm({ onFormSubmit }) {
         flightSegments,
       };
 
-      console.log(
-        "Booking Request Body:",
-        JSON.stringify(bookingData, null, 2)
-      );
+      "Booking Request Body:", JSON.stringify(bookingData, null, 2);
 
       // Call the storeBooking API function
       const response = await storeBooking(bookingData);
@@ -573,7 +570,7 @@ export default function BookingForm({ onFormSubmit }) {
       // Notify user of successful booking
 
       // Handle successful booking
-      console.log("Booking successful:", response);
+      "Booking successful:", response;
 
       // Notify parent component or reset state
       if (onFormSubmit) {
@@ -631,7 +628,7 @@ export default function BookingForm({ onFormSubmit }) {
       selectedSeats: selectedSeats, // Ensure it's included
     };
 
-    console.log("Selected Seats before validation:", selectedSeats);
+    "Selected Seats before validation:", selectedSeats;
 
     // Validate formState using bookingSchema
     try {
@@ -676,7 +673,7 @@ export default function BookingForm({ onFormSubmit }) {
         seatSelectionData = seatSelectionData.slice(0, flightId.length);
       }
 
-      console.log("Saving seat selection data:", seatSelectionData);
+      "Saving seat selection data:", seatSelectionData;
 
       // Save the updated seat selection data to localStorage
       localStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
