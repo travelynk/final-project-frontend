@@ -21,6 +21,8 @@ const BookingDetails = ({ selectedBooking }) => {
     );
   };
 
+  console.log(selectedBooking);
+
   return (
     <div className="rounded-lg py-4 pr-4 ms-2">
       <div className="flex items-center justify-between">
@@ -226,7 +228,11 @@ const BookingDetails = ({ selectedBooking }) => {
           <p>
             Diskon
             <span className="float-right">
-              IDR {selectedBooking.voucher?.value?.toLocaleString() || "0"}
+              {selectedBooking.voucher?.type === "Fixed"
+                ? `IDR ${selectedBooking.voucher?.value?.toLocaleString() || "0"}`
+                : selectedBooking.voucher?.type === "Percentage"
+                  ? `${selectedBooking.voucher?.value || 0}%`
+                  : ""}
             </span>
           </p>
         )}
