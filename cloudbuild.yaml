@@ -1,0 +1,6 @@
+options:
+  logging: CLOUD_LOGGING_ONLY # Atau NONE jika Anda tidak ingin menggunakan Cloud Logging.
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: ['app', 'deploy', '--quiet']
