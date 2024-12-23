@@ -138,7 +138,6 @@ const MenuSection = () => {
       setClassSeat(history.classSeat);
     }
   }, [isSuccess, listCities, data]);
-  console.log(listCities);
 
   const handleToggle = () => {
     setIsToggled(!isToggled);
