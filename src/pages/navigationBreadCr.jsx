@@ -64,6 +64,17 @@ function NavigationBreadCr({
     }
   }, [showSuccess]);
 
+  // useEffect(() => {
+  //   console.log("Location changed:", location.pathname);
+  //   if (
+  //     location.pathname === "/success" ||
+  //     location.pathname === "/flights/booking"
+  //   ) {
+  //     console.log("Setting showToast to true");
+  //     setShowToast(true);
+  //   }
+  // }, [location.pathname]);
+
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -81,6 +92,28 @@ function NavigationBreadCr({
     if (path === "/success") return currentPath === "/success";
     return false;
   };
+
+  // Helper function to determine the toast content
+  const getToastContent = () => {
+    if (location.pathname === "/flights/booking") {
+      return {
+        variant: "success",
+        title: "Booking Berhasil Disimpan",
+        description: "Silahkan Lanjutkan Pembayaran",
+      };
+    }
+    if (location.pathname === "/success") {
+      return {
+        variant: "success",
+        title: "Pembayaran Berhasil",
+        description: "Selamat Menikmati Perjalanan Anda",
+      };
+    }
+    return null;
+  };
+
+  const toastContent = getToastContent();
+
   return (
     <ToastProvider>
       <div className="dark:text-darkblue05 border-b h-[154px] p-3 shadow-md">
@@ -148,10 +181,10 @@ function NavigationBreadCr({
             <ToastDescription>{expirationMessage}</ToastDescription>
           </Toast>
         )}
-        {showSuccess && (
-          <Toast variant="success">
-            <ToastTitle>Booking Berhasil Disimpan</ToastTitle>
-            <ToastDescription>Silahkan Lanjut ke Pembayaran</ToastDescription>
+        {showSuccess && toastContent && (
+          <Toast variant={toastContent.variant}>
+            <ToastTitle>{toastContent.title}</ToastTitle>
+            <ToastDescription>{toastContent.description}</ToastDescription>
           </Toast>
         )}
         <ToastViewport />

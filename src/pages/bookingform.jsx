@@ -935,7 +935,7 @@ export default function BookingForm({ onFormSubmit }) {
                           id={`birthdate-${index}`}
                           placeholder="dd/mm/yyyy"
                           type="date"
-                          className="mb-2"
+                          className="mb-2 dark:date-input-icon "
                           value={formState.passengers[index]?.birthdate}
                           onChange={(e) =>
                             handleChange("birthdate", e.target.value, index)
@@ -999,7 +999,7 @@ export default function BookingForm({ onFormSubmit }) {
                         <select
                           required
                           id={`negarapenerbit-${index}`}
-                          className="mb-2 border p-2 rounded-lg w-full"
+                          className="mb-2 border p-2 rounded-lg w-full "
                           value={formState.passengers[index]?.negarapenerbit}
                           onChange={(e) =>
                             handleChange(

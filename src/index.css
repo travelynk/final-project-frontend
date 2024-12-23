@@ -58,6 +58,17 @@
     --text-white: 210 40% 98%;
   }
 }
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0); /* Default icon warna hitam */
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* Mengubah icon menjadi putih pada mode gelap */
+}
+
+/* Default style */
+
+
 @layer base {
   * {
     @apply border-border;
