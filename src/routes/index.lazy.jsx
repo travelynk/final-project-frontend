@@ -101,13 +101,13 @@ const MenuSection = () => {
   const [originCity, setOriginCity] = useState(null);
   const [destinationCity, setDestinationCity] = useState(null);
   const [openTo, setOpenTo] = useState(false);
-  const [countAdult, setCountAdult] = useState(0);
+  const [countAdult, setCountAdult] = useState(1);
   const [countChild, setCountChild] = useState(0);
   const [countBaby, setCountBaby] = useState(0);
-  const [returnCity, setReturnCity] = useState(true);
+  const [returnCity, setReturnCity] = useState(false);
   const [listCities, setListCities] = useState([]);
   const [isToggled, setIsToggled] = useState(false);
-  const [classSeat, setClassSeat] = useState(null);
+  const [classSeat, setClassSeat] = useState("Economy");
 
   const navigate = useNavigate();
 
@@ -119,6 +119,11 @@ const MenuSection = () => {
 
   useEffect(() => {
     const history = JSON.parse(localStorage.getItem("lastSearch"));
+    if (isSuccess) {
+      setListCities(data);
+      setOriginCity(data[14]?.code);
+      setDestinationCity(data[13]?.code);
+    }
 
     if (history) {
       setDepartureDate(new Date(history.departureDate));
@@ -132,10 +137,8 @@ const MenuSection = () => {
       setCountBaby(history.passengers.babies || 0);
       setClassSeat(history.classSeat);
     }
-    if (isSuccess) {
-      setListCities(data);
-    }
   }, [isSuccess, listCities, data]);
+  console.log(listCities);
 
   const handleToggle = () => {
     setIsToggled(!isToggled);
