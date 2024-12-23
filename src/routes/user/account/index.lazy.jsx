@@ -8,23 +8,25 @@ import {
 } from "@/components/ui/toast";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { deleteUser } from "@/services/auth"; // Import your deleteUser function
-import { FaTrashAlt } from "react-icons/fa"; // Import the trash icon from react-icons
 import { createLazyFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FaPen, FaCog, FaSignOutAlt } from "react-icons/fa";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pen, Settings, LogOut } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 import { ProfileUpdate } from "../../../services/auth"; // Assuming profile function is in src/service/auth
 import { useQueryClient } from "@tanstack/react-query";
 import { setToken } from "../../../redux/slices/auth";
+import Protected from "../../../components/auth/Protected";
 
 export const Route = createLazyFileRoute("/user/account/")({
-  component: Profile,
+  component: () => (
+    <Protected>
+      <Profile />
+    </Protected>
+  ),
 });
 
 function Profile() {
@@ -117,26 +119,26 @@ function Profile() {
         <Separator className="mt-[25px] shadow" />
 
         <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start mt-10 space-y-6 lg:space-y-0 lg:space-x-6 max-w-[936px] mx-auto mb-10">
-          <div className="flex flex-col w-[370px] lg:w-1/3 rounded-lg bg-white">
+          <div className="flex flex-col w-[370px] lg:w-1/3 rounded-lg bg-transparent">
             {/* Left Menu */}
-            <div className="border-gray-200 p-4 w-full">
+            <div className="border-gray-200 p-4 w-full border-2 dark:border-white rounded-lg">
               <ul className="space-y-4">
-                <li className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2">
-                  <FaPen />
+                <li className="flex items-center space-x-4 text-gray-700 dark:text-white cursor-pointer hover:text-darkblue05 border-b w-full p-2">
+                  <Pen />
                   <span>Ubah Profil</span>
                 </li>
                 <li
-                  className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2"
+                  className="flex items-center space-x-4 text-gray-700 dark:text-white cursor-pointer hover:text-darkblue05 border-b w-full p-2"
                   onClick={handleClickSettings}
                 >
-                  <FaCog />
+                  <Settings />
                   <span>Pengaturan Akun</span>
                 </li>
                 <li
-                  className="flex items-center space-x-4 text-gray-700 cursor-pointer hover:text-darkblue05 border-b w-full p-2 "
+                  className="flex items-center space-x-4 text-gray-700 dark:text-white cursor-pointer hover:text-darkblue05 border-b w-full p-2 "
                   onClick={handleLogout}
                 >
-                  <FaSignOutAlt />
+                  <LogOut />
 
                   <span>Keluar</span>
                 </li>

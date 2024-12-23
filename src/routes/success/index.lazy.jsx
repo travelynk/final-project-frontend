@@ -1,9 +1,14 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import NavigationBreadCr from "../../pages/navigationBreadCr";
+import Protected from "../../components/auth/Protected";
 
 export const Route = createLazyFileRoute("/success/")({
-  component: Success,
+  component: () => (
+    <Protected>
+      <Success />
+    </Protected>
+  ),
 });
 
 function Success() {

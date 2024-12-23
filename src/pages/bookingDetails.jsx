@@ -20,6 +20,7 @@ const BookingDetails = ({ selectedBooking }) => {
       nextSegment?.flight?.departure?.city?.name
     );
   };
+  console.log(selectedBooking);
 
   return (
     <div className="rounded-lg py-4 pr-4 ms-2">

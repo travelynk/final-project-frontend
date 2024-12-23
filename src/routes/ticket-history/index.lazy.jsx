@@ -18,9 +18,14 @@ import { getFlightsById } from "../../services/flights";
 import { cn } from "../../lib/utils";
 import BookingList from "../../pages/bookinglist";
 import BookingDetails from "../../pages/bookingDetails";
+import Protected from "../../components/auth/Protected";
 
 export const Route = createLazyFileRoute("/ticket-history/")({
-  component: TicketHistory,
+  component: () => (
+    <Protected>
+      <TicketHistory />
+    </Protected>
+  ),
 });
 
 function TicketHistory() {

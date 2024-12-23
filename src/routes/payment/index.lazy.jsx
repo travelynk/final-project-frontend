@@ -14,9 +14,14 @@ import {
 import NavigationBreadCr from "../../pages/navigationBreadCr";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import Protected from "../../components/auth/Protected";
 
 export const Route = createLazyFileRoute("/payment/")({
-  component: Payment,
+  component: () => (
+    <Protected>
+      <Payment />
+    </Protected>
+  ),
 });
 
 function Payment() {
@@ -24,12 +29,6 @@ function Payment() {
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const bookingId = urlParams.get("bookingId");
-
-  useEffect(() => {
-    if (!token) {
-      navigate({ to: "/auth/login" });
-    }
-  }, [navigate, token]);
 
   const [bookingInfo, setBookingInfo] = useState(null);
 

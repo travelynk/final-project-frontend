@@ -10,6 +10,7 @@ import {
   Trash2,
   CheckSquare,
   X,
+  Check,
 } from "lucide-react";
 import {
   getNotificationsById,
@@ -27,9 +28,14 @@ import {
   PopoverTrigger,
 } from "../../components/ui/popover";
 import { cn } from "../../lib/utils";
+import Protected from "../../components/auth/Protected";
 
 export const Route = createLazyFileRoute("/notification/")({
-  component: Notification,
+  component: () => (
+    <Protected>
+      <Notification />
+    </Protected>
+  ),
 });
 
 function Notification() {
@@ -58,6 +64,28 @@ function Notification() {
       queryClient.setQueryData(["notifications"], (oldNotifications) =>
         oldNotifications.map((notif) =>
           notif.id === variables ? { ...notif, isRead: true } : notif
+        )
+      );
+    },
+  });
+
+  const markAllAsReadMutation = useMutation({
+    mutationFn: async () => {
+      // Assuming the API supports batch updates. If not, we'll need to make multiple calls
+      const unreadNotifications = filteredNotifications.filter(
+        (n) => !n.isRead
+      );
+      await Promise.all(
+        unreadNotifications.map((n) => updateNotificationReadStatus(n.id))
+      );
+      return unreadNotifications.map((n) => n.id);
+    },
+    onSuccess: (notificationIds) => {
+      queryClient.setQueryData(["notifications"], (oldNotifications) =>
+        oldNotifications.map((notif) =>
+          notificationIds.includes(notif.id)
+            ? { ...notif, isRead: true }
+            : notif
         )
       );
     },
@@ -139,6 +167,10 @@ function Notification() {
     if (notification && !notification.isRead) {
       readMutation.mutate(notification.id);
     }
+  };
+
+  const handleMarkAllAsRead = () => {
+    markAllAsReadMutation.mutate();
   };
 
   const handleDateSelect = (range) =>
@@ -273,18 +305,30 @@ function Notification() {
 
       <div className="container max-w-4xl mx-auto px-4">
         <div className="container flex flex-wrap justify-between items-center px-4 mb-6 gap-4">
-          <Button
-            variant="outline"
-            className={
-              showDeleteButtons
-                ? "text-red-500 border-red-500 rounded-[18px]"
-                : "text-darkblue05 border-darkblue05 rounded-[18px]"
-            }
-            onClick={() => setShowDeleteButtons(!showDeleteButtons)}
-          >
-            <Trash2 />
-            {showDeleteButtons ? "Cancel" : "Delete"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className={
+                showDeleteButtons
+                  ? "text-red-500 border-red-500 rounded-[18px]"
+                  : "text-darkblue05 border-darkblue05 rounded-[18px]"
+              }
+              onClick={() => setShowDeleteButtons(!showDeleteButtons)}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {showDeleteButtons ? "Cancel" : "Delete"}
+            </Button>
+
+            <Button
+              variant="outline"
+              className="text-darkblue05 border-darkblue05 rounded-[18px]"
+              onClick={handleMarkAllAsRead}
+              disabled={!filteredNotifications.some((n) => !n.isRead)}
+            >
+              <Check className="mr-2 h-4 w-4" />
+              Mark All as Read
+            </Button>
+          </div>
 
           {showDeleteButtons && (
             <div className="flex flex-wrap gap-2">
@@ -293,7 +337,7 @@ function Notification() {
                 onClick={toggleSelectAll}
                 className="text-darkblue05 border-darkblue05 rounded-[18px]"
               >
-                <CheckSquare />
+                <CheckSquare className="mr-2 h-4 w-4" />
                 {checkedNotifications.length === filteredNotifications.length
                   ? "Uncheck All"
                   : "Check All"}

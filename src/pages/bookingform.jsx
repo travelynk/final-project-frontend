@@ -19,7 +19,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { getCountries } from "../services/country";
 import { Combobox } from "../components/ui/combobox";
 import { decodeToken } from "@/utils/decodeToken"; // Import the decodeToken function
-import { FaCalendarAlt } from "react-icons/fa";
+import { Calendar } from "lucide-react";
 import {
   Accordion,
   AccordionItem,
@@ -949,7 +949,7 @@ export default function BookingForm({ onFormSubmit }) {
                             }
                             disabled={isSubmitted}
                           />
-                          <FaCalendarAlt
+                          <Calendar
                             className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500  cursor-pointer hover:text-blue-500 dark:text-blue-400"
                             onClick={() =>
                               document
@@ -1015,16 +1015,11 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Negara Penerbit
                         </Label>
+
                         <Select
-                          id={`negarapenerbit-${index}`}
-                          className="mb-2 border p-2 rounded-lg w-full "
                           value={formState.passengers[index]?.negarapenerbit}
-                          onChange={(e) =>
-                            handleChange(
-                              "negarapenerbit",
-                              e.target.value,
-                              index
-                            )
+                          onValueChange={(value) =>
+                            handleChange("negarapenerbit", value, index)
                           }
                           disabled={isSubmitted}
                         >
@@ -1062,7 +1057,7 @@ export default function BookingForm({ onFormSubmit }) {
                             }
                             disabled={isSubmitted}
                           />
-                          <FaCalendarAlt
+                          <Calendar
                             className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500  cursor-pointer hover:text-blue-500 dark:text-blue-400"
                             onClick={() =>
                               document
