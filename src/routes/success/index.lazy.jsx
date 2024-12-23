@@ -14,8 +14,8 @@ function Success() {
         successMessage="Terimakasih atas pembayaran transaksi"
         showSuccess={true}
       />
-      <main className="container mx-auto max-w-5xl mt-8 px-4">
-        <div className="flex justify-center mt-20">
+      <main className="container mx-auto max-w-5xl mt-8 mb-3 px-4">
+        <div className="flex justify-center mt-15">
           <img src="/svg/picture-success.svg" alt="icon" />
         </div>
         <div className="flex flex-col items-center mt-4">

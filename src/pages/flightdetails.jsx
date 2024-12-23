@@ -215,7 +215,7 @@ export default function FlightDetail({
 
   return (
     <ToastProvider>
-      <div className="bg-white rounded-lg p-4 w-1/2 dark:text-black h-fit">
+      <div className="bg-white rounded-lg p-4 w-full md:w-1/2 lg:w-1/3 dark:text-black h-fit">
         <h2 className="text-lg font-bold">
           Booking Code: <span className="text-purple-600">{bookingCode}</span>
         </h2>

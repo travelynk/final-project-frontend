@@ -19,7 +19,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { getCountries } from "../services/country";
 import { Combobox } from "../components/ui/combobox";
 import { decodeToken } from "@/utils/decodeToken"; // Import the decodeToken function
-
+import { FaCalendarAlt } from "react-icons/fa";
 import {
   Accordion,
   AccordionItem,
@@ -860,7 +860,7 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Title
                         </Label>
-                  
+
                         <Select
                           onValueChange={(value) =>
                             handleChange("title", value, index)
@@ -936,18 +936,27 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Tanggal Lahir
                         </Label>
-                        <Input
-                          required
-                          id={`birthdate-${index}`}
-                          placeholder="dd/mm/yyyy"
-                          type="date"
-                          className="mb-2"
-                          value={formState.passengers[index]?.birthdate}
-                          onChange={(e) =>
-                            handleChange("birthdate", e.target.value, index)
-                          }
-                          disabled={isSubmitted}
-                        />
+                        <div className="relative">
+                          <Input
+                            required
+                            id={`birthdate-${index}`}
+                            type="date"
+                            className="mb-2 text-black dark:text-white appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
+                            value={formState.passengers[index]?.birthdate}
+                            onChange={(e) =>
+                              handleChange("birthdate", e.target.value, index)
+                            }
+                            disabled={isSubmitted}
+                          />
+                          <FaCalendarAlt
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400"
+                            onClick={() =>
+                              document
+                                .getElementById(`birthdate-${index}`)
+                                .showPicker()
+                            }
+                          />
+                        </div>
                       </div>
                       <div>
                         <Label
@@ -956,7 +965,7 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Kewarganegaraan
                         </Label>
-                
+
                         <Select
                           onValueChange={(value) =>
                             handleChange("citizenship", value, index)
@@ -1025,7 +1034,6 @@ export default function BookingForm({ onFormSubmit }) {
                             ))}
                           </SelectContent>
                         </Select>
-              
                       </div>
                       <div>
                         <Label
@@ -1034,18 +1042,27 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Berlaku Sampai
                         </Label>
-                        <Input
-                          required
-                          id={`expiry-${index}`}
-                          placeholder="dd/mm/yyyy"
-                          type="date"
-                          className="mb-2"
-                          value={formState.passengers[index]?.expiry}
-                          onChange={(e) =>
-                            handleChange("expiry", e.target.value, index)
-                          }
-                          disabled={isSubmitted}
-                        />
+                        <div className="relative">
+                          <Input
+                            required
+                            id={`expiry-${index}`}
+                            type="date"
+                            className="mb-2 text-black dark:text-white appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
+                            value={formState.passengers[index]?.expiry}
+                            onChange={(e) =>
+                              handleChange("expiry", e.target.value, index)
+                            }
+                            disabled={isSubmitted}
+                          />
+                          <FaCalendarAlt
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400"
+                            onClick={() =>
+                              document
+                                .getElementById(`expiry-${index}`)
+                                .showPicker()
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
                   </AccordionContent>
@@ -1057,10 +1074,11 @@ export default function BookingForm({ onFormSubmit }) {
           {/* Seat Selection */}
           <div className="border p-6 rounded-lg shadow-md bg-white mt-5 dark:text-black">
             <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
-            <div className="flex items-center justify-center text-center p-2 text-lg font-sm mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10">
+            <div className="flex items-center justify-center text-center p-3 sm:p-4 lg:p-5 text-sm sm:text-base lg:text-lg font-medium mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10 sm:h-12 lg:h-14">
               Flight Num. {flightNum} - {allSeats.length - reservedSeats.length}{" "}
               Seats Available
             </div>
+
             <div className="flex justify-center">
               <div className="grid grid-cols-7 gap-2 justify-center items-center">
                 {/* Render columns */}
