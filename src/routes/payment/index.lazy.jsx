@@ -76,6 +76,7 @@ function Payment() {
   const [vaNumber, setVaNumber] = useState("");
   const [loading, setLoading] = useState("");
   const [selectedBank, setSelectedBank] = useState("");
+  const [haveVaNumber, setHaveVaNumber] = useState(false);
 
   const handleCardNumberChange = (e) => {
     let value = e.target.value.replace(/\s+/g, ""); // Hilangkan spasi
@@ -133,6 +134,7 @@ function Payment() {
         const vaNum = response.data.data.paymentUrl.va_numbers[0].va_number;
         const trxId = response.data.data.paymentUrl.transaction_id;
         setVaNumber(vaNum);
+        setHaveVaNumber(true);
 
         const paymentStatus = async () => {
           const checkStatus = await checkPayment(trxId);
@@ -195,6 +197,7 @@ function Payment() {
                       onChange={changeBank}
                       id="bank"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      disabled={haveVaNumber}
                     >
                       <option selected>Bank</option>
                       <option value="bni">BNI</option>
