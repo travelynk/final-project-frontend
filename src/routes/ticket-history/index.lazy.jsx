@@ -158,7 +158,6 @@ function TicketHistory() {
       }
       groupedBookings[monthYear].push(booking);
     });
-    bookings;
     return groupedBookings;
   };
 

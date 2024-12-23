@@ -62,14 +62,14 @@ const BookingDetails = ({ selectedBooking }) => {
           <div className="flex space-x-4 mb-4">
             <Button
               onClick={() => setIsReturnFlight(false)} // Show Flight 1 (Outbound)
-              className={`px-4 py-2 w-full text-white rounded-[12px] ${!isReturnFlight ? "bg-darkblue05" : "bg-gray-300"}`}
+              className={`px-4 py-2 w-full text-white rounded-[12px] ${!isReturnFlight ? "bg-darkblue05" : "bg-gray-300 dark:bg-slate-800"}`}
             >
               Keberangkatan
             </Button>
 
             <Button
               onClick={() => setIsReturnFlight(true)} // Show Flight 2 (Return)
-              className={`px-4 py-2 w-full text-white rounded-[12px] ${isReturnFlight ? "bg-darkblue05" : "bg-gray-300"}`}
+              className={`px-4 py-2 w-full text-white rounded-[12px] ${isReturnFlight ? "bg-darkblue05" : "bg-gray-300 dark:bg-slate-800"}`}
             >
               Pulang
             </Button>
@@ -254,6 +254,8 @@ const BookingDetails = ({ selectedBooking }) => {
             onClick={() => {
               if (selectedBooking.status === "Unpaid") {
                 navigate({ to: `/payment?bookingId=${selectedBooking.id}` });
+              } else if (selectedBooking.status === "Issued") {
+                window.location.href = selectedBooking.urlTicket;
               }
             }}
             className={`w-full h-[42px] mt-4 py-3 text-white rounded-lg text-center ${

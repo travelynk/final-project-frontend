@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Switch } from "../components/ui/switch";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import PropTypes from "prop-types"; // Import PropTypes
 import { useQueryClient, useQuery } from "@tanstack/react-query"; // Import React Query Client
@@ -19,7 +19,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { getCountries } from "../services/country";
 import { Combobox } from "../components/ui/combobox";
 import { decodeToken } from "@/utils/decodeToken"; // Import the decodeToken function
-
+import { FaCalendarAlt } from "react-icons/fa";
 import {
   Accordion,
   AccordionItem,
@@ -28,6 +28,13 @@ import {
 } from "@/components/ui/accordion";
 import { z } from "zod";
 import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 // New function for booking API call
 const storeBooking = async (bookingData) => {
   const token = localStorage.getItem("token");
@@ -853,23 +860,22 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Title
                         </Label>
-                        <select
-                          required
-                          id={`title-${index}`}
-                          className="mb-2 border p-2 rounded-lg w-full"
-                          value={formState.passengers[index]?.title}
-                          onChange={(e) =>
-                            handleChange("title", e.target.value, index)
+
+                        <Select
+                          onValueChange={(value) =>
+                            handleChange("title", value, index)
                           }
                           disabled={isSubmitted}
                         >
-                          <option value="" disabled>
-                            Pilih Title
-                          </option>
-                          <option value="Mr.">Mr.</option>
-                          <option value="Mrs.">Mrs.</option>
-                          <option value="Miss">Miss</option>
-                        </select>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih Title" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Mr.">Mr.</SelectItem>
+                            <SelectItem value="Mrs.">Mrs.</SelectItem>
+                            <SelectItem value="Miss">Miss</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       <div>
@@ -930,18 +936,28 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Tanggal Lahir
                         </Label>
-                        <Input
-                          required
-                          id={`birthdate-${index}`}
-                          placeholder="dd/mm/yyyy"
-                          type="date"
-                          className="mb-2 dark:date-input-icon "
-                          value={formState.passengers[index]?.birthdate}
-                          onChange={(e) =>
-                            handleChange("birthdate", e.target.value, index)
-                          }
-                          disabled={isSubmitted}
-                        />
+                        <div className="relative">
+                          <Input
+                            required
+                            id={`birthdate-${index}`}
+                            placeholder="dd/mm/yyyy"
+                            type="date"
+                            className="mb-2 text-black dark:text-white appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
+                            value={formState.passengers[index]?.birthdate}
+                            onChange={(e) =>
+                              handleChange("birthdate", e.target.value, index)
+                            }
+                            disabled={isSubmitted}
+                          />
+                          <FaCalendarAlt
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500  cursor-pointer hover:text-blue-500 dark:text-blue-400"
+                            onClick={() =>
+                              document
+                                .getElementById(`birthdate-${index}`)
+                                .showPicker()
+                            }
+                          />
+                        </div>
                       </div>
                       <div>
                         <Label
@@ -950,25 +966,28 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Kewarganegaraan
                         </Label>
-                        <select
-                          required
-                          id={`citizenship-${index}`}
-                          className="mb-2 border p-2 rounded-lg w-full"
+
+                        <Select
                           value={formState.passengers[index]?.citizenship}
-                          onChange={(e) =>
-                            handleChange("citizenship", e.target.value, index)
+                          onValueChange={(value) =>
+                            handleChange("citizenship", value, index)
                           }
                           disabled={isSubmitted}
                         >
-                          <option value="" disabled>
-                            Pilih kewarganegaraan
-                          </option>
-                          {countries.map((country) => (
-                            <option key={country.value} value={country.label}>
-                              {country.label}
-                            </option>
-                          ))}
-                        </select>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih kewarganegaraan" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countries.map((country) => (
+                              <SelectItem
+                                key={country.value}
+                                value={country.label}
+                              >
+                                {country.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div>
                         <Label
@@ -996,8 +1015,7 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Negara Penerbit
                         </Label>
-                        <select
-                          required
+                        <Select
                           id={`negarapenerbit-${index}`}
                           className="mb-2 border p-2 rounded-lg w-full "
                           value={formState.passengers[index]?.negarapenerbit}
@@ -1010,15 +1028,20 @@ export default function BookingForm({ onFormSubmit }) {
                           }
                           disabled={isSubmitted}
                         >
-                          <option value="" disabled>
-                            Pilih negara penerbit
-                          </option>
-                          {countries.map((country) => (
-                            <option key={country.value} value={country.label}>
-                              {country.label}
-                            </option>
-                          ))}
-                        </select>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih negara penerbit" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countries.map((country) => (
+                              <SelectItem
+                                key={country.value}
+                                value={country.label}
+                              >
+                                {country.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div>
                         <Label
@@ -1027,18 +1050,27 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Berlaku Sampai
                         </Label>
-                        <Input
-                          required
-                          id={`expiry-${index}`}
-                          placeholder="dd/mm/yyyy"
-                          type="date"
-                          className="mb-2"
-                          value={formState.passengers[index]?.expiry}
-                          onChange={(e) =>
-                            handleChange("expiry", e.target.value, index)
-                          }
-                          disabled={isSubmitted}
-                        />
+                        <div className="relative">
+                          <Input
+                            required
+                            id={`expiry-${index}`}
+                            type="date"
+                            className="mb-2 text-black dark:text-white appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
+                            value={formState.passengers[index]?.expiry}
+                            onChange={(e) =>
+                              handleChange("expiry", e.target.value, index)
+                            }
+                            disabled={isSubmitted}
+                          />
+                          <FaCalendarAlt
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500  cursor-pointer hover:text-blue-500 dark:text-blue-400"
+                            onClick={() =>
+                              document
+                                .getElementById(`expiry-${index}`)
+                                .showPicker()
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
                   </AccordionContent>
@@ -1050,10 +1082,11 @@ export default function BookingForm({ onFormSubmit }) {
           {/* Seat Selection */}
           <div className="border p-6 rounded-lg shadow-md bg-white mt-5 dark:text-black">
             <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
-            <div className="flex items-center justify-center text-center p-2 text-lg font-sm mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10">
+            <div className="flex items-center justify-center text-center p-3 sm:p-4 lg:p-5 text-sm sm:text-base lg:text-lg font-medium mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10 sm:h-12 lg:h-14">
               Flight Num. {flightNum} - {allSeats.length - reservedSeats.length}{" "}
               Seats Available
             </div>
+
             <div className="flex justify-center">
               <div className="grid grid-cols-7 gap-2 justify-center items-center">
                 {/* Render columns */}

@@ -159,30 +159,28 @@ function Flight() {
 
   return (
     <>
-      <ScrollArea className="h-[89vh] ">
-        <div className="container mx-auto lg:px-28 px-2">
-          <HeaderComponent
-            flightDetails={searchQuery}
-            filters={flightFilter}
-            setSort={setSort}
-            handleCheckboxChange={handleCheckboxChange}
-            handleTransitChange={handleTransitChange}
-            listFlights={listFlights}
-            roundTrip={roundTrip}
-          />
-          <BodyComponent
-            listFlights={listFlights}
-            sort={sort}
-            filters={flightFilter}
-            isLoading={isLoading}
-            handleCheckboxChange={handleCheckboxChange}
-            handleTransitChange={handleTransitChange}
-            roundTrip={roundTrip}
-            setRoundTrip={setRoundTrip}
-            cart={cart}
-          />
-        </div>
-      </ScrollArea>
+      <div className="container mx-auto lg:px-28 px-2 overflow-hidden ">
+        <HeaderComponent
+          flightDetails={searchQuery}
+          filters={flightFilter}
+          setSort={setSort}
+          handleCheckboxChange={handleCheckboxChange}
+          handleTransitChange={handleTransitChange}
+          listFlights={listFlights}
+          roundTrip={roundTrip}
+        />
+        <BodyComponent
+          listFlights={listFlights}
+          sort={sort}
+          filters={flightFilter}
+          isLoading={isLoading}
+          handleCheckboxChange={handleCheckboxChange}
+          handleTransitChange={handleTransitChange}
+          roundTrip={roundTrip}
+          setRoundTrip={setRoundTrip}
+          cart={cart}
+        />
+      </div>
     </>
   );
 }
@@ -281,7 +279,7 @@ const HeaderComponent = ({
             Ubah Penerbangan
           </Button>
         </div>
-        <div className="list-date flex px-3 overflow-x-auto gap-2 ">
+        <div className="list-date flex px-3  overflow-auto gap-2 ">
           {dates.map((day, i) => {
             return (
               <Button
@@ -311,6 +309,7 @@ const HeaderComponent = ({
             );
           })}
         </div>
+
         <div className="filter flex justify-between lg:justify-end ">
           <div className="md:hidden">
             <Popover>
@@ -732,7 +731,7 @@ const BodyComponent = ({
               )}
             </div>
             <Button
-            className='flex gap-3'
+              className="flex gap-3"
               onClick={() => handlePay(searchQuery.ps)}
               disabled={
                 (roundTrip && !!cartArrivalFlight && !!cartDepartureFlight) ||
@@ -741,11 +740,8 @@ const BodyComponent = ({
                   : true
               }
             >
-              <span>
-                
-                Pembayaran
-                </span>
-                <img src="/svg/shopping_cart.svg" alt="shopping_cart" />
+              <span>Pembayaran</span>
+              <img src="/svg/shopping_cart.svg" alt="shopping_cart" />
             </Button>
           </div>
           <div className="filter p-5 border border-darkblue02 rounded-xl shadow-sm text-lg h-fit hidden md:block ">
@@ -899,227 +895,235 @@ const BodyComponent = ({
         </div>
 
         <div className="list-flights w-full lg:w-3/4">
-          <ul className="flex flex-col gap-2">
-            {isLoading ? (
-              <Loading />
-            ) : listFlights === null || listFlights?.length > 0 ? (
-              listFlights
-                .filter((data) => {
-                  const price = parseFloat(
-                    data.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
-                  );
-                  const isPriceMatch = price >= sliderValue;
+          <ScrollArea className="h-[89vh]  ">
+            <ul className="flex flex-col gap-2">
+              {isLoading ? (
+                <Loading />
+              ) : listFlights === null || listFlights?.length > 0 ? (
+                listFlights
+                  .filter((data) => {
+                    const price = parseFloat(
+                      data.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
+                    );
+                    const isPriceMatch = price >= sliderValue;
 
-                  const isAirlineMatch =
-                    checkedAirlines.length === 0 ||
-                    checkedAirlines.includes(data.flights[0].airline.name);
+                    const isAirlineMatch =
+                      checkedAirlines.length === 0 ||
+                      checkedAirlines.includes(data.flights[0].airline.name);
 
-                  const isDirectMatch =
-                    transitFilter.isDirect && data.flights.length === 1;
-                  const isOneTransitMatch =
-                    transitFilter.isOneTransit && data.flights.length === 2;
-                  const isTwoPlusTransitMatch =
-                    transitFilter.isTwoPlusTransit && data.flights.length > 2;
+                    const isDirectMatch =
+                      transitFilter.isDirect && data.flights.length === 1;
+                    const isOneTransitMatch =
+                      transitFilter.isOneTransit && data.flights.length === 2;
+                    const isTwoPlusTransitMatch =
+                      transitFilter.isTwoPlusTransit && data.flights.length > 2;
 
-                  return (
-                    isPriceMatch &&
-                    isAirlineMatch &&
-                    (isDirectMatch ||
-                      isOneTransitMatch ||
-                      isTwoPlusTransitMatch)
-                  );
-                })
-                .sort((a, b) => {
-                  const priceA = parseFloat(
-                    a.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
-                  );
-                  const priceB = parseFloat(
-                    b.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
-                  );
+                    return (
+                      isPriceMatch &&
+                      isAirlineMatch &&
+                      (isDirectMatch ||
+                        isOneTransitMatch ||
+                        isTwoPlusTransitMatch)
+                    );
+                  })
+                  .sort((a, b) => {
+                    const priceA = parseFloat(
+                      a.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
+                    );
+                    const priceB = parseFloat(
+                      b.price.replace(/[^\d,-]/g, "").replace(/,/g, "")
+                    );
 
-                  const departureTimeA = new Date(a.departureTime).getTime();
-                  const departureTimeB = new Date(b.departureTime).getTime();
+                    const departureTimeA = new Date(a.departureTime).getTime();
+                    const departureTimeB = new Date(b.departureTime).getTime();
 
-                  const arrivalTimeA = new Date(a.arrivalTime).getTime();
-                  const arrivalTimeB = new Date(b.arrivalTime).getTime();
+                    const arrivalTimeA = new Date(a.arrivalTime).getTime();
+                    const arrivalTimeB = new Date(b.arrivalTime).getTime();
 
-                  return sort == "1"
-                    ? priceA - priceB
-                    : sort == "2"
-                      ? priceB - priceA
-                      : sort == "3"
-                        ? departureTimeA - departureTimeB
-                        : sort == "4"
-                          ? departureTimeB - departureTimeA
-                          : sort == "5"
-                            ? arrivalTimeA - arrivalTimeB
-                            : sort == "6" && arrivalTimeB - arrivalTimeA;
-                })
-                ?.map((data, i) => {
-                  return (
-                    <li key={i}>
-                      <Accordion
-                        type="single"
-                        collapsible
-                        className="p-5 border border-darkblue02 rounded-xl shadow-sm w-full"
-                      >
-                        <AccordionItem
-                          value={`flight-${data.id}`}
-                          className="py-2"
+                    return sort == "1"
+                      ? priceA - priceB
+                      : sort == "2"
+                        ? priceB - priceA
+                        : sort == "3"
+                          ? departureTimeA - departureTimeB
+                          : sort == "4"
+                            ? departureTimeB - departureTimeA
+                            : sort == "5"
+                              ? arrivalTimeA - arrivalTimeB
+                              : sort == "6" && arrivalTimeB - arrivalTimeA;
+                  })
+                  ?.map((data, i) => {
+                    return (
+                      <li key={i}>
+                        <Accordion
+                          type="single"
+                          collapsible
+                          className="p-5 border border-darkblue02 rounded-xl shadow-sm w-full"
                         >
-                          <div className="w-full bg-transparent hover:bg-transparent grid grid-cols-12 ">
-                            <div className="header flex gap-2 h-[2rem] w-auto col-span-12">
-                              <img src={data.flights[0].airline.image} alt="" />
-                              <span>
-                                {data.flights[0].airline.name} -{" "}
-                                {data.seatClass}
-                              </span>
-                            </div>
-                            <div className="content   flex col-span-9 lg:col-span-10 px-5 justify-start font-bold text-sm md:text-xl items-center lg:gap-3 gap-1">
-                              <AccordionTrigger>
-                                <div className="flex  w-full px-5 justify-start font-bold text-sm md:text-xl items-center lg:gap-3 gap-1">
-                                  <div>
-                                    <span>
-                                      {new Date(data.departureTime)
-                                        .toISOString()
-                                        .slice(11, 16)}
-                                    </span>
-                                    <p className="font-semibold text-lg">
-                                      {data.flights[0].departure.city.code}
-                                    </p>
-                                  </div>
-                                  <div className="flex flex-col justify-center items-center  text-sm md:text-xl  w-full font-semibold text-gray-400 text-center">
-                                    <span>{data.estimatedDuration}</span>
+                          <AccordionItem
+                            value={`flight-${data.id}`}
+                            className="py-2"
+                          >
+                            <div className="w-full bg-transparent hover:bg-transparent grid grid-cols-12 ">
+                              <div className="header flex gap-2 h-[2rem] w-auto col-span-12">
+                                <img
+                                  src={data.flights[0].airline.image}
+                                  alt=""
+                                />
+                                <span>
+                                  {data.flights[0].airline.name} -{" "}
+                                  {data.seatClass}
+                                </span>
+                              </div>
+                              <div className="content   flex col-span-9 lg:col-span-10 px-5 justify-start font-bold text-sm md:text-xl items-center lg:gap-3 gap-1">
+                                <AccordionTrigger>
+                                  <div className="flex  w-full px-5 justify-start font-bold text-sm md:text-xl items-center lg:gap-3 gap-1">
+                                    <div>
+                                      <span>
+                                        {new Date(data.departureTime)
+                                          .toISOString()
+                                          .slice(11, 16)}
+                                      </span>
+                                      <p className="font-semibold text-lg">
+                                        {data.flights[0].departure.city.code}
+                                      </p>
+                                    </div>
+                                    <div className="flex flex-col justify-center items-center  text-sm md:text-xl  w-full font-semibold text-gray-400 text-center">
+                                      <span>{data.estimatedDuration}</span>
+                                      <img
+                                        src="/svg/route.svg"
+                                        alt=""
+                                        className="w-full"
+                                      />
+                                      <span>
+                                        {data.isTransit
+                                          ? "Transit"
+                                          : "Langsung"}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <span>
+                                        {new Date(data.arrivalTime)
+                                          .toISOString()
+                                          .slice(11, 16)}
+                                      </span>
+                                      <p className="font-semibold text-lg">
+                                        {
+                                          data.flights[data.flights.length - 1]
+                                            .arrival.city.code
+                                        }
+                                      </p>
+                                    </div>
+
                                     <img
-                                      src="/svg/route.svg"
+                                      src="/svg/bagasi.svg"
                                       alt=""
-                                      className="w-full"
+                                      className="w-10"
                                     />
-                                    <span>
-                                      {data.isTransit ? "Transit" : "Langsung"}
-                                    </span>
                                   </div>
-                                  <div>
-                                    <span>
-                                      {new Date(data.arrivalTime)
-                                        .toISOString()
-                                        .slice(11, 16)}
-                                    </span>
-                                    <p className="font-semibold text-lg">
-                                      {
-                                        data.flights[data.flights.length - 1]
-                                          .arrival.city.code
-                                      }
-                                    </p>
-                                  </div>
+                                </AccordionTrigger>
+                              </div>
 
-                                  <img
-                                    src="/svg/bagasi.svg"
-                                    alt=""
-                                    className="w-10"
-                                  />
-                                </div>
-                              </AccordionTrigger>
+                              <div className="price text-sm  lg:text-lg font-bold text-darkblue04  col-span-3 lg:col-span-2 ">
+                                <h1>{data.price}</h1>
+                                <Button
+                                  className="w-full rounded-2xl"
+                                  onClick={(event) => handleCart(event, data)}
+                                >
+                                  Pilih
+                                </Button>
+                              </div>
                             </div>
+                            <AccordionContent>
+                              <h1 className="text-darkblue05 text-xl font-bold">
+                                Detail Penerbangan
+                              </h1>
 
-                            <div className="price text-sm  lg:text-lg font-bold text-darkblue04  col-span-3 lg:col-span-2 ">
-                              <h1>{data.price}</h1>
-                              <Button
-                                className="w-full rounded-2xl"
-                                onClick={(event) => handleCart(event, data)}
-                              >
-                                Pilih
-                              </Button>
-                            </div>
-                          </div>
-                          <AccordionContent>
-                            <h1 className="text-darkblue05 text-xl font-bold">
-                              Detail Penerbangan
-                            </h1>
-
-                            {data.flights.map((data) => {
-                              return (
-                                <div key={data.flightId}>
-                                  <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
-                                    <h1 className="text-darkblue05  font-bold lg:col-end-10 col-end-7 px-5">
-                                      Keberangkatan
-                                    </h1>
-                                    <div className="col-span-9 ">
-                                      <h1 className="font-bold ">
-                                        {data.departure.time}
+                              {data.flights.map((data) => {
+                                return (
+                                  <div key={data.flightId}>
+                                    <div className="depature text-lg grid grid-cols-10 justify-items-stretch">
+                                      <h1 className="text-darkblue05  font-bold lg:col-end-10 col-end-7 px-5">
+                                        Keberangkatan
                                       </h1>
-                                      <p>
-                                        {/* {new Date(data.departure.date)} */}
-                                        {/* {format(data.departure.date, "d MMMM")} */}
-                                        {new Date(
-                                          data.departure.date
-                                        ).toLocaleDateString("id-ID", {
-                                          day: "numeric",
-                                          month: "long",
-                                        })}
-                                        {/* {new Date(data.departure.date)} */}
-                                      </p>
-                                      <span className="font-semibold text-lg">
-                                        {data.departure.airport} -
-                                        {data.departure.terminal}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
-                                    <div className="col-span-9 ">
-                                      <div className="flex gap-2">
-                                        <img
-                                          src={data.airline.image}
-                                          alt="logo airlines"
-                                          className="h-auto w-7"
-                                        />
+                                      <div className="col-span-9 ">
                                         <h1 className="font-bold ">
-                                          {data.airline.name} - {data.seatClass}
+                                          {data.departure.time}
                                         </h1>
+                                        <p>
+                                          {/* {new Date(data.departure.date)} */}
+                                          {/* {format(data.departure.date, "d MMMM")} */}
+                                          {new Date(
+                                            data.departure.date
+                                          ).toLocaleDateString("id-ID", {
+                                            day: "numeric",
+                                            month: "long",
+                                          })}
+                                          {/* {new Date(data.departure.date)} */}
+                                        </p>
+                                        <span className="font-semibold text-lg">
+                                          {data.departure.airport} -
+                                          {data.departure.terminal}
+                                        </span>
                                       </div>
-                                      <h1 className="font-bold ">
-                                        {data.flightNum}
+                                    </div>
+                                    <div className="detail px-10 text-lg grid grid-cols-10 justify-items-stretch">
+                                      <div className="col-span-9 ">
+                                        <div className="flex gap-2">
+                                          <img
+                                            src={data.airline.image}
+                                            alt="logo airlines"
+                                            className="h-auto w-7"
+                                          />
+                                          <h1 className="font-bold ">
+                                            {data.airline.name} -{" "}
+                                            {data.seatClass}
+                                          </h1>
+                                        </div>
+                                        <h1 className="font-bold ">
+                                          {data.flightNum}
+                                        </h1>
+
+                                        <span className="font-bold text-lg">
+                                          Informasi
+                                        </span>
+
+                                        <ul className="px-10">
+                                          <li> {data.facility}</li>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                    <div className="return text-lg grid grid-cols-10 justify-items-stretch">
+                                      <h1 className="text-darkblue05  font-bold lg:col-end-10 col-end-7 px-5">
+                                        Kedatangan
                                       </h1>
-
-                                      <span className="font-bold text-lg">
-                                        Informasi
-                                      </span>
-
-                                      <ul className="px-10">
-                                        <li> {data.facility}</li>
-                                      </ul>
+                                      <div className="col-span-9 ">
+                                        <h1 className="font-bold ">
+                                          {data.arrival.time}
+                                        </h1>
+                                        <p>
+                                          {/* {format(data.arrival.date, "d MMMM")} */}
+                                        </p>
+                                        <span className="font-semibold text-lg">
+                                          {data.arrival.airport} -
+                                          {data.arrival.terminal}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="return text-lg grid grid-cols-10 justify-items-stretch">
-                                    <h1 className="text-darkblue05  font-bold lg:col-end-10 col-end-7 px-5">
-                                      Kedatangan
-                                    </h1>
-                                    <div className="col-span-9 ">
-                                      <h1 className="font-bold ">
-                                        {data.arrival.time}
-                                      </h1>
-                                      <p>
-                                        {/* {format(data.arrival.date, "d MMMM")} */}
-                                      </p>
-                                      <span className="font-semibold text-lg">
-                                        {data.arrival.airport} -
-                                        {data.arrival.terminal}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </li>
-                  );
-                })
-            ) : (
-              <SoldOut />
-            )}
-          </ul>
+                                );
+                              })}
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </li>
+                    );
+                  })
+              ) : (
+                <SoldOut />
+              )}
+            </ul>
+          </ScrollArea>
         </div>
       </div>
     </>

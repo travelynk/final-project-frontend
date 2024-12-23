@@ -367,7 +367,7 @@ function Payment() {
           </div>
 
           {/* Booking Details */}
-          <div className="md:col-span-3 bg-white dark:text-darkblue05 rounded-lg p-4">
+          <div className="md:col-span-3 mb-3 bg-transparent dark:text-white rounded-lg p-4">
             {bookingInfo ? (
               <>
                 <strong className="text-lg">

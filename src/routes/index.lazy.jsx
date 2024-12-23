@@ -503,7 +503,7 @@ const MenuSection = () => {
               : true
           }
           onClick={handleSearch}
-          className="w-full bg-darkblue04 text-white block text-center py-2 rounded flex gap-3"
+          className="w-full bg-darkblue04 text-white  text-center py-2 rounded flex gap-3"
         >
           <span>Cari Penerbangan</span>
           <img src="/svg/flight-search.svg" alt="flight-search" />
@@ -573,18 +573,17 @@ const ResultSection = () => {
     <div className="flex flex-col items-center w-full gap-3 py-5">
       <div className="w-full">
         <h1 className="font-bold text-3xl">Destinasi Favorit</h1>
-        <div className="filter text-white grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-12  gap-5">
-          {listFlight?.map((flight, i) => {
-            return (
-              <Button
-                key={i}
-                className="bg-darkblue03 py-4 px-6 rounded-lg lg:col-span-3 "
-                onClick={() => setCity(flight.city)}
-              >
-                <img src="/svg/search.svg" alt="" /> {flight.city}
-              </Button>
-            );
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          {listFlight?.map((flight, i) => (
+            <Button
+              key={i}
+              className="w-full bg-darkblue05 hover:bg-blue-800 text-white p-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+              onClick={() => setCity(flight.city)}
+            >
+              <img src="/svg/search.svg" alt="" className="w-4 h-4" />
+              <span className="truncate">{flight.city}</span>
+            </Button>
+          ))}
         </div>
       </div>
 
@@ -595,15 +594,15 @@ const ResultSection = () => {
             filteredFlight.flights.map((favFlight, i) => (
               <Dialog key={`${index}-${i}`} className="text-start ">
                 <DialogTrigger className="border-0">
-                  <Card className="p-2 text-start hover:bg-darkblue02/50 transition-colors">
+                  <Card className="flex flex-col h-full p-4 text-start hover:bg-darkblue02/50 transition-colors">
                     <img
                       src={favFlight.arrival.city.image}
                       alt=""
-                      className="w-full"
+                      className="w-full h-32 object-cover" // Fixed height for the image
                     />
-                    <CardHeader>
+                    <CardHeader className="flex-grow">
                       <CardTitle className="text-md">
-                        {favFlight.departure.city.name} {">"}
+                        {favFlight.departure.city.name} {">"}{" "}
                         {favFlight.arrival.city.name}
                       </CardTitle>
                       <span className="text-red-500">
@@ -613,15 +612,15 @@ const ResultSection = () => {
                         <img
                           src={favFlight.airline.image}
                           alt="airline"
-                          className="h-auto w-5 "
+                          className="h-auto w-5"
                         />
                         {favFlight.airline.name}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="py-0">
-                      <p>{favFlight.schedule}</p>
+                    <CardContent className="py-0 flex-grow">
+                      <p className="text-sm">{favFlight.schedule}</p>
                     </CardContent>
-                    <CardFooter>
+                    <CardFooter className="flex justify-between items-center">
                       <span className="text-red-500">Rp {favFlight.price}</span>
                     </CardFooter>
                   </Card>
