@@ -494,7 +494,7 @@ function Payment() {
                     {bookingInfo.data.passengerCount.infant} Baby
                     <span className="float-right">IDR 0</span>
                   </p>
-                  <p>
+                  {/* <p>
                     Diskon Voucher
                     <span className="float-right">
                       IDR{" "}
@@ -502,7 +502,7 @@ function Payment() {
                         ? bookingInfo.data.voucher.value.toLocaleString("id-ID")
                         : "0"}
                     </span>
-                  </p>
+                  </p> */}
                   <p>
                     Tax
                     <span className="float-right">

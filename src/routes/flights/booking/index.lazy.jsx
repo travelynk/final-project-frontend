@@ -149,6 +149,7 @@ export default function Booking() {
       } else {
         // Jika tidak ada voucher, langsung navigasi
         ("Navigasi langsung tanpa voucher.");
+
         navigate({ to: `/payment?bookingId=${bookingId}` });
       }
     } else {

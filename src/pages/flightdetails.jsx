@@ -683,7 +683,6 @@ export default function FlightDetail({
             Lanjut Bayar
           </button>
         )}
-
         <ToastViewport />
       </div>
     </ToastProvider>

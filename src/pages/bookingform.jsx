@@ -239,6 +239,8 @@ export default function BookingForm({ onFormSubmit }) {
   });
 
   const handleChange = (field, value, index = null) => {
+    // Jika field adalah 'namakeluarga' dan value kosong, set ke undefined
+
     if (index !== null) {
       setFormState((prev) => {
         const passengers = [...prev.passengers];
@@ -673,7 +675,6 @@ export default function BookingForm({ onFormSubmit }) {
           seats: selectedSeatData,
         });
       }
-
       // Check if seatSelectionData exceeds total flights
       if (seatSelectionData.length > flightId.length) {
         console.warn("Too many seat selections, trimming excess data...");
