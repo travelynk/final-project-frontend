@@ -531,7 +531,7 @@ const ResultSection = () => {
   useEffect(() => {
     if (isSuccess) {
       setListFlight(data);
-      setCity(data[0]?.flights[0]?.arrival?.city?.name);
+      // setCity(data[0]?.flights[0]?.arrival?.city?.name);
     }
   }, [data, isSuccess]);
 
@@ -574,6 +574,13 @@ const ResultSection = () => {
       <div className="w-full">
         <h1 className="font-bold text-3xl">Destinasi Favorit</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          <Button
+            className="w-full bg-darkblue05 hover:bg-blue-800 text-white p-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+            onClick={() => setCity("")}
+          >
+            <img src="/svg/search.svg" alt="" className="w-4 h-4" />
+            <span className="truncate">Semua</span>
+          </Button>
           {listFlight?.map((flight, i) => (
             <Button
               key={i}
@@ -589,7 +596,7 @@ const ResultSection = () => {
 
       <div className="card grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full gap-4 font-semibold ">
         {listFlight
-          ?.filter((flight) => flight.city === city) // Filter berdasarkan city
+          ?.filter((flight) => (city ? flight.city === city : true)) // Filter berdasarkan city
           .map((filteredFlight, index) =>
             filteredFlight.flights.map((favFlight, i) => (
               <Dialog key={`${index}-${i}`} className="text-start ">
