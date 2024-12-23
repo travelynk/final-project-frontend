@@ -79,17 +79,24 @@ function ResetPassword() {
     <div className="flex min-h-screen">
       {/* Image Cover */}
       <div className="hidden lg:flex lg:w-[719px] h-screen relative">
-        <div className="w-full h-full bg-gradient-to-b from-[#DEC9FF] to-[#ffff]">
-          <img
-            src="/img/logo.png"
-            alt="Cover Image"
-            style={{ marginLeft: "100px", marginTop: "200px" }}
-          />
-          <img
+        <div className="w-full h-full bg-gradient-to-b from-darkblue05 to-[#ffff]">
+          <div
+            className="absolute left-1/2 -translate-x-1/2 top-1/4 flex flex-col justify-center items-center font-semibold text-darkblue05 text-3xl
+          "
+          >
+            <img
+              src="/img/rm-logo-travelynk-crop.png"
+              alt="Cover Image"
+              // style={{ marginLeft: "100px", marginTop: "200px" }}
+              className="h-auto w-96 rounded-full  "
+            />
+            <span>Travelynk</span>
+          </div>
+          {/* <img
             src="/img/leaves.png"
             alt="Cover Image"
             style={{ marginTop: "-80px" }}
-          />
+          /> */}
         </div>
       </div>
 

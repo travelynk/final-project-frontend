@@ -12,6 +12,10 @@ import {
   ToastDescription,
 } from "@/components/ui/toast";
 import { useSelector } from "react-redux";
+import { setToken } from "@/redux/slices/auth"; // Pastikan import ini sesuai dengan lokasi file Anda
+import { useToast } from "@/hooks/use-toast.js";
+import { useDispatch } from "react-redux";
+import { ToastAction } from "@/components/ui/toast";
 
 export const Route = createLazyFileRoute("/flights/booking/")({
   component: Booking,
@@ -25,18 +29,103 @@ export default function Booking() {
   const navigate = useNavigate();
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
+  const { toast } = useToast();
 
   const [showToast, setShowToast] = useState(false); // State untuk toast
   const { token } = useSelector((state) => state.auth);
 
+  const dispatch = useDispatch(); // Tambahkan ini
+
   useEffect(() => {
-    if (!token) {
-      setShowToast(true); // Tampilkan toast
-      setTimeout(() => {
-        navigate({ to: "/auth/login" }); // Arahkan ke /auth/login setelah 1 detik
-      }, 1000); // 1000ms = 1 detik
-    }
-  }, [navigate, token]);
+    const checkToken = () => {
+      // Cek token di localStorage dan Redux store
+      const localToken = localStorage.getItem("token");
+
+      if (!localToken || !token) {
+        // Pastikan token dihapus dari keduanya
+        dispatch(setToken(null));
+        localStorage.removeItem("token");
+
+        toast({
+          variant: "warning",
+          title: "Sesi Berakhir",
+          description: "Mohon login kembali untuk melanjutkan pemesanan.",
+          action: <ToastAction altText="OK">OK</ToastAction>,
+        });
+
+        // Redirect setelah toast muncul
+        setTimeout(() => {
+          navigate({ to: "/auth/login" });
+        }, 2000);
+        return;
+      }
+
+      // Tambahan: Cek apakah token sama antara localStorage dan Redux
+      if (localToken !== token) {
+        dispatch(setToken(null));
+        localStorage.removeItem("token");
+
+        toast({
+          variant: "destructive",
+          title: "Sesi Tidak Valid",
+          description: "Mohon login kembali untuk keamanan.",
+          action: <ToastAction altText="OK">OK</ToastAction>,
+        });
+
+        setTimeout(() => {
+          navigate({ to: "/auth/login" });
+        }, 2000);
+        return;
+      }
+
+      // Cek token expiration
+      try {
+        const payload = token.split(".")[1];
+        const decoded = JSON.parse(atob(payload));
+        const currentTime = Date.now() / 1000;
+
+        if (decoded.exp < currentTime) {
+          dispatch(setToken(null));
+          localStorage.removeItem("token");
+
+          toast({
+            variant: "destructive",
+            title: "Sesi Berakhir",
+            description: "Sesi Anda telah berakhir. Mohon login kembali.",
+            action: <ToastAction altText="OK">OK</ToastAction>,
+          });
+
+          setTimeout(() => {
+            navigate({ to: "/auth/login" });
+          }, 2000);
+        }
+      } catch (error) {
+        console.error("Error checking token:", error);
+        dispatch(setToken(null));
+        localStorage.removeItem("token");
+
+        toast({
+          variant: "destructive",
+          title: "Terjadi Kesalahan",
+          description: "Mohon login kembali untuk melanjutkan.",
+          action: <ToastAction altText="OK">OK</ToastAction>,
+        });
+
+        setTimeout(() => {
+          navigate({ to: "/auth/login" });
+        }, 2000);
+      }
+    };
+
+    // Jalankan pengecekan saat komponen di-mount dan setiap perubahan token
+    checkToken();
+
+    // Tambahkan interval untuk cek token secara berkala (misalnya setiap 30 detik)
+    const intervalId = setInterval(checkToken, 30000);
+
+    // Cleanup interval saat komponen di-unmount
+    return () => clearInterval(intervalId);
+  }, [token, navigate, dispatch, toast]);
 
   const handleFormSubmit = ({ bookingResult }) => {
     if (bookingResult?.response?.data?.bookingCode) {
@@ -50,8 +139,8 @@ export default function Booking() {
   };
 
   const handlePaymentRedirect = async () => {
-    console.log("Status:", status);
-    console.log("Booking ID:", bookingId);
+    "Status:", status;
+    "Booking ID:", bookingId;
 
     if (status?.toLowerCase() === "unpaid" && bookingId) {
       if (selectedVoucher) {
@@ -59,7 +148,8 @@ export default function Booking() {
         await updateTotalPrice();
       } else {
         // Jika tidak ada voucher, langsung navigasi
-        console.log("Navigasi langsung tanpa voucher.");
+        ("Navigasi langsung tanpa voucher.");
+
         navigate({ to: `/payment?bookingId=${bookingId}` });
       }
     } else {
@@ -96,7 +186,7 @@ export default function Booking() {
       }
 
       const data = await response.json();
-      console.log("Berhasil memperbarui total harga:", data);
+      "Berhasil memperbarui total harga:", data;
 
       // Arahkan ke halaman pembayaran
       navigate({ to: `/payment?bookingId=${bookingId}` });

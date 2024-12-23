@@ -33,6 +33,9 @@ const AuthResetPasswordIndexLazyImport = createFileRoute(
 )()
 const AuthRegisterIndexLazyImport = createFileRoute('/auth/register/')()
 const AuthLoginIndexLazyImport = createFileRoute('/auth/login/')()
+const UserAccountSettingsIndexLazyImport = createFileRoute(
+  '/user/account/settings/',
+)()
 
 // Create/Update Routes
 
@@ -135,6 +138,15 @@ const AuthLoginIndexLazyRoute = AuthLoginIndexLazyImport.update({
   import('./routes/auth/login/index.lazy').then((d) => d.Route),
 )
 
+const UserAccountSettingsIndexLazyRoute =
+  UserAccountSettingsIndexLazyImport.update({
+    id: '/user/account/settings/',
+    path: '/user/account/settings/',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/user/account/settings/index.lazy').then((d) => d.Route),
+  )
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -230,6 +242,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserAccountIndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/user/account/settings/': {
+      id: '/user/account/settings/'
+      path: '/user/account/settings'
+      fullPath: '/user/account/settings'
+      preLoaderRoute: typeof UserAccountSettingsIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -249,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/auth/verify-otp': typeof AuthVerifyOtpIndexLazyRoute
   '/flights/booking': typeof FlightsBookingIndexLazyRoute
   '/user/account': typeof UserAccountIndexLazyRoute
+  '/user/account/settings': typeof UserAccountSettingsIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -265,6 +285,7 @@ export interface FileRoutesByTo {
   '/auth/verify-otp': typeof AuthVerifyOtpIndexLazyRoute
   '/flights/booking': typeof FlightsBookingIndexLazyRoute
   '/user/account': typeof UserAccountIndexLazyRoute
+  '/user/account/settings': typeof UserAccountSettingsIndexLazyRoute
 }
 
 export interface FileRoutesById {
@@ -282,6 +303,7 @@ export interface FileRoutesById {
   '/auth/verify-otp/': typeof AuthVerifyOtpIndexLazyRoute
   '/flights/booking/': typeof FlightsBookingIndexLazyRoute
   '/user/account/': typeof UserAccountIndexLazyRoute
+  '/user/account/settings/': typeof UserAccountSettingsIndexLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -300,6 +322,7 @@ export interface FileRouteTypes {
     | '/auth/verify-otp'
     | '/flights/booking'
     | '/user/account'
+    | '/user/account/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -315,6 +338,7 @@ export interface FileRouteTypes {
     | '/auth/verify-otp'
     | '/flights/booking'
     | '/user/account'
+    | '/user/account/settings'
   id:
     | '__root__'
     | '/'
@@ -330,6 +354,7 @@ export interface FileRouteTypes {
     | '/auth/verify-otp/'
     | '/flights/booking/'
     | '/user/account/'
+    | '/user/account/settings/'
   fileRoutesById: FileRoutesById
 }
 
@@ -347,6 +372,7 @@ export interface RootRouteChildren {
   AuthVerifyOtpIndexLazyRoute: typeof AuthVerifyOtpIndexLazyRoute
   FlightsBookingIndexLazyRoute: typeof FlightsBookingIndexLazyRoute
   UserAccountIndexLazyRoute: typeof UserAccountIndexLazyRoute
+  UserAccountSettingsIndexLazyRoute: typeof UserAccountSettingsIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -363,6 +389,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthVerifyOtpIndexLazyRoute: AuthVerifyOtpIndexLazyRoute,
   FlightsBookingIndexLazyRoute: FlightsBookingIndexLazyRoute,
   UserAccountIndexLazyRoute: UserAccountIndexLazyRoute,
+  UserAccountSettingsIndexLazyRoute: UserAccountSettingsIndexLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -387,7 +414,8 @@ export const routeTree = rootRoute
         "/auth/send-reset-password/",
         "/auth/verify-otp/",
         "/flights/booking/",
-        "/user/account/"
+        "/user/account/",
+        "/user/account/settings/"
       ]
     },
     "/": {
@@ -428,6 +456,9 @@ export const routeTree = rootRoute
     },
     "/user/account/": {
       "filePath": "user/account/index.lazy.jsx"
+    },
+    "/user/account/settings/": {
+      "filePath": "user/account/settings/index.lazy.jsx"
     }
   }
 }

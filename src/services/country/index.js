@@ -1,7 +1,8 @@
-export const getAirpots = async () => {
+export const getCountries = async () => {
   const token = localStorage.getItem("token");
 
-  let url = `${import.meta.env.VITE_API_URL}/airports`;
+  let url = `${import.meta.env.VITE_API_URL}/countries
+  `;
 
   const response = await fetch(url, {
     headers: {

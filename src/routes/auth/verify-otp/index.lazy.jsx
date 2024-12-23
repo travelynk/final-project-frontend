@@ -43,7 +43,7 @@ function verifyOTP() {
   const { mutate: sendOtpMutation } = useMutation({
     mutationFn: sendOtp,
     onSuccess: (result) => {
-      console.log(result);
+      result;
       setCountdown(30);
       setIsResendEnabled(false);
 
@@ -118,7 +118,7 @@ function verifyOTP() {
       email: email, // Use email from Redux
       otp: otp, // Use OTP state
     };
-    console.log(request);
+    request;
 
     verifyOtpMutation(request); // Trigger OTP verification
   };

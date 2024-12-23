@@ -8,7 +8,7 @@ const Protected = ({ children }) => {
 
   // if token not found It will redirect it to login
   if (!token) {
-    navigate({ to: "/login" });
+    navigate({ to: "/auth/login" });
     return;
   }
 

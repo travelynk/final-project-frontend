@@ -15,26 +15,26 @@ const SocketioNotif = () => {
 
     // Event when connected
     SocketInstance.on("connect", () => {
-      console.log("Connected to server");
+      ("Connected to server");
     });
 
     // Event for payment status
     SocketInstance.on("Payment", (data) => {
       setNotification(data.message); // Set notification message
-      console.log(data.message, data.createdAt);
+      data.message, data.createdAt;
     });
 
     // Event for booking success
     SocketInstance.on("BookingSuccess", (data) => {
-      console.log("BookingSuccess data received:", data);
+      "BookingSuccess data received:", data;
 
       setNotification(data.message); // Display booking success message
-      console.log(data.message);
+      data.message;
     });
 
     // Handle connection error
     SocketInstance.on("connect_error", (err) => {
-      console.log("Connection error:", err.message);
+      "Connection error:", err.message;
     });
 
     // Cleanup on component unmount

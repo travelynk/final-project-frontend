@@ -56,7 +56,7 @@ const BookingList = ({
             className={`px-4 py-2 rounded-[18px] mb-2 md:mb-0 ${
               statusFilter === status
                 ? "bg-darkblue05 text-white"
-                : "bg-gray-200 text-gray-800"
+                : "bg-gray-200 dark:bg-slate-800 text-gray-800 dark:text-white"
             }`}
             onClick={() => setStatusFilter(status)}
           >
@@ -186,7 +186,7 @@ const BookingList = ({
                             key={booking.id}
                             className={`border shadow h-auto w-full rounded-lg p-4 mb-4 cursor-pointer ${
                               selectedBooking?.id === booking.id
-                                ? "bg-slate-200"
+                                ? "bg-slate-200 dark:bg-slate-800"
                                 : ""
                             }`}
                             onClick={() => {
@@ -234,11 +234,6 @@ const BookingList = ({
                                       acc.push(current);
                                       return acc;
                                     }, []);
-
-                                  console.log(
-                                    "filteredSegments:",
-                                    filteredSegments
-                                  );
 
                                   // If there are multiple segments, group them as a single transit route
                                   if (filteredSegments.length > 1) {
@@ -298,8 +293,6 @@ const BookingList = ({
                                     const totalMinutes = Math.round(
                                       (transit.duration - totalHours) * 60
                                     ); // Convert fractional hours to minutes
-
-                                    console.log("transit:", transit);
 
                                     return (
                                       <div

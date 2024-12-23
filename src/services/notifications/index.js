@@ -13,12 +13,12 @@ export const getNotificationsById = async () => {
   }
 
   const result = await response.json();
-  //console.log("Bookings", result);
+  // ("Bookings", result);
   return result?.data;
 };
 
 export const updateNotificationReadStatus = async (notificationId) => {
-  console.log(notificationId);
+  notificationId;
   const url = `${import.meta.env.VITE_API_URL}/notifications/${notificationId}`;
   const response = await fetch(url, {
     method: "PATCH",
@@ -36,7 +36,7 @@ export const updateNotificationReadStatus = async (notificationId) => {
 };
 
 export const deleteNotifications = async (notificationId) => {
-  console.log(notificationId);
+  notificationId;
   const url = `${import.meta.env.VITE_API_URL}/notifications/${notificationId}/soft-delete`;
   const response = await fetch(url, {
     method: "PATCH",

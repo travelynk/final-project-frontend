@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Switch } from "../components/ui/switch";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import PropTypes from "prop-types"; // Import PropTypes
 import { useQueryClient, useQuery } from "@tanstack/react-query"; // Import React Query Client
@@ -12,9 +12,14 @@ import {
   ToastTitle,
   ToastDescription,
 } from "../components/ui/toast";
+import { useSelector } from "react-redux";
 import { useToast } from "@/hooks/use-toast.js";
-import { ToastAction } from "@/components/ui/toast";
 
+import { ToastAction } from "@/components/ui/toast";
+import { getCountries } from "../services/country";
+import { Combobox } from "../components/ui/combobox";
+import { decodeToken } from "@/utils/decodeToken"; // Import the decodeToken function
+import { Calendar } from "lucide-react";
 import {
   Accordion,
   AccordionItem,
@@ -23,12 +28,19 @@ import {
 } from "@/components/ui/accordion";
 import { z } from "zod";
 import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 // New function for booking API call
 const storeBooking = async (bookingData) => {
   const token = localStorage.getItem("token");
 
   try {
-    console.log("Booking Request Body:", JSON.stringify(bookingData, null, 2));
+    "Booking Request Body:", JSON.stringify(bookingData, null, 2);
 
     const response = await fetch(
       "https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app/api/v1/bookings",
@@ -49,7 +61,7 @@ const storeBooking = async (bookingData) => {
       throw new Error(responseBody.message || "Booking failed");
     }
 
-    console.log("Booking successful:", responseBody);
+    "Booking successful:", responseBody;
 
     // Mengembalikan data yang dikirim dan respons
     return {
@@ -95,6 +107,8 @@ const bookingSchema = z.object({
 export default function BookingForm({ onFormSubmit }) {
   const [socket, setSocket] = useState(null);
   const [notification, setNotification] = useState("");
+  const { token } = useSelector((state) => state.auth); // Ambil token dari Redux
+
   useEffect(() => {
     // Initialize socket connection
     const socketInstance = io(
@@ -103,19 +117,19 @@ export default function BookingForm({ onFormSubmit }) {
 
     // Event when connected
     socketInstance.on("connect", () => {
-      console.log("Connected to server");
+      ("Connected to server");
     });
 
     // Event for Unpaid status
     socketInstance.on("Status Pembayaran (Unpaid)", (data) => {
       setNotification(data.message); // Set notification message
-      console.log("isi pesan :", data.message);
-      console.log("tanggal pemesanan:", data.createdAt);
+      // "isi pesan :", data.message;
+      // "tanggal pemesanan:", data.createdAt;
     });
 
     // Handle connection error
     socketInstance.on("connect_error", (err) => {
-      console.log("Connection error:", err.message);
+      "Connection error:", err.message;
     });
 
     setSocket(socketInstance); // Save socket instance to state
@@ -125,7 +139,7 @@ export default function BookingForm({ onFormSubmit }) {
       socketInstance.disconnect();
     };
   }, []);
-  // console.log(notification);
+  //  (notification);
 
   const Notification = ({ message, onDismiss }) => {
     if (!message) return null;
@@ -173,6 +187,35 @@ export default function BookingForm({ onFormSubmit }) {
   const [toastVariant, setToastVariant] = useState("default");
   const [toastTitle, setToastTitle] = useState("");
   const [toastDescription, setToastDescription] = useState("");
+  const [openCitizenship, setOpenCitizenship] = useState(false);
+  const [openIssuer, setOpenIssuer] = useState(false);
+  const [countries, setCountries] = useState([]);
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await getCountries();
+        // console.log("Respons API:", response); // Debug respons API
+
+        // Pastikan respons adalah array
+        if (Array.isArray(response)) {
+          const formattedCountries = response.map((country) => ({
+            label: country.name,
+            value: country.code,
+          }));
+          // console.log("Formatted Countries:", formattedCountries); // Debug data yang akan di-set
+          setCountries(formattedCountries);
+        } else {
+          console.error("Error: Respons API tidak berupa array", response);
+        }
+      } catch (error) {
+        console.error("Terjadi kesalahan saat mengambil data negara:", error);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
   const { toast } = useToast();
 
   const [formState, setFormState] = useState({
@@ -236,14 +279,20 @@ export default function BookingForm({ onFormSubmit }) {
         const pergiFlights = cartData?.flights?.[0]?.pergi?.flights || [];
         const pulangFlights = cartData?.flights?.[0]?.pulang?.flights || [];
 
+        // tambahkan console.log untuk pergiFlight dan pulangFlights
+        // console.log("Pergi Flights:", pergiFlights);
+        // console.log("Pulang Flights:", pulangFlights);
+
         const pergiFlightIds = pergiFlights.map((f) => ({
           flightId: f.flightId,
           isReturn: false,
+          flightNum: f.flightNum,
         }));
 
         const pulangFlightIds = pulangFlights.map((f) => ({
           flightId: f.flightId,
           isReturn: true,
+          flightNum: f.flightNum,
         }));
 
         const allFlightIds = [...pergiFlightIds, ...pulangFlightIds];
@@ -253,6 +302,7 @@ export default function BookingForm({ onFormSubmit }) {
         } else {
           console.warn("No valid flight IDs found in localStorage");
         }
+        // console.log("Flight IDs:", allFlightIds);
 
         const pergiPassengerCount =
           cartData?.flights[0]?.pergi?.passengerCount || 0;
@@ -262,9 +312,9 @@ export default function BookingForm({ onFormSubmit }) {
           pulangFlights.length > 0 ? pergiPassengers : [];
 
         // Debugging: Pastikan jumlah penumpang benar
-        console.log("Passengers for Outbound Flight:", pergiPassengers);
-        console.log("Passengers for Return Flight:", pulangPassengers);
-        console.log("Combined Passengers:", [...pergiPassengers]);
+        "Passengers for Outbound Flight:", pergiPassengers;
+        "Passengers for Return Flight:", pulangPassengers;
+        "Combined Passengers:", [...pergiPassengers];
 
         setFormState((prev) => ({
           ...prev,
@@ -349,7 +399,7 @@ export default function BookingForm({ onFormSubmit }) {
 
     // Iterasi untuk setiap flightId
     for (const { flightId } of flightIds) {
-      console.log(`Fetching seats for flightId: ${flightId}`);
+      `Fetching seats for flightId: ${flightId}`;
       const response = await fetch(
         `https://api-tiketku-travelynk-145227191319.asia-southeast1.run.app/api/v1/seats/${flightId}`, // Menggunakan path parameter
         {
@@ -401,7 +451,7 @@ export default function BookingForm({ onFormSubmit }) {
   }
 
   // Process seat data
-  // console.log("Seat Data:", seatData);
+  //  ("Seat Data:", seatData);
 
   if (!seatData || !Array.isArray(seatData)) {
     console.error("seatData is not valid:", seatData);
@@ -431,7 +481,7 @@ export default function BookingForm({ onFormSubmit }) {
         )
       : 1; // Default jika tidak ada data
 
-  // console.log("Calculated seat rows:", seatRows);
+  //  ("Calculated seat rows:", seatRows);
 
   const seatColumns = ["A", "B", "C", "", "D", "E", "F"];
   const reservedSeats = allSeats
@@ -446,20 +496,21 @@ export default function BookingForm({ onFormSubmit }) {
     if (selectedSeats.some((s) => s.id === seat.id)) {
       // If seat is selected, deselect it
       setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.id));
-      console.log(`Deselected Seat ID: ${seat.id}, Position: ${seat.position}`);
+      `Deselected Seat ID: ${seat.id}, Position: ${seat.position}`;
     } else if (selectedSeats.length < totalPassengers) {
       // If seat is not selected, select it
       setSelectedSeats([
         ...selectedSeats,
         { id: seat.id, position: seat.position },
       ]);
-      console.log(`Selected Seat ID: ${seat.id}, Position: ${seat.position}`);
+      `Selected Seat ID: ${seat.id}, Position: ${seat.position}`;
     } else {
       toast({
         variant: "info",
         title: "Pemilihan Tempat Duduk.",
         description: "Pemilihan Telah Mencapai Batas.",
         action: <ToastAction altText="Try again">OK</ToastAction>,
+        duration: 1000,
       });
     }
   };
@@ -470,13 +521,23 @@ export default function BookingForm({ onFormSubmit }) {
       const seatSelectionData =
         JSON.parse(localStorage.getItem("seatSelection")) || [];
 
-      console.log("seatSelectionData:", seatSelectionData);
+      "seatSelectionData:", seatSelectionData;
 
       // Validate if seatSelectionData matches the flights
       if (seatSelectionData.length !== flightId.length) {
-        throw new Error(
-          "Seat selection data does not match the number of flights."
-        );
+        toast({
+          variant: "info",
+          title: "Tolong Ulangi Pemesanan Anda!.",
+          description:
+            "Seat selection data does not match the number of flights!.",
+          action: <ToastAction altText="Try again">OK</ToastAction>,
+          duration: 3000,
+          onClose: () => {
+            setTimeout(() => {
+              window.location.reload();
+            }, 0);
+          },
+        });
       }
 
       // Construct flightSegments from seatSelectionData
@@ -510,10 +571,7 @@ export default function BookingForm({ onFormSubmit }) {
         flightSegments,
       };
 
-      console.log(
-        "Booking Request Body:",
-        JSON.stringify(bookingData, null, 2)
-      );
+      "Booking Request Body:", JSON.stringify(bookingData, null, 2);
 
       // Call the storeBooking API function
       const response = await storeBooking(bookingData);
@@ -521,7 +579,7 @@ export default function BookingForm({ onFormSubmit }) {
       // Notify user of successful booking
 
       // Handle successful booking
-      console.log("Booking successful:", response);
+      "Booking successful:", response;
 
       // Notify parent component or reset state
       if (onFormSubmit) {
@@ -558,6 +616,8 @@ export default function BookingForm({ onFormSubmit }) {
   };
 
   const handleSaveAndContinue = () => {
+    const flightNum = flightId?.[currentFlightIndex]?.flightNum;
+
     // Check if the number of selected seats matches the number of passengers
     if (selectedSeats.length !== formState.passengers.length) {
       toast({
@@ -566,6 +626,7 @@ export default function BookingForm({ onFormSubmit }) {
         description:
           "Pastikan jumlah kursi yang dipilih sesuai dengan jumlah penumpang.",
         action: <ToastAction altText="Try again">OK</ToastAction>,
+        duration: 1500,
       });
       return; // Stop execution if validation fails
     }
@@ -576,7 +637,7 @@ export default function BookingForm({ onFormSubmit }) {
       selectedSeats: selectedSeats, // Ensure it's included
     };
 
-    console.log("Selected Seats before validation:", selectedSeats);
+    "Selected Seats before validation:", selectedSeats;
 
     // Validate formState using bookingSchema
     try {
@@ -620,10 +681,19 @@ export default function BookingForm({ onFormSubmit }) {
         seatSelectionData = seatSelectionData.slice(0, flightId.length);
       }
 
-      console.log("Saving seat selection data:", seatSelectionData);
+      "Saving seat selection data:", seatSelectionData;
 
       // Save the updated seat selection data to localStorage
       localStorage.setItem("seatSelection", JSON.stringify(seatSelectionData));
+
+      // Show toast after saving the current flight's data
+      toast({
+        variant: "success",
+        title: `Flight ${flightNum} Tersimpan "`,
+        description: `Data untuk penerbangan ${flightNum} berhasil disimpan.`,
+        action: <ToastAction altText="OK">OK</ToastAction>,
+        duration: 3000,
+      });
 
       // Mark current flight as completed
       const updatedSeatCompletion = [...seatSelectionComplete];
@@ -641,6 +711,7 @@ export default function BookingForm({ onFormSubmit }) {
           title: "Berhasil Disimpan",
           description: "Silahkan Lanjutkan untuk Booking !",
           action: <ToastAction altText="Try again">OK</ToastAction>,
+          duration: 4000,
         });
         // Additional logic if needed
       }
@@ -655,6 +726,7 @@ export default function BookingForm({ onFormSubmit }) {
           title: "Validasi Gagal",
           description: err.message,
           action: <ToastAction altText="Try again">OK</ToastAction>,
+          duration: 1500,
         });
       });
     }
@@ -663,6 +735,11 @@ export default function BookingForm({ onFormSubmit }) {
   const isButtonDisabled =
     seatSelectionComplete.length !== flightId.length ||
     seatSelectionComplete.includes(false);
+
+  // Mengakses flightNum berdasarkan currentFlightIndex
+  const flightNum = flightId?.[currentFlightIndex]?.flightNum;
+
+  // console.log("Flight Number:", flightNum);
 
   return (
     <ToastProvider>
@@ -773,7 +850,7 @@ export default function BookingForm({ onFormSubmit }) {
                 <AccordionItem key={index} value={`passenger-${index}`}>
                   <AccordionTrigger className="bg-[#3C3C3C] text-white rounded-lg px-4 py-2 mb-1">
                     Data Diri Penumpang {index + 1} - {passenger.type} Flight:{" "}
-                    {formState.flightNum}
+                    {flightNum}
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="space-y-4 p-4 dark:text-white">
@@ -784,17 +861,24 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Title
                         </Label>
-                        <Input
-                          id={`title-${index}`}
-                          placeholder="Mr./Mrs./Miss"
-                          className="mb-2"
-                          value={formState.passengers[index]?.title}
-                          onChange={(e) =>
-                            handleChange("title", e.target.value, index)
+
+                        <Select
+                          onValueChange={(value) =>
+                            handleChange("title", value, index)
                           }
                           disabled={isSubmitted}
-                        />
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih Title" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Mr.">Mr.</SelectItem>
+                            <SelectItem value="Mrs.">Mrs.</SelectItem>
+                            <SelectItem value="Miss">Miss</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
+
                       <div>
                         <Label
                           className="text-darkblue05 font-bold text-[14px]"
@@ -853,18 +937,28 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Tanggal Lahir
                         </Label>
-                        <Input
-                          required
-                          id={`birthdate-${index}`}
-                          placeholder="dd/mm/yyyy"
-                          type="date"
-                          className="mb-2"
-                          value={formState.passengers[index]?.birthdate}
-                          onChange={(e) =>
-                            handleChange("birthdate", e.target.value, index)
-                          }
-                          disabled={isSubmitted}
-                        />
+                        <div className="relative">
+                          <Input
+                            required
+                            id={`birthdate-${index}`}
+                            placeholder="dd/mm/yyyy"
+                            type="date"
+                            className="mb-2 text-black dark:text-white appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
+                            value={formState.passengers[index]?.birthdate}
+                            onChange={(e) =>
+                              handleChange("birthdate", e.target.value, index)
+                            }
+                            disabled={isSubmitted}
+                          />
+                          <Calendar
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500  cursor-pointer hover:text-blue-500 dark:text-blue-400"
+                            onClick={() =>
+                              document
+                                .getElementById(`birthdate-${index}`)
+                                .showPicker()
+                            }
+                          />
+                        </div>
                       </div>
                       <div>
                         <Label
@@ -873,17 +967,28 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Kewarganegaraan
                         </Label>
-                        <Input
-                          required
-                          id={`citizenship-${index}`}
-                          placeholder="Indonesia"
-                          className="mb-2"
+
+                        <Select
                           value={formState.passengers[index]?.citizenship}
-                          onChange={(e) =>
-                            handleChange("citizenship", e.target.value, index)
+                          onValueChange={(value) =>
+                            handleChange("citizenship", value, index)
                           }
                           disabled={isSubmitted}
-                        />
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih kewarganegaraan" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countries.map((country) => (
+                              <SelectItem
+                                key={country.value}
+                                value={country.label}
+                              >
+                                {country.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div>
                         <Label
@@ -911,21 +1016,28 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Negara Penerbit
                         </Label>
-                        <Input
-                          required
-                          id={`negarapenerbit-${index}`}
-                          placeholder="Masukan Negara Penerbit"
-                          className="mb-2"
+
+                        <Select
                           value={formState.passengers[index]?.negarapenerbit}
-                          onChange={(e) =>
-                            handleChange(
-                              "negarapenerbit",
-                              e.target.value,
-                              index
-                            )
+                          onValueChange={(value) =>
+                            handleChange("negarapenerbit", value, index)
                           }
                           disabled={isSubmitted}
-                        />
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Pilih negara penerbit" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countries.map((country) => (
+                              <SelectItem
+                                key={country.value}
+                                value={country.label}
+                              >
+                                {country.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div>
                         <Label
@@ -934,18 +1046,27 @@ export default function BookingForm({ onFormSubmit }) {
                         >
                           Berlaku Sampai
                         </Label>
-                        <Input
-                          required
-                          id={`expiry-${index}`}
-                          placeholder="dd/mm/yyyy"
-                          type="date"
-                          className="mb-2"
-                          value={formState.passengers[index]?.expiry}
-                          onChange={(e) =>
-                            handleChange("expiry", e.target.value, index)
-                          }
-                          disabled={isSubmitted}
-                        />
+                        <div className="relative">
+                          <Input
+                            required
+                            id={`expiry-${index}`}
+                            type="date"
+                            className="mb-2 text-black dark:text-white appearance-none [&::-webkit-calendar-picker-indicator]:hidden"
+                            value={formState.passengers[index]?.expiry}
+                            onChange={(e) =>
+                              handleChange("expiry", e.target.value, index)
+                            }
+                            disabled={isSubmitted}
+                          />
+                          <Calendar
+                            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500  cursor-pointer hover:text-blue-500 dark:text-blue-400"
+                            onClick={() =>
+                              document
+                                .getElementById(`expiry-${index}`)
+                                .showPicker()
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
                   </AccordionContent>
@@ -957,10 +1078,11 @@ export default function BookingForm({ onFormSubmit }) {
           {/* Seat Selection */}
           <div className="border p-6 rounded-lg shadow-md bg-white mt-5 dark:text-black">
             <h3 className="text-xl font-semibold mb-4">Pilih Kursi</h3>
-            <div className="flex items-center justify-center text-center p-2 text-lg font-sm mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10">
-              Penerbangan {formState.flightNum} -{" "}
-              {allSeats.length - reservedSeats.length} Seats Available
+            <div className="flex items-center justify-center text-center p-3 sm:p-4 lg:p-5 text-sm sm:text-base lg:text-lg font-medium mb-4 bg-[#73CA5C] border-b rounded-[4px] text-white h-10 sm:h-12 lg:h-14">
+              Flight Num. {flightNum} - {allSeats.length - reservedSeats.length}{" "}
+              Seats Available
             </div>
+
             <div className="flex justify-center">
               <div className="grid grid-cols-7 gap-2 justify-center items-center">
                 {/* Render columns */}
@@ -1060,7 +1182,7 @@ export default function BookingForm({ onFormSubmit }) {
               onClick={handleSaveAndContinue}
               disabled={isSubmitted}
             >
-              Simpan Penerbangan Saat Ini
+              Simpan Penerbangan Saat Ini [ {flightNum} ]
             </button>
           ) : (
             // Tombol Booking Pesanan

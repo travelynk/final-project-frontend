@@ -40,7 +40,7 @@ function Register() {
       return register(body);
     },
     onSuccess: (result) => {
-      console.log("Register Success:", result);
+      "Register Success:", result;
       toast({
         description: result.status.message,
         variant: "info",
@@ -80,13 +80,13 @@ function Register() {
 
       // Listen for messages from the popup
       const messageHandler = (event) => {
-        console.log(event);
-        console.log(event.origin);
+        event;
+        event.origin;
         const apiOrigin = new URL(import.meta.env.VITE_API_URL).origin;
         if (event.origin !== apiOrigin) return; // Ensure the message is from the same origin
-        console.log(event.data);
+        event.data;
         const { result, error } = event.data;
-        console.log(result);
+        result;
         if (result) {
           const parsedResult = JSON.parse(result);
 

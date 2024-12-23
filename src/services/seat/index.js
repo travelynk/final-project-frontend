@@ -16,7 +16,7 @@ export const Seat = async (flightId) => {
   }
 
   const data = await response.json();
-  console.log("Seat Data:", data); // Debug log untuk melihat data
+  "Seat Data:", data; // Debug log untuk melihat data
   return data?.data;
   // return response.json().then((data) => data?.data);
 };

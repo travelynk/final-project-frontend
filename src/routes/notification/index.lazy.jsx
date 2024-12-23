@@ -2,7 +2,16 @@ import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Separator } from "../../components/ui/separator";
-import { ArrowLeft, Bell, Filter, Search, Trash2, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Bell,
+  Filter,
+  Search,
+  Trash2,
+  CheckSquare,
+  X,
+  Check,
+} from "lucide-react";
 import {
   getNotificationsById,
   updateNotificationReadStatus,
@@ -19,9 +28,14 @@ import {
   PopoverTrigger,
 } from "../../components/ui/popover";
 import { cn } from "../../lib/utils";
+import Protected from "../../components/auth/Protected";
 
 export const Route = createLazyFileRoute("/notification/")({
-  component: Notification,
+  component: () => (
+    <Protected>
+      <Notification />
+    </Protected>
+  ),
 });
 
 function Notification() {
@@ -29,6 +43,7 @@ function Notification() {
   const [showDeleteButtons, setShowDeleteButtons] = useState(false);
   const [dateRange, setDateRange] = useState({ from: null, to: null });
   const [searchTerm, setSearchTerm] = useState("");
+  const [checkedNotifications, setCheckedNotifications] = useState([]);
 
   const queryClient = useQueryClient();
 
@@ -54,6 +69,28 @@ function Notification() {
     },
   });
 
+  const markAllAsReadMutation = useMutation({
+    mutationFn: async () => {
+      // Assuming the API supports batch updates. If not, we'll need to make multiple calls
+      const unreadNotifications = filteredNotifications.filter(
+        (n) => !n.isRead
+      );
+      await Promise.all(
+        unreadNotifications.map((n) => updateNotificationReadStatus(n.id))
+      );
+      return unreadNotifications.map((n) => n.id);
+    },
+    onSuccess: (notificationIds) => {
+      queryClient.setQueryData(["notifications"], (oldNotifications) =>
+        oldNotifications.map((notif) =>
+          notificationIds.includes(notif.id)
+            ? { ...notif, isRead: true }
+            : notif
+        )
+      );
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: deleteNotifications,
     onSuccess: (data, variables) => {
@@ -62,6 +99,33 @@ function Notification() {
       );
     },
   });
+
+  // Function to toggle individual notification selection
+  const toggleNotificationSelection = (id) => {
+    setCheckedNotifications((prev) =>
+      prev.includes(id)
+        ? prev.filter((notifId) => notifId !== id)
+        : [...prev, id]
+    );
+  };
+
+  // Function to check/uncheck all notifications
+  const toggleSelectAll = () => {
+    if (checkedNotifications.length === filteredNotifications.length) {
+      setCheckedNotifications([]);
+    } else {
+      setCheckedNotifications(filteredNotifications.map((notif) => notif.id));
+    }
+  };
+
+  // Function to delete all selected notifications
+  const deleteSelectedNotifications = () => {
+    checkedNotifications.forEach((id) => {
+      deleteMutation.mutate(id);
+    });
+    setCheckedNotifications([]);
+    setShowDeleteButtons(false);
+  };
 
   const filteredNotifications = useMemo(() => {
     if (!notifications) return [];
@@ -105,9 +169,8 @@ function Notification() {
     }
   };
 
-  const handleDeleteClick = (e, notificationId) => {
-    e.stopPropagation();
-    deleteMutation.mutate(notificationId);
+  const handleMarkAllAsRead = () => {
+    markAllAsReadMutation.mutate();
   };
 
   const handleDateSelect = (range) =>
@@ -225,7 +288,7 @@ function Notification() {
                 <div className="relative w-full sm:w-[180px]">
                   <input
                     type="text"
-                    className="border border-darkblue05 rounded-[18px] p-2 pl-10 pr-2 w-full"
+                    className="border border-darkblue05 dark:bg-transparent rounded-[18px] p-2 pl-10 pr-2 w-full"
                     placeholder="Cari Notifikasi"
                     value={searchTerm}
                     onChange={handleSearchChange}
@@ -241,55 +304,98 @@ function Notification() {
       <Separator className="my-6" />
 
       <div className="container max-w-4xl mx-auto px-4">
-        <div className="container flex justify-self-end w-[130px] px-4 mb-6">
-          <Button
-            variant="outline"
-            className={
-              showDeleteButtons
-                ? "text-red-500 border-red-500 rounded-[18px]"
-                : "text-darkblue05 border-darkblue05 rounded-[18px]"
-            }
-            onClick={() => setShowDeleteButtons(!showDeleteButtons)}
-          >
-            <Trash2 />
-            {showDeleteButtons ? "Cancel" : "Delete"}
-          </Button>
-        </div>
-        <div className="mb-5 border border-gray-300 rounded-lg bg-white shadow-md">
-          {filteredNotifications.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">
-              Tidak ada notifikasi tersedia
-            </div>
-          ) : (
-            filteredNotifications.map((notification) => (
-              <Card
-                key={notification.id}
-                onClick={() =>
-                  !showDeleteButtons && handleNotificationClick(notification)
-                }
-                className={`w-full p-6 border-none shadow-none rounded-none transition-all duration-300 ease-in-out relative ${
-                  notification.isRead
-                    ? "bg-gray-200 shadow-md opacity-70"
-                    : "bg-white hover:bg-gray-50"
-                } cursor-pointer`}
-              >
-                <div className="flex items-start justify-between w-full">
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-darkblue05 flex items-center justify-center">
-                      <Bell className="w-4 h-4 text-white" />
-                    </div>
+        <div className="container flex flex-wrap justify-between items-center px-4 mb-6 gap-4">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className={
+                showDeleteButtons
+                  ? "text-red-500 border-red-500 rounded-[18px]"
+                  : "text-darkblue05 border-darkblue05 rounded-[18px]"
+              }
+              onClick={() => setShowDeleteButtons(!showDeleteButtons)}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {showDeleteButtons ? "Cancel" : "Delete"}
+            </Button>
 
-                    <div className="flex flex-col">
-                      <span className="text-base font-medium text-gray-900">
-                        {notification.title}
-                      </span>
-                      <span className="text-sm text-gray-500 mt-0.5">
-                        {notification.message}
-                      </span>
-                    </div>
+            <Button
+              variant="outline"
+              className="text-darkblue05 border-darkblue05 rounded-[18px]"
+              onClick={handleMarkAllAsRead}
+              disabled={!filteredNotifications.some((n) => !n.isRead)}
+            >
+              <Check className="mr-2 h-4 w-4" />
+              Mark All as Read
+            </Button>
+          </div>
+
+          {showDeleteButtons && (
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                onClick={toggleSelectAll}
+                className="text-darkblue05 border-darkblue05 rounded-[18px]"
+              >
+                <CheckSquare className="mr-2 h-4 w-4" />
+                {checkedNotifications.length === filteredNotifications.length
+                  ? "Uncheck All"
+                  : "Check All"}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={deleteSelectedNotifications}
+                className="text-red-500 border-red-500 rounded-[18px]"
+              >
+                Delete Selected
+              </Button>
+            </div>
+          )}
+        </div>
+        {filteredNotifications.length === 0 ? (
+          <div className="p-6 text-center text-gray-500">
+            Tidak ada notifikasi tersedia
+          </div>
+        ) : (
+          filteredNotifications.map((notification) => (
+            <Card
+              key={notification.id}
+              onClick={() =>
+                !showDeleteButtons && handleNotificationClick(notification)
+              }
+              className={`w-full p-6 mb-2 border-darkblue05 shadow-none rounded-lg transition-all duration-300 ease-in-out relative ${
+                notification.isRead
+                  ? "bg-gray-200 dark:bg-slate-800 shadow-md opacity-70"
+                  : "bg-white dark:bg-slate-800 hover:bg-gray-50"
+              } cursor-pointer`}
+            >
+              <div className="flex items-start justify-between w-full">
+                <div className="flex gap-4">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-darkblue05 flex items-center justify-center">
+                    <Bell className="w-4 h-4 text-white" />
                   </div>
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col">
+                    <span className="text-base font-medium text-gray-900 dark:text-gray-100">
+                      {notification.title}
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-slate-100 mt-0.5">
+                      {notification.message}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  {showDeleteButtons ? (
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4"
+                      checked={checkedNotifications.includes(notification.id)}
+                      onChange={() =>
+                        toggleNotificationSelection(notification.id)
+                      }
+                    />
+                  ) : (
                     <div
                       className={`flex items-center text-sm text-gray-500 w-[20px] justify-end ${
                         showDeleteButtons ? "hidden" : ""
@@ -301,30 +407,16 @@ function Notification() {
                         }`}
                       />
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-300 ${
-                        showDeleteButtons
-                          ? "scale-100 opacity-100"
-                          : "scale-0 opacity-0 hidden"
-                      }`}
-                      onClick={(e) => handleDeleteClick(e, notification.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="flex justify-end text-xs">
-                  {formatDate(notification.createdAt)}
-                </div>
-
-                <Separator className="absolute bottom-0 left-0 w-full border-t-2" />
-              </Card>
-            ))
-          )}
-        </div>
+              <div className="flex justify-end text-xs">
+                {formatDate(notification.createdAt)}
+              </div>
+            </Card>
+          ))
+        )}
       </div>
     </>
   );
