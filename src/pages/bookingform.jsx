@@ -772,37 +772,9 @@ export default function BookingForm({ onFormSubmit }) {
                 value={formState.fullname}
                 onChange={(e) => handleChange("fullname", e.target.value)}
                 disabled={isSubmitted}
+                readOnly
               />
             </div>
-            {/* Switch Punya Nama Keluarga */}
-            <div className="flex items-center justify-between mb-4">
-              <Label className="dark:text-black">Punya Nama Keluarga</Label>
-              <Switch
-                checked={hasFamilyName}
-                onCheckedChange={(value) => setHasFamilyName(value)}
-              />
-            </div>
-
-            {/* Conditional Rendering: Nama Keluarga */}
-            {hasFamilyName && (
-              <div>
-                <Label
-                  className="text-darkblue05 font-bold text-[14px]"
-                  htmlFor="namakeluarga"
-                >
-                  Nama Keluarga
-                </Label>
-                <Input
-                  required
-                  id="namakeluarga"
-                  placeholder="Masukkan nama keluarga"
-                  className="mb-2"
-                  value={formState.namakeluarga}
-                  onChange={(e) => handleChange("namakeluarga", e.target.value)}
-                  disabled={isSubmitted}
-                />
-              </div>
-            )}
             <div>
               <Label
                 className="text-darkblue05 font-bold text-[14px]"
@@ -818,6 +790,7 @@ export default function BookingForm({ onFormSubmit }) {
                 value={formState.phone}
                 onChange={(e) => handleChange("phone", e.target.value)}
                 disabled={isSubmitted}
+                readOnly
               />
             </div>
             <div>
@@ -836,6 +809,7 @@ export default function BookingForm({ onFormSubmit }) {
                 value={formState.email}
                 onChange={(e) => handleChange("email", e.target.value)}
                 disabled={isSubmitted}
+                readOnly
               />
             </div>
           </div>

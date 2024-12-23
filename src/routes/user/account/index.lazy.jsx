@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Pen, Settings, LogOut } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-
+import { useToast } from "../../../hooks/use-toast";
 import { ProfileUpdate } from "../../../services/auth"; // Assuming profile function is in src/service/auth
 import { useQueryClient } from "@tanstack/react-query";
 import { setToken } from "../../../redux/slices/auth";
@@ -35,6 +35,7 @@ function Profile() {
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { toast } = useToast();
 
   // Cek token saat komponen pertama kali di-render
   useEffect(() => {
@@ -72,13 +73,19 @@ function Profile() {
     };
 
     try {
+      // Assuming ProfileUpdate is a function that returns the updated profile data
       const updatedProfile = await ProfileUpdate(profileData);
-      "Updated profile:", updatedProfile;
+
+      console.log("Updated profile:", updatedProfile); // Corrected log statement
       setSuccessMessage("Profil berhasil diperbarui!");
       setToastVisible(true);
     } catch (error) {
       console.error("Error updating profile:", error);
-      alert("Gagal memperbarui profil. Silakan coba lagi.");
+      toast({
+        title: "Error",
+        description: error.message, // Adjusted to provide more useful error feedback
+        variant: "destructive",
+      });
     }
   };
 
@@ -196,6 +203,7 @@ function Profile() {
                   defaultValue={profileData?.email}
                   className="mt-2"
                   placeholder="masukan email"
+                  readOnly
                 />
               </div>
 
