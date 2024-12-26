@@ -63,7 +63,9 @@ function sendOTP() {
 
       <div className="flex flex-col items-center justify-center w-full lg:w-[50%] px-6 py-12">
         <Card className="w-full max-w-lg p-8 space-y-6 bg-white rounded-lg lg:ms-24 lg:mb-12 border-none">
-          <h2 className="text-2xl font-bold dark:text-darkblue05">Kirim OTP</h2>
+          <h2 className="text-2xl font-bold dark:text-darkblue05">
+            Kirim Email Konfirmasi
+          </h2>
           <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Email Input */}
             <div>
